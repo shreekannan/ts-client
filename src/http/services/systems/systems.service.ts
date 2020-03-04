@@ -8,6 +8,7 @@ import {
     EngineSystemShowOptions,
     EngineSystemsQueryOptions
 } from './system.interfaces';
+import { toQueryString } from '../../../utilities/api.utilities';
 
 export class EngineSystemsService extends EngineResourceService<EngineSystem> {
     /* istanbul ignore next */
@@ -97,7 +98,27 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
         module: string,
         index: number = 1
     ): Promise<EngineModuleFunctionMap> {
-        return this.task(id, 'funcs', { module, index }, 'get');
+        const query = toQueryString({ module, index });
+        const key = `task|${id}|functions|${query}`;
+        /* istanbul ignore else */
+        if (!this._promises[key]) {
+            this._promises[key] = new Promise((resolve, reject) => {
+                const url = `${this.api_route}/${id}/functions/${module}_${index}`;
+                let result: any;
+                this.http.get(`${url}`).subscribe(
+                    d => (result = d),
+                    e => {
+                        reject(e);
+                        delete this._promises[key];
+                    },
+                    () => {
+                        resolve(result);
+                        this.timeout(key, () => delete this._promises[key], 1000);
+                    }
+                );
+            });
+        }
+        return this._promises[key];
     }
 
     /**
