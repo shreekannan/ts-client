@@ -218,8 +218,11 @@ export class MockEngineHttpClient extends EngineHttpClient {
      */
     private mock_request(handler: MockHttpRequestHandler, request: MockHttpRequest) {
         const result = handler.callback(request);
+        const variance = handler.delay_variance || 100;
+        const delay_value = (handler.delay || 300)
+        const delay_time = Math.floor(Math.random() * (variance) - variance / 2) + delay_value;
         return from([result]).pipe(
-            concatMap(item => of(item).pipe(delay(Math.floor(Math.random() * 300 + 50))))
+            concatMap(item => of(item).pipe(delay(Math.max(200, delay_time)))
         );
     }
 }

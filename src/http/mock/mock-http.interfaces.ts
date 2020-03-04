@@ -11,6 +11,10 @@ export interface MockHttpRequestHandlerOptions<T = any> {
     method: HttpVerb;
     /** Callback for handling request to the associated URL */
     callback: (handler: MockHttpRequest<T>) => T;
+    /** Number of milliseconds the response should be returned */
+    delay?: number;
+    /** Number of milliseconds the delay value can vary */
+    delay_variance?: number;
 }
 
 /** Interface for data needed to handle Mock HTTP requests */
