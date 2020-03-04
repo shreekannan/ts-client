@@ -74,21 +74,17 @@ describe('EngineSystemsService', () => {
 
     it('allow executing methods on modules', async () => {
         http.post.mockReturnValueOnce(of('test')).mockReturnValueOnce(of('test2'));
-        let resp = await service.execute('test', 'module');
-        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/exec', {
-            _task: 'exec',
+        let resp = await service.execute('test', 'explode', 'module');
+        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/module_1/explode', {
+            _task: 'module_1/explode',
             id: 'test',
-            module: 'module',
-            index: 1,
             args: []
         });
         expect(resp).toBe('test');
-        resp = await service.execute('test', 'module', 2, ['let', 'me', 'go']);
-        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/exec', {
-            _task: 'exec',
+        resp = await service.execute('test', 'explode', 'module', 2, ['let', 'me', 'go']);
+        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/module_2/explode', {
+            _task: 'module_2/explode',
             id: 'test',
-            module: 'module',
-            index: 2,
             args: ['let', 'me', 'go']
         });
         expect(resp).toBe('test2');
@@ -100,11 +96,11 @@ describe('EngineSystemsService', () => {
             .mockReturnValueOnce(of({ test: 'yeah2' }));
         let value = await service.state('test', 'module', 1, 'look');
         expect(http.get).toBeCalledWith(
-            `/api/engine/v2/systems/test/state?module=module&index=1&lookup=look`
+            `/api/engine/v2/systems/test/module_1?lookup=look`
         );
         expect(value).toEqual({ test: 'yeah' });
         value = await service.state('test', 'module');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/state?module=module&index=1`);
+        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/module_1`);
         expect(value).toEqual({ test: 'yeah2' });
     });
 
@@ -113,10 +109,10 @@ describe('EngineSystemsService', () => {
             .mockReturnValueOnce(of({ test: { arity: 1 } }))
             .mockReturnValueOnce(of({ test: { arity: 2 } }));
         let value = await service.functionList('test', 'module');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/funcs?module=module&index=1`);
+        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/functions/module_1`);
         expect(value).toEqual({ test: { arity: 1 } });
         value = await service.functionList('test', 'module', 2);
-        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/funcs?module=module&index=2`);
+        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/functions/module_2`);
         expect(value).toEqual({ test: { arity: 2 } });
     });
 

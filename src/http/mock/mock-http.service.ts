@@ -222,7 +222,7 @@ export class MockEngineHttpClient extends EngineHttpClient {
         const delay_value = (handler.delay || 300)
         const delay_time = Math.floor(Math.random() * (variance) - variance / 2) + delay_value;
         return from([result]).pipe(
-            concatMap(item => of(item).pipe(delay(Math.max(200, delay_time)))
+            concatMap(item => of(item).pipe(delay(Math.max(200, delay_time))))
         );
     }
 }
