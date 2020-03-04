@@ -1,6 +1,8 @@
 
+/** Commands allowed by Engine */
 export type EngineCommand = 'bind' | 'unbind' | 'debug' | 'ignore' | 'exec';
 
+/** General Engine websocket request metadata */
 export interface EngineCommandRequest {
     /** Unique request identifier */
     id: string | number;
@@ -18,6 +20,7 @@ export interface EngineCommandRequest {
     args?: any[];
 }
 
+/** Additional management metadata for a Engine request */
 export interface EngineCommandRequestMetadata extends EngineCommandRequest {
     /** Request and binding identifier */
     key: string;
@@ -29,6 +32,7 @@ export interface EngineCommandRequestMetadata extends EngineCommandRequest {
     reject?: (_?: any) => void;
 }
 
+/** Metadata describing the actor the request should be performed on */
 export interface EngineRequestOptions {
     /** System ID to perform the command  */
     sys: string;
@@ -40,10 +44,12 @@ export interface EngineRequestOptions {
     name: string;
 }
 
+/** Engine websocket exec request metadata */
 export interface EngineExecRequestOptions extends EngineRequestOptions {
     args?: any[];
 }
 
+/** Websocket initialisation options */
 export interface EngineWebsocketOptions {
     /** Domain and port of the engine server */
     host?: string;
@@ -53,6 +59,7 @@ export interface EngineWebsocketOptions {
     secure?: boolean;
 }
 
+/** Engine webscoket API response */
 export interface EngineResponse {
     /** ID of the associated request */
     id: string | number;
@@ -74,6 +81,7 @@ export interface EngineResponse {
     msg?: string;
 }
 
+/** Possible error codes returned by Engine */
 export enum EngineErrorCodes {
     PARSE_ERROR = 0,
     BAD_REQUEST = 1,
@@ -93,6 +101,7 @@ export interface SimpleNetworkError {
     message: string;
 }
 
+/** Logging levels of debug messages */
 export enum EngineLogLevel {
     Info = 'info',
     Debug = 'debug',
@@ -100,6 +109,7 @@ export enum EngineLogLevel {
     Error = 'error'
 }
 
+/** Metadata associated with Engine Debug events */
 export interface EngineDebugEvent {
     /** Module associated with the event */
     module: string;
