@@ -8,7 +8,6 @@ import {
     EngineSystemShowOptions,
     EngineSystemsQueryOptions
 } from './system.interfaces';
-import { toQueryString } from '../../../utilities/api.utilities';
 
 export class EngineSystemsService extends EngineResourceService<EngineSystem> {
     /* istanbul ignore next */
@@ -63,17 +62,19 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
     /**
      * Execute a function of the given system module
      * @param id System ID
+     * @param method Name of the function to execute
      * @param module Class name of the Module e.g. `Display`, `Lighting` etc.
      * @param index Module index. Defaults to `1`
      * @param args Array of arguments to pass to the executed method
      */
     public execute(
         id: string,
+        method: string,
         module: string,
         index: number = 1,
         args: any[] = []
     ): Promise<HashMap> {
-        return this.task(id, 'exec', { module, index, args });
+        return this.task(id, `${module}_${index}/${method}`, { args });
     }
 
     /**
@@ -84,7 +85,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      * @param lookup Status variable of interest. If set it will return only the state of this variable
      */
     public state(id: string, module: string, index: number = 1, lookup?: string): Promise<HashMap> {
-        return this.task(id, 'state', { module, index, lookup }, 'get');
+        return this.task(id, `${module}_${index}`, { lookup }, 'get');
     }
 
     /**
@@ -98,27 +99,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
         module: string,
         index: number = 1
     ): Promise<EngineModuleFunctionMap> {
-        const query = toQueryString({ module, index });
-        const key = `task|${id}|functions|${query}`;
-        /* istanbul ignore else */
-        if (!this._promises[key]) {
-            this._promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.api_route}/${id}/functions/${module}_${index}`;
-                let result: any;
-                this.http.get(`${url}`).subscribe(
-                    d => (result = d),
-                    e => {
-                        reject(e);
-                        delete this._promises[key];
-                    },
-                    () => {
-                        resolve(result);
-                        this.timeout(key, () => delete this._promises[key], 1000);
-                    }
-                );
-            });
-        }
-        return this._promises[key];
+        return this.task(id, `functions/${module}_${index}`, {}, 'get');
     }
 
     /**
