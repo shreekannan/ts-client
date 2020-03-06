@@ -61,6 +61,11 @@ export * from './http/services/zones/zones.service';
 export * from './http/services/zones/zone.interfaces';
 export * from './http/services/zones/zone.class';
 
+export * from './http/services/clusters/clusters.service';
+export * from './http/services/clusters/cluster.interfaces';
+export * from './http/services/clusters/cluster.class';
+export * from './http/services/clusters/process.class';
+
 export * from './http/services/resources/resource.class';
 export * from './http/services/resources/resources.interface';
 export * from './http/services/resources/resources.service';
