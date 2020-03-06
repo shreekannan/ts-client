@@ -3,7 +3,7 @@ import { EngineHttpClient } from '../../http.service';
 import { EngineDriverDetails } from '../drivers/drivers.interfaces';
 import { EngineResourceService } from '../resources/resources.service';
 import { EngineRepository } from './repository.class';
-import { EngineRepositoryCommitQuery, EngineRepositoryDetailsQuery } from './repository.interfaces';
+import { EngineRepositoryCommitQuery, EngineRepositoryDetailsQuery, EngineRepositoryPullQuery } from './repository.interfaces';
 
 export class EngineRepositoriesService extends EngineResourceService<EngineRepository> {
     /* istanbul ignore next */
@@ -32,12 +32,21 @@ export class EngineRepositoriesService extends EngineResourceService<EngineRepos
     }
 
     /**
-     * The
+     * Get the details for a given driver
      * @param id ID of the repository
      * @param query Addition query parameters to pass to the request
      */
     public async driverDetails(id: string, query: EngineRepositoryDetailsQuery): Promise<EngineDriverDetails> {
         return await this.task(id, 'details', query, 'get');
+    }
+
+    /**
+     * Pull remote changes to the repository
+     * @param id ID of the repository
+     * @param query Addition query parameters to pass to the request
+     */
+    public async pullCommit(id: string, query?: EngineRepositoryPullQuery): Promise<EngineDriverDetails> {
+        return await this.task(id, 'pull', query, 'post');
     }
 
     /**

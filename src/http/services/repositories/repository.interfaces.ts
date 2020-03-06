@@ -19,6 +19,11 @@ export interface EngineRepositoryDetailsQuery {
     commit: string;
 }
 
+export interface EngineRepositoryPullQuery {
+    /** Hash of the commit being requested */
+    commit: string;
+}
+
 /** Metadata for a repository commit */
 export interface EngineRepositoryCommit {
     /** Hash associated with the commit */
