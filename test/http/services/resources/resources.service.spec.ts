@@ -2,6 +2,7 @@ import { Observable, of, throwError } from 'rxjs';
 
 import { EngineResource } from '../../../../src/http/services/resources/resource.class';
 import { EngineResourceService } from '../../../../src/http/services/resources/resources.service';
+import { HashMap } from '../../../../src/utilities/types.utilities';
 
 class ERSInstance extends EngineResourceService<EngineResource<any>> {}
 
@@ -44,6 +45,7 @@ describe('EngineResourceService', () => {
     beforeEach(() => {
         jest.useFakeTimers();
         http = {
+            responseHeaders: jest.fn(() => ({})),
             get: jest.fn(),
             post: jest.fn(),
             put: jest.fn(),
@@ -80,7 +82,9 @@ describe('EngineResourceService', () => {
     it('should save index request totals', async () => {
         expect.assertions(6);
         const item = { id: 'test', name: 'Test' };
+        http.responseHeaders.mockReturnValue({ 'X-Total-Count': 10 });
         await testRequest('get', 'query', { total: 10, results: [item] }, [{ offset: 10 }], [{ offset: 10 }]);
+        http.responseHeaders.mockReturnValue({ 'X-Total-Count': 25 });
         await testRequest('get', 'query', { total: 25, results: undefined }, [{ test: true }], [{ test: true }]);
         expect(service.total).toBe(10);
         expect(service.last_total).toBe(25);
@@ -201,5 +205,9 @@ describe('EngineResourceService', () => {
         await testRequest('delete', 'delete', item, ['test'], ['test', { test: true }]);
         expect(http.delete).toBeCalledWith('/api/engine/v2/base/test');
         expect(http.delete).toBeCalledWith('/api/engine/v2/base/test?test=true');
+    });
+
+    it('should allow getting the next page', () => {
+        expect(service.next).toBeFalsy();
     });
 });

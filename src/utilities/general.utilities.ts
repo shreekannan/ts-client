@@ -144,3 +144,28 @@ export function bytesToDisplay(bytes: number) {
     }
     return `${(bytes / 1024 / 1024 / 1024 / 1024).toFixed(2)} TB`;
 }
+
+/**
+ * Parse URLs from Link header string
+ * @param header Header value
+ */
+export function parseLinkHeader(header: string): HashMap<string> {
+    if (header.length === 0) {
+        throw new Error('input must not be of zero length');
+    }
+
+    // Split parts by comma
+    const parts = header.split(',');
+    const links: HashMap<string> = {};
+    // Parse each part into a named link
+    for (const part of parts) {
+        const section = part.split(';');
+        if (section.length !== 2) {
+            throw new Error('section could not be split on \';\'');
+        }
+        const url = section[0].replace(/<(.*)>/, '$1').trim();
+        const name = section[1].replace(/rel="(.*)"/, '$1').trim();
+        links[name] = url;
+    }
+    return links;
+}

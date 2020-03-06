@@ -9,6 +9,7 @@ describe('EngineTriggersService', () => {
 
     beforeEach(() => {
         http = {
+            responseHeaders: jest.fn(() => ({})),
             get: jest.fn(),
             post: jest.fn(),
             put: jest.fn(),

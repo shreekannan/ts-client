@@ -1,7 +1,9 @@
 import {
-    generateNonce,
+    bytesToDisplay,
     convertPairStringToMap,
-    getFragments
+    generateNonce,
+    getFragments,
+    parseLinkHeader
 } from '../../src/utilities/general.utilities';
 
 describe('General Utilities', () => {
@@ -60,6 +62,24 @@ describe('General Utilities', () => {
             expect(getFragments()).toEqual({ not_test: `true`, test: 'false' });
             window.history.pushState({}, 'Test', `?test=false#not_test=true&other=value`);
             expect(getFragments()).toEqual({ not_test: `true`, test: 'false', other: `value` });
+        });
+    });
+
+    describe('parseLinkHeaders', () => {
+        it('should get the URL', () => {
+            const header = '<http://google.com/>; rel="next"';
+            const map = parseLinkHeader(header);
+            expect(map.next).toBe('http://google.com/');
+        });
+    });
+
+    describe('bytesToDisplay', () => {
+        it('should generate display value correctly', () => {
+            expect(bytesToDisplay(234)).toBe('234 B');
+            expect(bytesToDisplay(23456)).toBe('22.91 KB');
+            expect(bytesToDisplay(23456789)).toBe('22.37 MB');
+            expect(bytesToDisplay(23456789012)).toBe('21.85 GB');
+            expect(bytesToDisplay(23456789012345)).toBe('21.33 TB');
         });
     });
 });

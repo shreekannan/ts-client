@@ -84,20 +84,21 @@ export abstract class EngineResource<T extends ResourceService<any>> {
         const me: HashMap = this.toJSON();
         if (Object.keys(this._changes).length > 0) {
             return new Promise((resolve, reject) => {
+                const on_error = (err: any) => reject(err);
                 this.id
                     ? this._service.update(this.id, me, { version: this._version }, type).then(
                           updated_item => {
                               this.emit('item_saved', updated_item);
                               resolve(updated_item);
                           },
-                          _ => reject(_)
+                          on_error
                       )
                     : this._service.add(me).then(
                           new_item => {
                               this.emit('item_saved', new_item);
                               resolve(new_item);
                           },
-                          _ => reject(_)
+                          on_error
                       );
             });
         } else {

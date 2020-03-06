@@ -2,6 +2,7 @@ import { BehaviorSubject, Observable, Subject, Subscriber } from 'rxjs';
 
 import { toQueryString } from '../../../utilities/api.utilities';
 import { EngineBaseClass } from '../../../utilities/base.class';
+import { parseLinkHeader } from '../../../utilities/general.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
 import { HttpError } from '../../http.interfaces';
 import { EngineHttpClient } from '../../http.service';
@@ -29,6 +30,11 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
     public get last_total(): number {
         return this._last_total;
     }
+
+    /** URL for the next query page */
+    public get next(): string {
+        return this._next;
+    }
     /** Display name of the service */
     protected _name: string;
     /** API Route of the service */
@@ -47,6 +53,8 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
     protected _total: number = 0;
     /** Total number of items returned by the last index query */
     protected _last_total: number = 0;
+    /** URL to get the next page */
+    protected _next: string = '';
 
     constructor(protected http: EngineHttpClient) {
         super();
@@ -74,24 +82,30 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
                 const url = `${this.api_route}${query ? '?' + query : ''}`;
                 let result: T[] | HashMap[] = [];
                 this.http.get(url).subscribe(
-                    (d: HashMap) => {
+                    (resp: HashMap) => {
                         result =
-                            d && d instanceof Array
-                                ? d.map(i => this.process(i))
-                                : d && !(d instanceof Array) && d.results
-                                    ? (d.results as HashMap[]).map(i => this.process(i))
+                            resp && resp instanceof Array
+                                ? resp.map(i => this.process(i))
+                                : resp && !(resp instanceof Array) && resp.results
+                                    ? (resp.results as HashMap[]).map(i => this.process(i))
                                     : [];
-                        if (d.total) {
-                            query.length < 2 || query.length < 12 && query.indexOf('offset=') >= 0
-                                ? this._total = d.total
-                                : this._last_total = d.total;
-                        }
                     },
                     (e: any) => {
                         reject(e);
                         this.timeout(key, () => delete this._promises[key], 1);
                     },
                     () => {
+                        const headers = this.http.responseHeaders(url);
+                        if (headers['X-Total-Count']) {
+                            const total = +headers['X-Total-Count'] || 0;
+                            query.length < 2 || query.length < 12 && query.indexOf('offset=') >= 0
+                                ? this._total = total
+                                : this._last_total = total;
+                        }
+                        if (headers.Link) {
+                            const link_map = parseLinkHeader(headers.Link);
+                            this._next = link_map.next;
+                        }
                         resolve(result);
                         this.timeout(key, () => delete this._promises[key], cache);
                     }
@@ -210,21 +224,22 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
         this._observers[key] = this._subjects[key].asObservable();
         const sub = this._subjects[key];
         const query = { ...(query_params || {}), _poll: true };
+        const on_error = (e: any) => sub.error(e);
         if (id) {
-            this.show(id, query).then(d => sub.next(d), e => sub.error(e));
+            this.show(id, query).then(d => sub.next(d), on_error);
             this.interval(
                 key,
                 () => {
-                    this.show(id, query).then(d => sub.next(d), e => sub.error(e));
+                    this.show(id, query).then(d => sub.next(d), on_error);
                 },
                 delay
             );
         } else {
-            this.query(query).then((d: T[]) => sub.next(d), (e: any) => sub.error(e));
+            this.query(query).then((d: T[]) => sub.next(d), on_error);
             this.interval(
                 key,
                 () => {
-                    this.query(query).then(d => sub.next(d), e => sub.error(e));
+                    this.query(query).then(d => sub.next(d), on_error);
                 },
                 delay
             );

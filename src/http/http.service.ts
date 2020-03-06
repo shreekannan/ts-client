@@ -27,11 +27,18 @@ export const engine_http: any = {
 };
 
 export class EngineHttpClient {
+    /** Map of headers from the last request made */
+    private _response_headers: HashMap<HashMap<string>> = {};
+
     constructor(protected _auth: EngineAuthService) {}
 
     /** API Endpoint for the retrieved version of engine */
     public get api_endpoint() {
         return this._auth.api_endpoint;
+    }
+
+    public responseHeaders(url: string): HashMap<string> {
+        return this._response_headers[url] || {};
     }
 
     /**
@@ -133,6 +140,18 @@ export class EngineHttpClient {
     private transform(resp: AjaxResponse, type: 'void'): void;
     private transform(resp: AjaxResponse, type: HttpResponseType): HttpResponse {
         const text = resp.response;
+        if (resp.xhr) {
+            const headers = resp.xhr.getAllResponseHeaders();
+            const header_lines = headers.trim().split(/[\r\n]+/);
+            const header_map: HashMap<string> = {};
+            header_lines.forEach((line) => {
+                const parts = line.split(': ');
+                const header = parts.shift() || '';
+                const value = parts.join(': ');
+                header_map[header] = value;
+            });
+            this._response_headers[resp.request.url || ''] = header_map;
+        }
         switch (type) {
             case 'json':
                 return typeof text === 'string' ? JSON.parse(text || '{}') : text;
