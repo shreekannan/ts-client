@@ -1,7 +1,7 @@
 import { of } from 'rxjs';
 
-import { PlaceOS } from '../src/placeos';
 import { engine } from '../src/auth/auth.service';
+import { PlaceOS } from '../src/placeos';
 
 import { EngineAuthority } from '../src/auth/auth.interfaces';
 import { EngineHttpClient } from '../src/http/http.service';
@@ -21,6 +21,7 @@ import { EngineBindingService } from '../src/websocket/binding.service';
 import { MockEngineWebsocket } from '../src/websocket/mock/mock-websocket.class';
 import { EngineWebsocket } from '../src/websocket/websocket.class';
 
+import { EngineClustersService } from '../src/http/services/clusters/clusters.service';
 import { EngineLDAPSourcesService } from '../src/http/services/ldap-sources/ldap-sources.service';
 import { EngineOAuthSourcesService } from '../src/http/services/oauth-sources/oauth-sources.service';
 import { EngineSAMLSourcesService } from '../src/http/services/saml-sources/saml-sources.service';
@@ -45,6 +46,7 @@ describe('PlaceOS', () => {
         expect(() => PlaceOS.systems).toThrow();
         expect(() => PlaceOS.users).toThrow();
         expect(() => PlaceOS.zones).toThrow();
+        expect(() => PlaceOS.clusters).toThrow();
     });
 
     describe('services', () => {
@@ -105,6 +107,7 @@ describe('PlaceOS', () => {
             expect(PlaceOS.triggers).toBeInstanceOf(EngineTriggersService);
             expect(PlaceOS.users).toBeInstanceOf(EngineUsersService);
             expect(PlaceOS.zones).toBeInstanceOf(EngineZonesService);
+            expect(PlaceOS.clusters).toBeInstanceOf(EngineClustersService);
         });
     });
 

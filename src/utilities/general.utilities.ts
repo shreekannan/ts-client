@@ -127,3 +127,20 @@ export function removeFragment(name: string) {
         .replace(/&$/g, '#');
     window.history.replaceState(null, '', `${location.pathname}${new_hash}${new_search}`);
 }
+
+/**
+ * Convert byte values into a display string
+ * @param bytes Number of bytes
+ */
+export function bytesToDisplay(bytes: number) {
+    if (bytes < 1024) {
+        return `${Math.floor(bytes)} B`;
+    } else if (bytes < 1024 * 1024) {
+        return `${(bytes / 1024).toFixed(2)} KB`;
+    } else if (bytes < 1024 * 1024 * 1024) {
+        return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+    } else if (bytes < 1024 * 1024 * 1024 * 1024) {
+        return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
+    }
+    return `${(bytes / 1024 / 1024 / 1024 / 1024).toFixed(2)} TB`;
+}

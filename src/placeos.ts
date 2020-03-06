@@ -25,6 +25,7 @@ import { EngineUsersService } from './http/services/users/users.service';
 import { EngineZonesService } from './http/services/zones/zones.service';
 import { EngineWebsocketOptions } from './websocket/websocket.interfaces';
 
+import { EngineClustersService } from './http/services/clusters/clusters.service';
 import { EngineLDAPSourcesService } from './http/services/ldap-sources/ldap-sources.service';
 import { EngineOAuthSourcesService } from './http/services/oauth-sources/oauth-sources.service';
 import { EngineSAMLSourcesService } from './http/services/saml-sources/saml-sources.service';
@@ -124,6 +125,11 @@ export class PlaceOS {
         return this.checkProperty(this._zones);
     }
 
+    /** @hidden HTTP service for engine clusters */
+    public static get clusters(): EngineClustersService {
+        return this.checkProperty(this._clusters);
+    }
+
     /** Observable for the intialised state of PlaceOS */
     public static get initialised(): Observable<boolean> {
         return this._initialised.asObservable();
@@ -174,6 +180,7 @@ export class PlaceOS {
                 this._system_triggers = new EngineSystemTriggersService(this._http);
                 this._triggers = new EngineTriggersService(this._http);
                 this._zones = new EngineZonesService(this._http);
+                this._clusters = new EngineClustersService(this._http);
                 this._initialised.next(true);
                 if (this._sub) {
                     this._sub.unsubscribe();
@@ -219,6 +226,8 @@ export class PlaceOS {
     private static _settings: EngineSettingsService;
     /** HTTP service for engine zones */
     private static _zones: EngineZonesService;
+    /** HTTP service for engine clusters */
+    private static _clusters: EngineClustersService;
     /** Initialisation subscription */
     private static _sub: Subscription;
 
@@ -242,7 +251,8 @@ export class PlaceOS {
             '_system_triggers',
             '_settings',
             '_users',
-            '_zones'
+            '_zones',
+            '_clusters'
         ];
         for (const key of keys) {
             if (key && (this as any)[key]) {
