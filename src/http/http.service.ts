@@ -49,9 +49,11 @@ export class EngineHttpClient {
     public get(url: string, options?: HttpJsonOptions): Observable<HashMap>;
     public get(url: string, options?: HttpTextOptions): Observable<string>;
     public get(url: string, options?: HttpOptions): Observable<HttpResponse> {
+        /* istanbul ignore else */
         if (!options) {
             options = { response_type: 'json' };
         }
+        /* istanbul ignore else */
         if (!this._auth.has_token) {
             this._auth.refreshAuthority();
         }
@@ -67,9 +69,11 @@ export class EngineHttpClient {
     public post(url: string, body: any, options?: HttpJsonOptions): Observable<HashMap>;
     public post(url: string, body: any, options?: HttpTextOptions): Observable<string>;
     public post(url: string, body: any, options?: HttpOptions): Observable<HttpResponse> {
+        /* istanbul ignore else */
         if (!options) {
             options = { response_type: 'json' };
         }
+        /* istanbul ignore else */
         if (this._auth.has_token) {
             this._auth.refreshAuthority();
         }
@@ -85,9 +89,11 @@ export class EngineHttpClient {
     public put(url: string, body: any, options?: HttpJsonOptions): Observable<HashMap>;
     public put(url: string, body: any, options?: HttpTextOptions): Observable<string>;
     public put(url: string, body: any, options?: HttpOptions): Observable<HttpResponse> {
+        /* istanbul ignore else */
         if (!options) {
             options = { response_type: 'json' };
         }
+        /* istanbul ignore else */
         if (this._auth.has_token) {
             this._auth.refreshAuthority();
         }
@@ -103,9 +109,11 @@ export class EngineHttpClient {
     public patch(url: string, body: any, options?: HttpJsonOptions): Observable<HashMap>;
     public patch(url: string, body: any, options?: HttpTextOptions): Observable<string>;
     public patch(url: string, body: any, options?: HttpOptions): Observable<HttpResponse> {
+        /* istanbul ignore else */
         if (!options) {
             options = { response_type: 'json' };
         }
+        /* istanbul ignore else */
         if (this._auth.has_token) {
             this._auth.refreshAuthority();
         }
@@ -121,9 +129,11 @@ export class EngineHttpClient {
     public delete(url: string, options?: HttpTextOptions): Observable<string>;
     public delete(url: string, options?: HttpVoidOptions): Observable<void>;
     public delete(url: string, options?: HttpOptions): Observable<HttpResponse> {
+        /* istanbul ignore else */
         if (!options) {
             options = { response_type: 'void' };
         }
+        /* istanbul ignore else */
         if (this._auth.has_token) {
             this._auth.refreshAuthority();
         }
@@ -140,6 +150,7 @@ export class EngineHttpClient {
     private transform(resp: AjaxResponse, type: 'void'): void;
     private transform(resp: AjaxResponse, type: HttpResponseType): HttpResponse {
         const text = resp.response;
+        /* istanbul ignore else */
         if (resp.xhr) {
             const headers = resp.xhr.getAllResponseHeaders();
             const header_lines = headers.trim().split(/[\r\n]+/);
@@ -167,6 +178,7 @@ export class EngineHttpClient {
      * @param error Message to format
      */
     private error(error: AjaxError): HttpError {
+        /* istanbul ignore else */
         if (error.status === HttpStatusCode.UNAUTHORISED) {
             this._auth.refreshAuthority();
         }
@@ -185,6 +197,7 @@ export class EngineHttpClient {
     private request(method: HttpVerb, url: string, options: HttpOptions): Observable<HttpResponse> {
         return new Observable<HttpResponse>(obs => {
             let ajax_obs: Observable<HttpResponse | HttpError>;
+            /* istanbul ignore else */
             // Add auth header to request
             if (!options.headers) {
                 options.headers = {};

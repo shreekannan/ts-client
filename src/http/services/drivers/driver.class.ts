@@ -78,6 +78,7 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
      * Live load/reload the driver
      */
     public reload(): Promise<void> {
+        /* istanbul ignore else */
         if (!this.id) {
             throw new Error('You must save the module before it can be started');
         }

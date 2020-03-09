@@ -1,16 +1,18 @@
+import { of } from 'rxjs';
 import { EngineProcess } from '../../../../src/http/services/clusters/process.class';
 
 describe('EngineProcess', () => {
-    let application: EngineProcess;
+    let process: EngineProcess;
     let service: any;
 
     beforeEach(() => {
         service = {
             reload: jest.fn(),
             remove: jest.fn(),
-            update: jest.fn()
+            update: jest.fn(),
+            delete: jest.fn()
         };
-        application = new EngineProcess(service, {
+        process = new EngineProcess(service, 'test-cluster', {
             driver: '/app/bin/drivers/drivers_aca_private_helper_fe33588',
             modules: ['mod-ETbLjPMTRfb'],
             running: true,
@@ -25,19 +27,34 @@ describe('EngineProcess', () => {
     });
 
     it('should create instance', () => {
-        expect(application).toBeTruthy();
-        expect(application).toBeInstanceOf(EngineProcess);
+        expect(process).toBeTruthy();
+        expect(process).toBeInstanceOf(EngineProcess);
     });
 
     it('should expose ID', () => {
-        expect(application.id).toBe('/app/bin/drivers/drivers_aca_private_helper_fe33588');
+        expect(process.id).toBe('/app/bin/drivers/drivers_aca_private_helper_fe33588');
     });
 
     it('should allow generating display string for memory usage', () => {
-        expect(application.used_memory).toBe('90.30 MB');
+        expect(process.used_memory).toBe('90.30 MB');
     });
 
     it('should allow generating display string for memory total', () => {
-        expect(application.total_memory).toBe('7.78 GB');
+        expect(process.total_memory).toBe('7.78 GB');
+    });
+
+    it('should allow killing processes', () => {
+        jest.useFakeTimers();
+        service.delete.mockReturnValue(Promise.resolve());
+        expect(process.is_killing).toBeFalsy();
+        process.kill();
+        expect(service.delete).toBeCalledWith('test-cluster', {
+            driver: '/app/bin/drivers/drivers_aca_private_helper_fe33588'
+        });
+        service.delete.mockReturnValue(new Promise((rs, rj) => setTimeout(() => rj(), 10)));
+        process.kill().then(() => expect(process.is_killing).toBeFalsy());
+        expect(process.is_killing).toBeTruthy();
+        jest.runOnlyPendingTimers();
+        jest.useRealTimers();
     });
 });

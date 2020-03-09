@@ -35,6 +35,10 @@ describe('EngineHttpClient', () => {
         expect(service.api_endpoint).toBe('/api/engine/v2');
     });
 
+    it('should expose response headers', () => {
+        expect(service.responseHeaders('/test')).toEqual({});
+    });
+
     describe('GET', () => {
         beforeEach(() => {
             auth.has_token = false;
