@@ -33,7 +33,7 @@ export class EngineClustersService extends EngineResourceService<any> {
                 let result: EngineProcess[];
                 this.http.get(url).subscribe(
                     (resp: any) => {
-                        (result = resp.map((item: HashMap) => new EngineProcess(this, item)));
+                        (result = resp.map((item: HashMap) => new EngineProcess(this, id, item)));
                     },
                     (e: HttpError) => {
                         reject(e);

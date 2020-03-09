@@ -2,6 +2,7 @@ import { EngineClustersService } from './clusters.service';
 
 import { bytesToDisplay } from '../../../utilities/general.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
+import { EngineCluster } from './cluster.class';
 
 export class EngineProcess {
     /** Unique identifier of the application */
@@ -24,8 +25,10 @@ export class EngineProcess {
     public readonly memory_total: number;
     /** Total amount of memory used by the process in KB */
     public readonly memory_usage: number;
+    /** Whether the process is being killed */
+    private _killing: boolean = false;
 
-    constructor(protected _service: EngineClustersService, raw_data: HashMap) {
+    constructor(protected _service: EngineClustersService, private _cluster_id: string, raw_data: HashMap) {
         this.id = raw_data.id || raw_data.driver || '';
         this.modules = raw_data.modules || [];
         this.running = raw_data.running || false;
@@ -38,6 +41,11 @@ export class EngineProcess {
         this.memory_usage = raw_data.memory_usage || 0;
     }
 
+    /** Whether the process is being killed */
+    public get is_killing(): boolean {
+        return this._killing;
+    }
+
     /** Display string for the memory usage */
     public get used_memory(): string {
         return bytesToDisplay(this.memory_usage * 1024);
@@ -46,5 +54,21 @@ export class EngineProcess {
     /** Display string for the memory total */
     public get total_memory(): string {
         return bytesToDisplay(this.memory_total * 1024);
+    }
+
+    /**
+     * Send signal to kill this process on the cluster
+     */
+    public kill(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this._killing = true;
+            this._service.delete(this._cluster_id, { driver: this.id }).then(() => {
+                this._killing = false;
+                resolve();
+            }, (err) => {
+                this._killing = false;
+                reject(err);
+            });
+        });
     }
 }

@@ -6,8 +6,10 @@ export interface EngineModuleFunctionMap extends HashMap<EngineModuleFunction> {
 export interface EngineModuleFunction {
     /** Arity of the function. See https://apidock.com/ruby/Method/arity */
     arity: number;
-    /** List of available paramters for the function */
-    params: string[];
+    /** Map of available paramters for the function */
+    params: HashMap<[string, any] | [string]>;
+    /** Order of the parameters to pass to the server */
+    order: string[];
 }
 
 /** Allowable query parameters for systems index endpoint */
