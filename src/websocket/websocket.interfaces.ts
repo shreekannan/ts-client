@@ -111,6 +111,8 @@ export enum EngineLogLevel {
 
 /** Metadata associated with Engine Debug events */
 export interface EngineDebugEvent {
+    /** ID of the module associated with the event */
+    mod_id: string;
     /** Module associated with the event */
     module: string;
     /** Logically class name of the module driver */

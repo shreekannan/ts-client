@@ -196,8 +196,10 @@ export class EngineWebsocket {
                 this.handleSuccess(message);
             } else if (message.type === 'debug') {
                 engine_socket.log('WS', `[DEBUG] ${message.mod}${message.klass} →`, message.msg);
+                const meta = message.meta || { mod: '', index: ''};
                 this.debug_events.next({
-                    module: message.mod || '<empty>',
+                    mod_id: message.mod || '<empty>',
+                    module: `${meta.mod}_${meta.index}`,
                     class_name: message.klass || '<empty>',
                     message: message.msg || '<empty>',
                     level: message.level || EngineLogLevel.Debug
