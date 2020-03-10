@@ -42,28 +42,20 @@ describe('EngineSystemsService', () => {
         http.post.mockReturnValueOnce(of(null));
         await service.remove('test', 'module_1');
         expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/remove', {
-            module_id: 'module_1',
-            _task: 'remove',
-            id: 'test'
+            module_id: 'module_1'
         });
     });
 
     it('allow starting a system', async () => {
         http.post.mockReturnValueOnce(of(null));
         await service.start('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/start', {
-            _task: 'start',
-            id: 'test'
-        });
+        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/start', {});
     });
 
     it('allow stopping a system', async () => {
         http.post.mockReturnValueOnce(of(null));
         await service.stop('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/stop', {
-            _task: 'stop',
-            id: 'test'
-        });
+        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/stop', {});
     });
 
     it('allow counting system modules', async () => {
@@ -76,18 +68,10 @@ describe('EngineSystemsService', () => {
     it('allow executing methods on modules', async () => {
         http.post.mockReturnValueOnce(of('test')).mockReturnValueOnce(of('test2'));
         let resp = await service.execute('test', 'explode', 'module');
-        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/module_1/explode', {
-            _task: 'module_1/explode',
-            id: 'test',
-            args: []
-        });
+        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/module_1/explode',  []);
         expect(resp).toBe('test');
         resp = await service.execute('test', 'explode', 'module', 2, ['let', 'me', 'go']);
-        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/module_2/explode', {
-            _task: 'module_2/explode',
-            id: 'test',
-            args: ['let', 'me', 'go']
-        });
+        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/module_2/explode', ['let', 'me', 'go']);
         expect(resp).toBe('test2');
     });
 

@@ -34,9 +34,6 @@ describe('EngineDriversService', () => {
     it('allow reloading a driver', async () => {
         http.post.mockReturnValueOnce(of(null));
         await service.reload('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/drivers/test/reload', {
-            _task: 'reload',
-            id: 'test'
-        });
+        expect(http.post).toBeCalledWith('/api/engine/v2/drivers/test/reload', {});
     });
 });

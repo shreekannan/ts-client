@@ -74,7 +74,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
         index: number = 1,
         args: any[] = []
     ): Promise<HashMap> {
-        return this.task(id, `${module}_${index}/${method}`, { args });
+        return this.task(id, `${module}_${index}/${method}`, args);
     }
 
     /**

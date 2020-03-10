@@ -180,7 +180,7 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
     public task<U = any>(
         id: string,
         task_name: string,
-        form_data: HashMap = {},
+        form_data: any = {},
         method: 'post' | 'get' = 'post'
     ): Promise<U> {
         const query = toQueryString(form_data);
@@ -188,7 +188,7 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
         /* istanbul ignore else */
         if (!this._promises[key]) {
             this._promises[key] = new Promise<U>((resolve, reject) => {
-                const post_data = { ...form_data, id, _task: task_name };
+                const post_data = form_data;
                 const url = `${this.api_route}/${id}/${task_name}`;
                 let result: any;
                 const request =

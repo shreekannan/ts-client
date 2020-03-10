@@ -34,29 +34,20 @@ describe('EngineModuleService', () => {
     it('allow starting a module', async () => {
         http.post.mockReturnValueOnce(of(null));
         await service.start('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/modules/test/start', {
-            _task: 'start',
-            id: 'test'
-        });
+        expect(http.post).toBeCalledWith('/api/engine/v2/modules/test/start', {});
     });
 
     it('allow stopping a module', async () => {
         http.post.mockReturnValueOnce(of(null));
         await service.stop('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/modules/test/stop', {
-            _task: 'stop',
-            id: 'test'
-        });
+        expect(http.post).toBeCalledWith('/api/engine/v2/modules/test/stop', {});
     });
 
     it('allow pinging a module', async () => {
         const response = { host: 'test.com', pingable: true };
         http.post.mockReturnValueOnce(of(response));
         const ping = await service.ping('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/modules/test/ping', {
-            _task: 'ping',
-            id: 'test'
-        });
+        expect(http.post).toBeCalledWith('/api/engine/v2/modules/test/ping', {});
         expect(ping).toBe(response);
     });
 

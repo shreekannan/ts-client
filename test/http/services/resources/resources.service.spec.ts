@@ -116,14 +116,9 @@ describe('EngineResourceService', () => {
             ['test', 'a_task'],
             ['test', 'a_task', { test: true }]
         );
+        expect(http.post).toBeCalledWith('/api/engine/v2/base/test/a_task', {});
         expect(http.post).toBeCalledWith('/api/engine/v2/base/test/a_task', {
-            id: 'test',
-            _task: 'a_task'
-        });
-        expect(http.post).toBeCalledWith('/api/engine/v2/base/test/a_task', {
-            test: true,
-            id: 'test',
-            _task: 'a_task'
+            test: true
         });
     });
 
