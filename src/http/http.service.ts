@@ -184,7 +184,8 @@ export class EngineHttpClient {
         }
         return {
             status: error.status,
-            message: error.message
+            message: error.message,
+            response: error.response
         };
     }
 

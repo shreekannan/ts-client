@@ -106,7 +106,8 @@ export enum EngineLogLevel {
     Info = 'info',
     Debug = 'debug',
     Warning = 'warn',
-    Error = 'error'
+    Error = 'error',
+    Fatal = 'fatal'
 }
 
 /** Metadata associated with Engine Debug events */

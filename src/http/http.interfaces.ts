@@ -30,6 +30,10 @@ export enum HttpStatusCode {
 }
 
 export interface HttpError {
+    /** HTTP Error code of the message */
     status: HttpStatusCode;
+    /** Error message */
     message: string;
+    /** Body of the error repsonse */
+    response?: any;
 }
