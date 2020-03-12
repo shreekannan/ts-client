@@ -43,7 +43,7 @@ export class EngineModule extends EngineResource<EngineModulesService> {
     /** Timestamp of last update in ms since UTC epoch */
     public readonly updated_at: number;
     /** ID of the driver associated with the module */
-    public readonly dependency_id: string;
+    public readonly driver_id: string;
     /** Driver/dependancy associated with the module */
     public readonly driver?: EngineDriver;
     /** ID of the system associated with the module */
@@ -77,7 +77,7 @@ export class EngineModule extends EngineResource<EngineModulesService> {
 
     constructor(protected _service: EngineModulesService, raw_data: HashMap) {
         super(_service, raw_data);
-        this.dependency_id = raw_data.dependency_id || '';
+        this.driver_id = raw_data.driver_id || raw_data.dependency_id || '';
         this.control_system_id = raw_data.control_system_id || '';
         this.ip = raw_data.ip || '';
         this.tls = raw_data.tls || false;
