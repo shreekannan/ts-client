@@ -1,7 +1,7 @@
-import { PlaceOS } from '../../../../src/placeos';
 import { EngineDriverRole } from '../../../../src/http/services/drivers/drivers.enums';
 import { EngineModule } from '../../../../src/http/services/modules/module.class';
 import { EngineSettings } from '../../../../src/http/services/settings/settings.class';
+import { PlaceOS } from '../../../../src/placeos';
 
 describe('EngineModule', () => {
     let module: EngineModule;
@@ -28,7 +28,7 @@ describe('EngineModule', () => {
         jest.spyOn(PlaceOS, 'drivers', 'get').mockReturnValue(null as any);
         module = new EngineModule(service, {
             id: 'mod_test',
-            dependency_id: 'dep-001',
+            driver_id: 'dep-001',
             control_system_id: 'sys-001',
             ip: '1.1.1.1',
             tls: false,
@@ -52,21 +52,21 @@ describe('EngineModule', () => {
         expect(module).toBeInstanceOf(EngineModule);
     });
 
-    it('should expose dependency id', () => {
-        expect(module.dependency_id).toBe('dep-001');
+    it('should expose driver id', () => {
+        expect(module.driver_id).toBe('dep-001');
     });
 
-    it('should allow setting dependency id on new modules', () => {
+    it('should allow setting driver id on new modules', () => {
         try {
-            module.storePendingChange('dependency_id', 'new-dep-test');
+            module.storePendingChange('driver_id', 'new-dep-test');
             throw Error('Failed to throw error');
         } catch (e) {
             expect(e).not.toEqual(new Error('Failed to throw error'));
         }
         const new_mod = new EngineModule(service, {});
-        new_mod.storePendingChange('dependency_id', 'another-dep');
-        expect(new_mod.dependency_id).not.toBe('another-dep');
-        expect(new_mod.changes.dependency_id).toBe('another-dep');
+        new_mod.storePendingChange('driver_id', 'another-dep');
+        expect(new_mod.driver_id).not.toBe('another-dep');
+        expect(new_mod.changes.driver_id).toBe('another-dep');
     });
 
     it('should expose system id', () => {

@@ -13,7 +13,7 @@ import { EngineModulesService } from './modules.service';
 
 export const MODULE_MUTABLE_FIELDS = [
     'name',
-    'dependency_id',
+    'driver_id',
     'control_system_id',
     'ip',
     'tls',
@@ -30,7 +30,7 @@ type ModuleMutableTuple = typeof MODULE_MUTABLE_FIELDS;
 export type ModuleMutableFields = ModuleMutableTuple[number];
 
 /** List of property keys that can only be set when creating a new object */
-const NON_EDITABLE_FIELDS = ['dependency_id', 'control_system_id', 'role'];
+const NON_EDITABLE_FIELDS = ['driver_id', 'control_system_id', 'role'];
 
 /** Function to request the server to stop emitting debug events */
 export type EndDebugFn = () => void;

@@ -5,7 +5,7 @@ export interface EngineModuleQueryOptions extends EngineResourceQueryOptions {
     /** Returns modules that are in the given system */
     system_id?: string;
     /** Returns modules with the given dependency */
-    dependency_id?: string;
+    driver_id?: string;
     /** Return results that connected state matches this value */
     connected?: boolean;
     /** Return modules that are running or not stopped */
