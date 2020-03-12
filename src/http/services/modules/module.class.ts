@@ -177,9 +177,9 @@ export class EngineModule extends EngineResource<EngineModulesService> {
     /**
      * Request server to start emitting debug events through the realtime API
      */
-    public debug(): EndDebugFn {
+    public async debug(): Promise<EndDebugFn> {
         const binding_details = { sys: this.control_system_id, mod: this.id, index: 1, name: 'debug' };
-        PlaceOS.realtime.debug(binding_details);
+        await PlaceOS.realtime.debug(binding_details);
         return () => PlaceOS.realtime.ignore({ ...binding_details, name: 'ignore' });
     }
 }

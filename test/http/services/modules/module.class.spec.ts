@@ -269,12 +269,15 @@ describe('EngineModule', () => {
         }
     });
 
-    it('should allow debugging', () => {
-        const end_fn = module.debug();
-        expect(realtime.debug).toBeCalled();
-        expect(end_fn).toBeInstanceOf(Function);
-        expect(realtime.ignore).not.toBeCalled();
-        end_fn();
-        expect(realtime.ignore).toBeCalled();
+    it('should allow debugging', (done) => {
+        realtime.debug.mockReturnValue(Promise.resolve());
+        module.debug().then((end_fn) => {
+            expect(realtime.debug).toBeCalled();
+            expect(end_fn).toBeInstanceOf(Function);
+            expect(realtime.ignore).not.toBeCalled();
+            end_fn();
+            expect(realtime.ignore).toBeCalled();
+            done();
+        });
     });
 });
