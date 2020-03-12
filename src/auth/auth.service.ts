@@ -64,11 +64,11 @@ export class EngineAuthService {
         /* istanbul ignore else */
         if (this.authority) {
             /* istanbul ignore else */
-            if (/[2-9]\.[0-9]+\.[0-9]+/g.test(this.authority.version || '')) {
-                return `/api/engine/v2`;
+            if (!(/[2-9]\.[0-9]+\.[0-9]+/g).test(this.authority.version || '')) {
+                return `/control/api`;
             }
         }
-        return `/control/api`;
+        return `/api/engine/v2`;
     }
 
     /** OAuth 2 client ID for the application */
