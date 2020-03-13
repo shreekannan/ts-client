@@ -9,6 +9,7 @@ describe('EngineHttpClient', () => {
     beforeEach(() => {
         auth = { has_token: false, token: 'test_token', api_endpoint: '/api/engine/v2' };
         auth.refreshAuthority = jest.fn();
+        auth.invalidateToken = jest.fn();
         service = new EngineHttpClient(auth);
     });
 
@@ -18,14 +19,16 @@ describe('EngineHttpClient', () => {
     });
 
     it('should refresh auth on 401 errors on GET and DELETE requests', done => {
-        expect.assertions(2);
+        expect.assertions(4);
         spy = jest.spyOn(engine_http.ajax, 'get');
         spy.mockImplementation(() => throwError({ status: 400, message: 'Bad Request' }));
         auth.has_token = true;
         service.get('_').subscribe(_ => null, _ => null);
+        expect(auth.invalidateToken).not.toBeCalled();
         expect(auth.refreshAuthority).not.toBeCalled();
         spy.mockImplementation(() => throwError({ status: 401, message: 'Unauthorised' }));
         service.get('_').subscribe(_ => null, _ => setTimeout(() => done()));
+        expect(auth.invalidateToken).toBeCalled();
         expect(auth.refreshAuthority).toBeCalled();
         spy.mockReset();
         spy.mockRestore();
