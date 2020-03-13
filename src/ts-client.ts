@@ -28,6 +28,7 @@ export * from './http/services/domains/domain.class';
 
 export * from './http/services/drivers/drivers.service';
 export * from './http/services/drivers/drivers.interfaces';
+export * from './http/services/drivers/drivers.enums';
 export * from './http/services/drivers/driver.class';
 
 export * from './http/services/modules/modules.service';
