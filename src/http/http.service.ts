@@ -180,6 +180,7 @@ export class EngineHttpClient {
     private error(error: AjaxError): HttpError {
         /* istanbul ignore else */
         if (error.status === HttpStatusCode.UNAUTHORISED) {
+            this._auth.invalidateToken();
             this._auth.refreshAuthority();
         }
         return {
