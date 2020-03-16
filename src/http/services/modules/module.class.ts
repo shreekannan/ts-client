@@ -82,7 +82,7 @@ export class EngineModule extends EngineResource<EngineModulesService> {
         this.ip = raw_data.ip || '';
         this.tls = raw_data.tls || false;
         this.udp = raw_data.udp || false;
-        this.port = raw_data.port || -1;
+        this.port = raw_data.port || 1;
         this.makebreak = raw_data.makebreak || false;
         this.uri = raw_data.uri || '';
         this.custom_name = raw_data.custom_name || '';

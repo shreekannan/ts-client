@@ -1,7 +1,7 @@
-import { PlaceOS } from '../../../../src/placeos';
 import { EngineDriver } from '../../../../src/http/services/drivers/driver.class';
 import { EngineDriverRole } from '../../../../src/http/services/drivers/drivers.enums';
 import { EngineSettings } from '../../../../src/http/services/settings/settings.class';
+import { PlaceOS } from '../../../../src/placeos';
 
 describe('EngineDriver', () => {
     let driver: EngineDriver;
@@ -18,7 +18,8 @@ describe('EngineDriver', () => {
             description: 'In a galaxy far far away...',
             module_name: 'SteamShip',
             role: EngineDriverRole.Logic,
-            default: 'Sometimes we default',
+            default_uri: 'Sometimes we default',
+            default_port: 1234,
             ignore_connected: false,
             settings: { settings_string: '{ today: false, future: \'Yeah!\' }' },
             class_name: '::ACA::SolveProblem',
@@ -65,14 +66,24 @@ describe('EngineDriver', () => {
         expect(driver.changes.role).toBe(EngineDriverRole.Service);
     });
 
-    it('should expose default', () => {
-        expect(driver.default).toBe('Sometimes we default');
+    it('should expose default uri', () => {
+        expect(driver.default_uri).toBe('Sometimes we default');
     });
 
-    it('should allow setting default', () => {
-        driver.storePendingChange('default', 'No default today');
-        expect(driver.default).not.toBe('No default today');
-        expect(driver.changes.default).toBe('No default today');
+    it('should allow setting default URI', () => {
+        driver.storePendingChange('default_uri', 'No default today');
+        expect(driver.default_uri).not.toBe('No default today');
+        expect(driver.changes.default_uri).toBe('No default today');
+    });
+
+    it('should expose default port', () => {
+        expect(driver.default_port).toBe(1234);
+    });
+
+    it('should allow setting default port', () => {
+        driver.storePendingChange('default_port', 4200);
+        expect(driver.default_port).not.toBe(4200);
+        expect(driver.changes.default_port).toBe(4200);
     });
 
     it('should expose ignore connected', () => {

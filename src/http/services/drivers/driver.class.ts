@@ -13,7 +13,8 @@ export const DRIVER_MUTABLE_FIELDS = [
     'description',
     'module_name',
     'role',
-    'default',
+    'default_uri',
+    'default_port',
     'ignore_connected',
     'repository_id',
     'file_name',
@@ -34,8 +35,10 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
     public readonly module_name: string;
     /** Role of the driver in engine */
     public readonly role: EngineDriverRole;
-    /** Default settings for the driver */
-    public readonly default: string;
+    /** Default URI for the driver */
+    public readonly default_uri: string;
+    /** Default port number for the driver */
+    public readonly default_port: number;
     /** ID of the repository the driver is from */
     public readonly repository_id: string;
     /** Name of the file from the repository to load the driver logic from */
@@ -52,7 +55,8 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
         this.description = raw_data.description || '';
         this.module_name = raw_data.module_name || '';
         this.role = raw_data.role || EngineDriverRole.Logic;
-        this.default = raw_data.default || '';
+        this.default_uri = raw_data.default_uri || '';
+        this.default_port = raw_data.default_port || 1;
         this.ignore_connected = raw_data.ignore_connected || false;
         this.class_name = raw_data.class_name || '';
         this.repository_id = raw_data.repository_id || '';
