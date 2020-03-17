@@ -40,7 +40,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      * @param module_id ID of the module to remove
      */
     public remove(id: string, module_id: string): Promise<void> {
-        return this.task(id, 'remove', { module_id });
+        return this.task(id, `module/${module_id}`, {}, 'delete');
     }
 
     /**

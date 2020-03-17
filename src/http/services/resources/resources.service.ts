@@ -181,7 +181,7 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
         id: string,
         task_name: string,
         form_data: any = {},
-        method: 'post' | 'get' = 'post'
+        method: 'post' | 'get' | 'delete' = 'post'
     ): Promise<U> {
         const query = toQueryString(form_data);
         const key = `task|${id}|${task_name}|${query}`;
@@ -194,7 +194,7 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
                 const request =
                     method === 'post'
                         ? this.http.post(url, post_data)
-                        : this.http.get(`${url}${query ? '?' + query : ''}`);
+                        : this.http[method](`${url}${query ? '?' + query : ''}`);
                 request.subscribe(
                     d => (result = d),
                     e => {
