@@ -36,4 +36,11 @@ export class EngineDomain extends EngineResource<EngineDomainsService> {
     ): this {
         return super.storePendingChange(key as any, value);
     }
+
+    public toJSON(this: EngineDomain, with_changes: boolean = true): HashMap {
+        const obj = super.toJSON(with_changes);
+        obj.config = JSON.parse(this.config);
+        obj.internals = JSON.parse(this.internals);
+        return obj;
+    }
 }
