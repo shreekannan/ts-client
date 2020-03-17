@@ -41,7 +41,7 @@ describe('EngineSystemsService', () => {
     it('allow removing modules', async () => {
         http.delete.mockReturnValueOnce(of(null));
         await service.remove('test', 'module_1');
-        expect(http.delete).toBeCalledWith('/api/engine/v2/systems/test/remove/module_1');
+        expect(http.delete).toBeCalledWith('/api/engine/v2/systems/test/module/module_1');
     });
 
     it('allow starting a system', async () => {
