@@ -181,7 +181,8 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
         id: string,
         task_name: string,
         form_data: any = {},
-        method: 'post' | 'get' | 'delete' = 'post'
+        method: 'post' | 'get' | 'delete' | 'put' = 'post',
+        callback?: (_: any) => U
     ): Promise<U> {
         const query = toQueryString(form_data);
         const key = `task|${id}|${task_name}|${query}`;
@@ -192,8 +193,8 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
                 const url = `${this.api_route}/${id}/${task_name}`;
                 let result: any;
                 const request =
-                    method === 'post'
-                        ? this.http.post(url, post_data)
+                    method === 'post' || method === 'put'
+                        ? this.http[method](url, post_data)
                         : this.http[method](`${url}${query ? '?' + query : ''}`);
                 request.subscribe(
                     d => (result = d),
@@ -202,7 +203,7 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
                         delete this._promises[key];
                     },
                     () => {
-                        resolve(result as U);
+                        resolve(callback ? callback(result) : (result as U));
                         this.timeout(key, () => delete this._promises[key], 1000);
                     }
                 );

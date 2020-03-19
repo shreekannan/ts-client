@@ -1,6 +1,8 @@
 import { of } from 'rxjs';
 import { EngineSystem } from '../../../../src/http/services/systems/system.class';
 import { EngineSystemsService } from '../../../../src/http/services/systems/systems.service';
+import { EngineTrigger } from '../../../../src/http/services/triggers/trigger.class';
+import { PlaceOS } from '../../../../src/placeos';
 
 describe('EngineSystemsService', () => {
     let service: EngineSystemsService;
@@ -16,6 +18,7 @@ describe('EngineSystemsService', () => {
             api_endpoint: '/api/engine/v2'
         };
         service = new EngineSystemsService(http);
+        (PlaceOS as any)._triggers = {};
     });
 
     it('should create instance', () => {
@@ -40,19 +43,19 @@ describe('EngineSystemsService', () => {
 
     it('allow removing modules', async () => {
         http.delete.mockReturnValueOnce(of(null));
-        await service.remove('test', 'module_1');
+        await service.removeModule('test', 'module_1');
         expect(http.delete).toBeCalledWith('/api/engine/v2/systems/test/module/module_1');
     });
 
     it('allow starting a system', async () => {
         http.post.mockReturnValueOnce(of(null));
-        await service.start('test');
+        await service.startSystem('test');
         expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/start', {});
     });
 
     it('allow stopping a system', async () => {
         http.post.mockReturnValueOnce(of(null));
-        await service.stop('test');
+        await service.stopSystem('test');
         expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/stop', {});
     });
 
@@ -77,9 +80,9 @@ describe('EngineSystemsService', () => {
         http.get
             .mockReturnValueOnce(of({ test: 'yeah' }))
             .mockReturnValueOnce(of({ test: 'yeah2' }));
-        let value = await service.state('test', 'module', 1, 'look');
+        let value = await service.stateLookup('test', 'module', 1, 'look');
         expect(http.get).toBeCalledWith(
-            `/api/engine/v2/systems/test/module_1?lookup=look`
+            `/api/engine/v2/systems/test/module_1/look`
         );
         expect(value).toEqual({ test: 'yeah' });
         value = await service.state('test', 'module');
@@ -105,4 +108,25 @@ describe('EngineSystemsService', () => {
         expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/count`);
         expect(value).toEqual({ test: 0 });
     });
+
+    it('allow listing triggers', async () => {
+        http.get.mockReturnValueOnce(of([]));
+        const value = await service.listTriggers('test');
+        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/triggers`);
+        expect(value).toEqual([]);
+    });
+
+    it('allow adding triggers', async () => {
+        http.post.mockReturnValueOnce(of({}));
+        const value = await service.addTrigger('test', {});
+        expect(http.post).toBeCalledWith(`/api/engine/v2/systems/test/triggers`, {});
+        expect(value instanceof EngineTrigger).toBeTruthy();
+    });
+
+    it('allow remove triggers', async () => {
+        http.delete.mockReturnValueOnce(of(null));
+        const value = await service.removeTrigger('test', 'a_trigger');
+        expect(http.delete).toBeCalledWith(`/api/engine/v2/systems/test/triggers/a_trigger`);
+    });
+
 });

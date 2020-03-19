@@ -49,7 +49,13 @@ describe('EngineHttpClient', () => {
             spy.mockImplementation(() =>
                 of({
                     status: 200,
-                    response: ({ message: 'GET RECEIVED!!!' })
+                    response: ({ message: 'GET RECEIVED!!!' }),
+                    request: {
+                        url: 'test'
+                    },
+                    xhr: {
+                        getAllResponseHeaders: jest.fn().mockImplementation(() => 'Authorisation:test\r\nX-Total-Count:100')
+                    }
                 } as any)
             );
             jest.useFakeTimers();

@@ -158,21 +158,21 @@ export class EngineModule extends EngineResource<EngineModulesService> {
      * Get the state of the module
      * @param lookup Status variable of interest. If set it will return only the state of this variable
      */
-    public state(lookup?: string): Promise<HashMap> {
+    public stateLookup(lookup: string): Promise<HashMap> {
         if (!this.id) {
             throw new Error('You must save the module before it\'s state can be grabbed');
         }
-        return this._service.state(this.id, lookup);
+        return this._service.stateLookup(this.id, lookup);
     }
 
     /**
      * Get the internal state of the module
      */
-    public internalState(): Promise<HashMap> {
+    public state(): Promise<HashMap> {
         if (!this.id) {
             throw new Error('You must save the module before it\'s internal state can be grabbed');
         }
-        return this._service.internalState(this.id);
+        return this._service.state(this.id);
     }
 
     /**

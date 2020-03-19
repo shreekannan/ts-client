@@ -45,21 +45,21 @@ export class EngineModulesService extends EngineResourceService<EngineModule> {
     }
 
     /**
-     * Get the state of the given module
-     * @param id Module ID
-     * @param lookup Status variable of interest. If set it will return only the state of this variable
-     */
-    public state(id: string, lookup?: string): Promise<HashMap> {
-        return this.task(id, 'state', { lookup }, 'get');
-    }
-
-    /**
      * Get the internal state of the given module
      * @param id Module ID
      * @param lookup Status variable of interest. If set it will return only the state of this variable
      */
-    public internalState(id: string): Promise<HashMap> {
-        return this.task(id, 'internal_state', undefined, 'get');
+    public state(id: string): Promise<HashMap> {
+        return this.task(id, 'state', undefined, 'get');
+    }
+
+    /**
+     * Get the state of the given module
+     * @param id Module ID
+     * @param key Status variable of interest. If set it will return only the state of this variable
+     */
+    public stateLookup(id: string, key: string): Promise<HashMap> {
+        return this.task(id, `state/${key}`, undefined, 'get');
     }
 
     /**

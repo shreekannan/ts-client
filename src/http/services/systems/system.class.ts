@@ -85,7 +85,7 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
         if (!this.id) {
             throw new Error('You must save the system before it can be started');
         }
-        return this._service.start(this.id);
+        return this._service.startSystem(this.id);
     }
 
     /**
@@ -95,7 +95,7 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
         if (!this.id) {
             throw new Error('You must save the system before it can be stopped');
         }
-        return this._service.stop(this.id);
+        return this._service.stopSystem(this.id);
     }
 
     /**
@@ -127,7 +127,7 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
      * @param mod_id ID of the module to remove
      */
     public removeModule(mod_id: string) {
-        return this._service.remove(this.id, mod_id);
+        return this._service.removeModule(this.id, mod_id);
     }
 
     /**

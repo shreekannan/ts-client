@@ -1,7 +1,9 @@
 import { EngineResourceService } from '../resources/resources.service';
 
+import { PlaceOS } from '../../../placeos';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
+import { EngineTrigger } from '../triggers/trigger.class';
 import { EngineSystem } from './system.class';
 import {
     EngineModuleFunctionMap,
@@ -39,7 +41,16 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      * @param id System ID
      * @param module_id ID of the module to remove
      */
-    public remove(id: string, module_id: string): Promise<void> {
+    public addModule(id: string, module_id: string, data: HashMap = {}): Promise<void> {
+        return this.task(id, `module/${module_id}`, data, 'put');
+    }
+
+    /**
+     * Remove module from the given system
+     * @param id System ID
+     * @param module_id ID of the module to remove
+     */
+    public removeModule(id: string, module_id: string): Promise<void> {
         return this.task(id, `module/${module_id}`, {}, 'delete');
     }
 
@@ -47,7 +58,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      * Start the given system and clears any existing caches
      * @param id System ID
      */
-    public start(id: string): Promise<void> {
+    public startSystem(id: string): Promise<void> {
         return this.task(id, 'start');
     }
 
@@ -55,7 +66,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      * Stops all modules in the given system
      * @param id System ID
      */
-    public stop(id: string): Promise<void> {
+    public stopSystem(id: string): Promise<void> {
         return this.task(id, 'stop');
     }
 
@@ -84,8 +95,24 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      * @param index Module index. Defaults to `1`
      * @param lookup Status variable of interest. If set it will return only the state of this variable
      */
-    public state(id: string, module: string, index: number = 1, lookup?: string): Promise<HashMap> {
-        return this.task(id, `${module}_${index}`, { lookup }, 'get');
+    public state(id: string, module: string, index: number = 1): Promise<HashMap> {
+        return this.task(id, `${module}_${index}`, undefined, 'get');
+    }
+
+    /**
+     * Get the state of the given system module
+     * @param id System ID
+     * @param module Class name of the Module e.g. `Display`, `Lighting` etc.
+     * @param index Module index. Defaults to `1`
+     * @param lookup Status variable of interest. If set it will return only the state of this variable
+     */
+    public stateLookup(
+        id: string,
+        module: string,
+        index: number = 1,
+        lookup: string
+    ): Promise<HashMap> {
+        return this.task(id, `${module}_${index}/${lookup}`, undefined, 'get');
     }
 
     /**
@@ -117,6 +144,40 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      */
     public types(id: string): Promise<HashMap<number>> {
         return this.task(id, 'count', undefined, 'get');
+    }
+
+    /**
+     * Get list of triggers for system
+     * @param id System ID
+     */
+    public listTriggers(id: string): Promise<EngineTrigger[]> {
+        return this.task(id, 'triggers', undefined, 'get', (list: any[]) =>
+            list.map(item => new EngineTrigger(PlaceOS.triggers, item))
+        );
+    }
+
+    /**
+     * Get list of triggers for system
+     * @param id System ID
+     * @param data Values for trigger properties
+     */
+    public addTrigger(id: string, data: HashMap): Promise<EngineTrigger> {
+        return this.task(
+            id,
+            'triggers',
+            data,
+            'post',
+            (item: any) => new EngineTrigger(PlaceOS.triggers, item)
+        );
+    }
+
+    /**
+     * Remove trigger from system
+     * @param id System ID
+     * @param trigger_id ID of the trigger
+     */
+    public removeTrigger(id: string, trigger_id: string): Promise<void> {
+        return this.task(id, `triggers/${trigger_id}`, undefined, 'delete');
     }
 
     /**

@@ -44,7 +44,6 @@ export * from './http/services/users/users.service';
 export * from './http/services/users/user.interfaces';
 export * from './http/services/users/user.class';
 
-export * from './http/services/triggers/system-triggers.service';
 export * from './http/services/triggers/triggers.service';
 export * from './http/services/triggers/trigger.class';
 export * from './http/services/triggers/trigger.interfaces';

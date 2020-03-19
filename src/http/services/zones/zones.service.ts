@@ -30,6 +30,24 @@ export class EngineZonesService extends EngineResourceService<EngineZone> {
     }
 
     /**
+     * Execute a function of the given modules within the zone
+     * @param id Zone ID
+     * @param method Name of the function to execute
+     * @param module Class name of the Module e.g. `Display`, `Lighting` etc.
+     * @param index Module index. Defaults to `1`
+     * @param args Array of arguments to pass to the executed method
+     */
+    public execute(
+        id: string,
+        method: string,
+        module: string,
+        index: number = 1,
+        args: any[] = []
+    ): Promise<HashMap> {
+        return this.task(id, `${module}_${index}/${method}`, args);
+    }
+
+    /**
      * Convert API data into local interface
      * @param item Raw API data
      */

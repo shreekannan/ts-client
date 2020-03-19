@@ -1,7 +1,6 @@
 import { HashMap } from '../../../utilities/types.utilities';
 import { HttpVerb } from '../../http.interfaces';
 import { EngineResource } from '../resources/resource.class';
-import { EngineSystemTriggersService } from './system-triggers.service';
 import { TriggerActions, TriggerConditions } from './trigger.interfaces';
 import { EngineTriggersService } from './triggers.service';
 
@@ -23,9 +22,7 @@ export type TriggerMutableFields = TriggerMutableTuple[number];
 /** List of property keys that can only be set when creating a new object */
 const NON_EDITABLE_FIELDS = ['system_id'];
 
-export class EngineTrigger extends EngineResource<
-    EngineTriggersService | EngineSystemTriggersService
-> {
+export class EngineTrigger extends EngineResource<EngineTriggersService> {
     /** Name of the system assocaited with the trigger */
     public readonly system_name: string;
     /** Number of times the trigger has been activated/triggered */
@@ -81,7 +78,7 @@ export class EngineTrigger extends EngineResource<
     private _conditions: TriggerConditions;
 
     constructor(
-        protected _service: EngineTriggersService | EngineSystemTriggersService,
+        protected _service: EngineTriggersService,
         raw_data: HashMap
     ) {
         super(_service, raw_data);

@@ -1,6 +1,6 @@
-import { PlaceOS } from '../../../../src/placeos';
 import { EngineSettings } from '../../../../src/http/services/settings/settings.class';
 import { EngineSystem } from '../../../../src/http/services/systems/system.class';
+import { PlaceOS } from '../../../../src/placeos';
 
 describe('EngineSystem', () => {
     let system: EngineSystem;
@@ -11,11 +11,12 @@ describe('EngineSystem', () => {
 
     beforeEach(() => {
         service = {
-            start: jest.fn(),
-            stop: jest.fn(),
+            startSystem: jest.fn(),
+            stopSystem: jest.fn(),
             types: jest.fn(),
             remove: jest.fn(),
-            update: jest.fn()
+            update: jest.fn(),
+            removeModule: jest.fn()
         };
         jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'modules', 'get').mockReturnValue(null as any);
@@ -130,15 +131,15 @@ describe('EngineSystem', () => {
     });
 
     it('should allow starting the system', async () => {
-        service.start.mockReturnValue(Promise.resolve());
+        service.startSystem.mockReturnValue(Promise.resolve());
         await system.start();
-        expect(service.start).toBeCalledWith('sys-test');
+        expect(service.startSystem).toBeCalledWith('sys-test');
     });
 
     it('should allow stopping the system', async () => {
-        service.stop.mockReturnValue(Promise.resolve());
+        service.stopSystem.mockReturnValue(Promise.resolve());
         await system.stop();
-        expect(service.stop).toBeCalledWith('sys-test');
+        expect(service.stopSystem).toBeCalledWith('sys-test');
     });
 
     it('should grabbing the module types for the system', async () => {
@@ -160,9 +161,9 @@ describe('EngineSystem', () => {
     });
 
     it('should allow removing modules', async () => {
-        service.stop.mockReturnValue(Promise.resolve());
+        service.removeModule.mockReturnValue(Promise.resolve());
         await system.removeModule('test');
-        expect(service.remove).toBeCalledWith('sys-test', 'test');
+        expect(service.removeModule).toBeCalledWith('sys-test', 'test');
     });
 
     it('should allow adding zones', async () => {

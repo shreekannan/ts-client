@@ -19,8 +19,8 @@ describe('EngineModule', () => {
             remove: jest.fn(),
             update: jest.fn(),
             ping: jest.fn(),
-            state: jest.fn(),
-            internalState: jest.fn()
+            stateLookup: jest.fn(),
+            state: jest.fn()
         };
         realtime = { debug: jest.fn(), ignore: jest.fn() };
         jest.spyOn(PlaceOS, 'realtime', 'get').mockReturnValue(realtime);
@@ -240,12 +240,12 @@ describe('EngineModule', () => {
     });
 
     it('should allow getting state of the module', async () => {
-        service.state.mockReturnValue(Promise.resolve({}));
-        let response = await module.state();
-        expect(service.state).toBeCalledWith('mod_test', undefined);
+        service.stateLookup.mockReturnValue(Promise.resolve({}));
+        let response = await module.stateLookup('');
+        expect(service.stateLookup).toBeCalledWith('mod_test', '');
         expect(response).toEqual({});
-        response = await module.state('lookup_value');
-        expect(service.state).toBeCalledWith('mod_test', 'lookup_value');
+        response = await module.stateLookup('lookup_value');
+        expect(service.stateLookup).toBeCalledWith('mod_test', 'lookup_value');
         const new_mod = new EngineModule(service, {});
         try {
             new_mod.state();
@@ -256,13 +256,13 @@ describe('EngineModule', () => {
     });
 
     it('should allow getting internal state of the module', async () => {
-        service.internalState.mockReturnValue(Promise.resolve({}));
-        const response = await module.internalState();
-        expect(service.internalState).toBeCalledWith('mod_test');
+        service.state.mockReturnValue(Promise.resolve({}));
+        const response = await module.state();
+        expect(service.state).toBeCalledWith('mod_test');
         expect(response).toEqual({});
         const new_mod = new EngineModule(service, {});
         try {
-            new_mod.internalState();
+            new_mod.state();
             throw new Error('Failed to error');
         } catch (e) {
             expect(e).not.toEqual(new Error('Failed to error'));

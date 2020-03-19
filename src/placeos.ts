@@ -19,7 +19,6 @@ import { EngineDriversService } from './http/services/drivers/drivers.service';
 import { EngineModulesService } from './http/services/modules/modules.service';
 import { EngineRepositoriesService } from './http/services/repositories/repositories.service';
 import { EngineSettingsService } from './http/services/settings/settings.service';
-import { EngineSystemTriggersService } from './http/services/triggers/system-triggers.service';
 import { EngineTriggersService } from './http/services/triggers/triggers.service';
 import { EngineUsersService } from './http/services/users/users.service';
 import { EngineZonesService } from './http/services/zones/zones.service';
@@ -106,10 +105,6 @@ export class PlaceOS {
         return this.checkProperty(this._triggers);
     }
 
-    public static get system_triggers(): EngineSystemTriggersService {
-        return this.checkProperty(this._system_triggers);
-    }
-
     /** HTTP service for engine auth sources */
     public static get users(): EngineUsersService {
         return this.checkProperty(this._users);
@@ -177,7 +172,6 @@ export class PlaceOS {
                 this._systems = new EngineSystemsService(this._http);
                 this._users = new EngineUsersService(this._http);
                 this._settings = new EngineSettingsService(this._http);
-                this._system_triggers = new EngineSystemTriggersService(this._http);
                 this._triggers = new EngineTriggersService(this._http);
                 this._zones = new EngineZonesService(this._http);
                 this._clusters = new EngineClustersService(this._http);
@@ -216,8 +210,6 @@ export class PlaceOS {
     private static _repositories: EngineRepositoriesService;
     /** HTTP service for engine systems */
     private static _systems: EngineSystemsService;
-    /** HTTP service for engine system triggers */
-    private static _system_triggers: EngineSystemTriggersService;
     /** HTTP service for engine triggers */
     private static _triggers: EngineTriggersService;
     /** HTTP service for engine users */

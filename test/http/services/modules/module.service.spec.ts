@@ -55,8 +55,8 @@ describe('EngineModuleService', () => {
         http.get
             .mockReturnValueOnce(of({ test: 'yeah' }))
             .mockReturnValueOnce(of({ test: 'yeah2' }));
-        let value = await service.state('test', 'look');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/modules/test/state?lookup=look`);
+        let value = await service.stateLookup('test', 'look');
+        expect(http.get).toBeCalledWith(`/api/engine/v2/modules/test/state/look`);
         expect(value).toEqual({ test: 'yeah' });
         value = await service.state('test');
         expect(http.get).toBeCalledWith(`/api/engine/v2/modules/test/state`);
@@ -66,8 +66,8 @@ describe('EngineModuleService', () => {
     it('allow querying the internal state of a module', async () => {
         const response = { host: 'test.com', pingable: true };
         http.get.mockReturnValueOnce(of(response));
-        const ping = await service.internalState('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/modules/test/internal_state');
+        const ping = await service.state('test');
+        expect(http.get).toBeCalledWith('/api/engine/v2/modules/test/state');
         expect(ping).toBe(response);
     });
 });
