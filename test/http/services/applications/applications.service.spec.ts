@@ -27,7 +27,7 @@ describe('EngineApplicationsService', () => {
     it('allow querying systems index', async () => {
         http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
         const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/applications');
+        expect(http.get).toBeCalledWith('/api/engine/v2/oauth_apps');
         expect(result).toBeInstanceOf(Array);
         expect(result[0]).toBeInstanceOf(EngineApplication);
     });
@@ -35,7 +35,7 @@ describe('EngineApplicationsService', () => {
     it('allow querying systems show', async () => {
         http.get.mockReturnValueOnce(of({ id: 'test' }));
         const result = await service.show('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/applications/test');
+        expect(http.get).toBeCalledWith('/api/engine/v2/oauth_apps/test');
         expect(result).toBeInstanceOf(EngineApplication);
     });
 });

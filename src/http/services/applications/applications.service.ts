@@ -9,7 +9,7 @@ export class EngineApplicationsService extends EngineResourceService<EngineAppli
     constructor(protected http: EngineHttpClient) {
         super(http);
         this._name = 'Application';
-        this._api_route = 'applications';
+        this._api_route = 'oauth_apps';
     }
 
     /**
