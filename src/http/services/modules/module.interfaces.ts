@@ -3,7 +3,7 @@ import { EngineResourceQueryOptions } from '../resources/resources.interface';
 /** Mapping of available query paramters for the modules index */
 export interface EngineModuleQueryOptions extends EngineResourceQueryOptions {
     /** Returns modules that are in the given system */
-    system_id?: string;
+    control_system_id?: string;
     /** Returns modules with the given dependency */
     driver_id?: string;
     /** Return results that connected state matches this value */

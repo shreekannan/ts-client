@@ -99,17 +99,18 @@ export class EngineModule extends EngineResource<EngineModulesService> {
                 raw_data.settings || { parent_id: this.id }
             );
         });
-        if (raw_data.control_system || raw_data.system) {
+        try {
             this.system = new EngineSystem(
                 PlaceOS.systems,
-                raw_data.control_system || raw_data.system
+                raw_data.control_system || raw_data.system || {}
             );
-        }
-        if (raw_data.dependancy || raw_data.driver) {
             this.driver = new EngineDriver(
                 PlaceOS.drivers,
-                raw_data.dependency || raw_data.driver
+                raw_data.dependency || raw_data.driver || {}
             );
+        } catch (error) {
+            const str = 'error';
+            console[str](error);
         }
     }
 
