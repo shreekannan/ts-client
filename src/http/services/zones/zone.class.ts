@@ -16,8 +16,9 @@ export class EngineZone extends EngineResource<EngineZonesService> {
     public readonly settings: [
         EngineSettings | null,
         EngineSettings | null,
+        EngineSettings | null,
         EngineSettings | null
-    ] = [null, null, null];
+    ] = [null, null, null, null];
     /** Description of the zone's purpose */
     public readonly description: string;
     /** List of triggers associated with the zone */

@@ -50,8 +50,9 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
     public readonly settings: [
         EngineSettings | null,
         EngineSettings | null,
+        EngineSettings | null,
         EngineSettings | null
-    ] = [null, null, null];
+    ] = [null, null, null, null];
 
     constructor(protected _service: EngineDriversService, raw_data: HashMap) {
         super(_service, raw_data);

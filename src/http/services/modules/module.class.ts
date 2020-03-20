@@ -73,8 +73,9 @@ export class EngineModule extends EngineResource<EngineModulesService> {
     public readonly settings: [
         EngineSettings | null,
         EngineSettings | null,
+        EngineSettings | null,
         EngineSettings | null
-    ] = [null, null, null];
+    ] = [null, null, null, null];
     /** ID of the system associated with the module */
     public get system_id(): string {
         return this.control_system_id;
