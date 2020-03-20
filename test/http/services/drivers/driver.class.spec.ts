@@ -97,7 +97,7 @@ describe('EngineDriver', () => {
     });
 
     it('should expose settings', () => {
-        expect(driver.settings).toBeInstanceOf(EngineSettings);
+        expect(driver.settings).toBeInstanceOf(Array);
     });
 
     it('should expose repository ID', () => {

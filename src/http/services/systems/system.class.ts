@@ -25,8 +25,13 @@ type SystemMutableTuple = typeof SYSTEM_MUTABLE_FIELDS;
 export type SystemMutableFields = SystemMutableTuple[number];
 
 export class EngineSystem extends EngineResource<EngineSystemsService> {
-    /** Map of user settings for the system */
-    public settings: EngineSettings;
+    /** Tuple of user settings of differring encryption levels for the system */
+    public readonly settings: [
+        EngineSettings | null,
+        EngineSettings | null,
+        EngineSettings | null,
+        EngineSettings | null
+    ] = [null, null, null, null];
     /** Description of the system */
     public readonly description: string;
     /** Email address associated with the system */
@@ -59,12 +64,7 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
         this.support_url = raw_data.support_url || '';
         this.modules = raw_data.modules || [];
         this.zones = raw_data.zones || [];
-        this.settings = new EngineSettings({} as any, raw_data.settings || { parent_id: this.id });
         PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
-            this.settings = new EngineSettings(
-                PlaceOS.settings,
-                raw_data.settings || { parent_id: this.id }
-            );
             if (raw_data.module_data && raw_data.module_data instanceof Array) {
                 this.module_list = raw_data.module_data.map(mod => new EngineModule(PlaceOS.modules, mod));
             }

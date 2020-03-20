@@ -158,7 +158,7 @@ describe('EngineModule', () => {
     });
 
     it('should expose settings', () => {
-        expect(module.settings).toBeInstanceOf(EngineSettings);
+        expect(module.settings).toBeInstanceOf(Array);
     });
 
     it('should expose role', () => {

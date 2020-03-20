@@ -1,4 +1,3 @@
-
 import { first } from 'rxjs/operators';
 
 import { PlaceOS } from '../../../placeos';
@@ -47,8 +46,12 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
     public readonly commit: string;
     /** Ignore connection issues */
     public readonly ignore_connected: boolean;
-    /** Map of user settings for the system */
-    public settings: EngineSettings;
+    /** Tuple of user settings of differring encryption levels for the driver */
+    public readonly settings: [
+        EngineSettings | null,
+        EngineSettings | null,
+        EngineSettings | null
+    ] = [null, null, null];
 
     constructor(protected _service: EngineDriversService, raw_data: HashMap) {
         super(_service, raw_data);
@@ -62,13 +65,6 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
         this.repository_id = raw_data.repository_id || '';
         this.file_name = raw_data.file_name || '';
         this.commit = raw_data.commit || '';
-        this.settings = new EngineSettings({} as any, raw_data.settings || { parent_id: this.id });
-        PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
-            this.settings = new EngineSettings(
-                PlaceOS.settings,
-                raw_data.settings || { parent_id: this.id }
-            );
-        });
     }
 
     public storePendingChange(

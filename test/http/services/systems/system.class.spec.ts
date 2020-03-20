@@ -105,7 +105,7 @@ describe('EngineSystem', () => {
     });
 
     it('should expose settings', () => {
-        expect(system.settings).toBeInstanceOf(EngineSettings);
+        expect(system.settings).toBeInstanceOf(Array);
     });
 
     it('should error on tasks when system has no ID', async () => {

@@ -1,6 +1,6 @@
-import { PlaceOS } from '../../../../src/placeos';
 import { EngineSettings } from '../../../../src/http/services/settings/settings.class';
 import { EngineZone } from '../../../../src/http/services/zones/zone.class';
+import { PlaceOS } from '../../../../src/placeos';
 
 describe('EngineZone', () => {
     let zone: EngineZone;
@@ -49,7 +49,7 @@ describe('EngineZone', () => {
     });
 
     it('should expose settings', () => {
-        expect(zone.settings).toBeInstanceOf(EngineSettings);
+        expect(zone.settings).toBeInstanceOf(Array);
     });
 
     it('should expose triggers', () => {

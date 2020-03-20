@@ -1,4 +1,3 @@
-
 import { first } from 'rxjs/operators';
 
 import { PlaceOS } from '../../../placeos';
@@ -70,10 +69,16 @@ export class EngineModule extends EngineResource<EngineModulesService> {
     public readonly notes: string;
     /** Ignore connection issues */
     public readonly ignore_connected: boolean;
-    /** Map of user settings for the system */
-    public settings: EngineSettings;
+    /** Tuple of user settings of differring encryption levels for the module */
+    public readonly settings: [
+        EngineSettings | null,
+        EngineSettings | null,
+        EngineSettings | null
+    ] = [null, null, null];
     /** ID of the system associated with the module */
-    public get system_id(): string { return this.control_system_id; }
+    public get system_id(): string {
+        return this.control_system_id;
+    }
 
     constructor(protected _service: EngineModulesService, raw_data: HashMap) {
         super(_service, raw_data);
@@ -92,13 +97,6 @@ export class EngineModule extends EngineResource<EngineModulesService> {
         this.connected = raw_data.connected || false;
         this.running = raw_data.running || false;
         this.updated_at = raw_data.updated_at || 0;
-        this.settings = new EngineSettings({} as any, raw_data.settings || { parent_id: this.id });
-        PlaceOS.initialised.pipe(first(_ => !!_)).subscribe(() => {
-            this.settings = new EngineSettings(
-                PlaceOS.settings,
-                raw_data.settings || { parent_id: this.id }
-            );
-        });
         try {
             this.system = new EngineSystem(
                 PlaceOS.systems,
@@ -179,7 +177,12 @@ export class EngineModule extends EngineResource<EngineModulesService> {
      * Request server to start emitting debug events through the realtime API
      */
     public async debug(): Promise<EndDebugFn> {
-        const binding_details = { sys: this.control_system_id, mod: this.id, index: 1, name: 'debug' };
+        const binding_details = {
+            sys: this.control_system_id,
+            mod: this.id,
+            index: 1,
+            name: 'debug'
+        };
         await PlaceOS.realtime.debug(binding_details);
         return () => PlaceOS.realtime.ignore({ ...binding_details, name: 'ignore' });
     }

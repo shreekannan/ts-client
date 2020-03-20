@@ -1,4 +1,3 @@
-
 import { first } from 'rxjs/operators';
 
 import { PlaceOS } from '../../../placeos';
@@ -13,8 +12,12 @@ type ZoneMutableTuple = typeof ZONE_MUTABLE_FIELDS;
 export type ZoneMutableFields = ZoneMutableTuple[number];
 
 export class EngineZone extends EngineResource<EngineZonesService> {
-    /** Map of user settings for the system */
-    public settings: EngineSettings;
+    /** Tuple of user settings of differring encryption levels for the zone */
+    public readonly settings: [
+        EngineSettings | null,
+        EngineSettings | null,
+        EngineSettings | null
+    ] = [null, null, null];
     /** Description of the zone's purpose */
     public readonly description: string;
     /** List of triggers associated with the zone */
@@ -29,14 +32,11 @@ export class EngineZone extends EngineResource<EngineZonesService> {
         this.description = raw_data.description || '';
         this.tags = raw_data.tags || '';
         this.triggers = raw_data.triggers || [];
-        this.settings = new EngineSettings({} as any, raw_data.settings || { parent_id: this.id });
         PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
-            this.settings = new EngineSettings(
-                PlaceOS.settings,
-                raw_data.settings || { parent_id: this.id }
-            );
             if (raw_data.trigger_data && raw_data.trigger_data instanceof Array) {
-                this.trigger_list = raw_data.trigger_data.map(trigger => new EngineTrigger(PlaceOS.triggers, trigger));
+                this.trigger_list = raw_data.trigger_data.map(
+                    trigger => new EngineTrigger(PlaceOS.triggers, trigger)
+                );
             }
         });
     }
