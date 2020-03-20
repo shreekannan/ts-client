@@ -1,4 +1,3 @@
-
 import { first } from 'rxjs/operators';
 
 import { PlaceOS } from '../../../placeos';
@@ -6,6 +5,7 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineModule } from '../modules/module.class';
 import { EngineResource } from '../resources/resource.class';
 import { EngineSettings } from '../settings/settings.class';
+import { EncryptionLevel } from '../settings/settings.interfaces';
 import { EngineSystemsService } from './systems.service';
 
 export const SYSTEM_MUTABLE_FIELDS = [
@@ -64,9 +64,22 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
         this.support_url = raw_data.support_url || '';
         this.modules = raw_data.modules || [];
         this.zones = raw_data.zones || [];
+        this.settings = raw_data.settings || [null, null, null, null];
         PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
+            if (typeof this.settings !== 'object') {
+                (this as any).settings = [null, null, null, null];
+            }
+            for (const level in EncryptionLevel) {
+                if (!isNaN(Number(level)) && !this.settings[level]) {
+                    this.settings[level] = new EngineSettings(PlaceOS.settings, {
+                        encryption_level: level
+                    });
+                }
+            }
             if (raw_data.module_data && raw_data.module_data instanceof Array) {
-                this.module_list = raw_data.module_data.map(mod => new EngineModule(PlaceOS.modules, mod));
+                this.module_list = raw_data.module_data.map(
+                    mod => new EngineModule(PlaceOS.modules, mod)
+                );
             }
         });
     }

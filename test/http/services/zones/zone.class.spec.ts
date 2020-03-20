@@ -49,7 +49,7 @@ describe('EngineZone', () => {
     });
 
     it('should expose settings', () => {
-        expect(zone.settings).toBeInstanceOf(Array);
+        expect(zone.settings).toBeInstanceOf(Object);
     });
 
     it('should expose triggers', () => {

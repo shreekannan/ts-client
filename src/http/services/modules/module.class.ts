@@ -6,6 +6,7 @@ import { EngineDriver } from '../drivers/driver.class';
 import { EngineDriverRole } from '../drivers/drivers.enums';
 import { EngineResource } from '../resources/resource.class';
 import { EngineSettings } from '../settings/settings.class';
+import { EncryptionLevel } from '../settings/settings.interfaces';
 import { EngineSystem } from '../systems/system.class';
 import { EngineModulePingOptions } from './module.interfaces';
 import { EngineModulesService } from './modules.service';
@@ -111,6 +112,19 @@ export class EngineModule extends EngineResource<EngineModulesService> {
             const str = 'error';
             console[str](error);
         }
+        this.settings = raw_data.settings || [null, null, null, null];
+        PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
+            if (typeof this.settings !== 'object') {
+                (this as any).settings = [null, null, null, null];
+            }
+            for (const level in EncryptionLevel) {
+                if (!isNaN(Number(level)) && !this.settings[level]) {
+                    this.settings[level] = new EngineSettings(PlaceOS.settings, {
+                        encryption_level: level
+                    });
+                }
+            }
+        });
     }
 
     public storePendingChange(

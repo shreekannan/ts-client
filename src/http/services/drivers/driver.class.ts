@@ -4,6 +4,7 @@ import { PlaceOS } from '../../../placeos';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineResource } from '../resources/resource.class';
 import { EngineSettings } from '../settings/settings.class';
+import { EncryptionLevel } from '../settings/settings.interfaces';
 import { EngineDriverRole } from './drivers.enums';
 import { EngineDriversService } from './drivers.service';
 
@@ -52,7 +53,7 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
         EngineSettings | null,
         EngineSettings | null,
         EngineSettings | null
-    ] = [null, null, null, null];
+    ];
 
     constructor(protected _service: EngineDriversService, raw_data: HashMap) {
         super(_service, raw_data);
@@ -66,6 +67,19 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
         this.repository_id = raw_data.repository_id || '';
         this.file_name = raw_data.file_name || '';
         this.commit = raw_data.commit || '';
+        this.settings = raw_data.settings || [null, null, null, null];
+        PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
+            if (typeof this.settings !== 'object') {
+                (this as any).settings = [null, null, null, null];
+            }
+            for (const level in EncryptionLevel) {
+                if (!isNaN(Number(level)) && !this.settings[level]) {
+                    this.settings[level] = new EngineSettings(PlaceOS.settings, {
+                        encryption_level: level
+                    });
+                }
+            }
+        });
     }
 
     public storePendingChange(

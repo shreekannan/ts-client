@@ -4,6 +4,7 @@ import { PlaceOS } from '../../../placeos';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineResource } from '../resources/resource.class';
 import { EngineSettings } from '../settings/settings.class';
+import { EncryptionLevel } from '../settings/settings.interfaces';
 import { EngineTrigger } from '../triggers/trigger.class';
 import { EngineZonesService } from './zones.service';
 
@@ -33,7 +34,18 @@ export class EngineZone extends EngineResource<EngineZonesService> {
         this.description = raw_data.description || '';
         this.tags = raw_data.tags || '';
         this.triggers = raw_data.triggers || [];
+        this.settings = raw_data.settings || [null, null, null, null];
         PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
+            if (typeof this.settings !== 'object') {
+                (this as any).settings = [null, null, null, null];
+            }
+            for (const level in EncryptionLevel) {
+                if (!isNaN(Number(level)) && !this.settings[level]) {
+                    this.settings[level] = new EngineSettings(PlaceOS.settings, {
+                        encryption_level: level
+                    });
+                }
+            }
             if (raw_data.trigger_data && raw_data.trigger_data instanceof Array) {
                 this.trigger_list = raw_data.trigger_data.map(
                     trigger => new EngineTrigger(PlaceOS.triggers, trigger)
