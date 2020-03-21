@@ -194,6 +194,14 @@ describe('EngineModule', () => {
         expect(module.ignore_connected).toBe(false);
     });
 
+    it('should remove system id when saving non-logic', async () => {
+        service.update.mockReturnValue(Promise.resolve({}));
+        module.storePendingChange('name', 'New Name');
+        await module.save();
+        expect(module.toJSON().control_system_id).toBeFalsy();
+        expect(service.update).toBeCalled();
+    });
+
     it('should allow setting ignore connected on new modules', () => {
         module.storePendingChange('ignore_connected', true);
         expect(module.ignore_connected).not.toBe(true);
