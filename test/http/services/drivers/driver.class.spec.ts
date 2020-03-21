@@ -13,6 +13,7 @@ describe('EngineDriver', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
+        jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
         driver = new EngineDriver(service, {
             id: 'dep-test',
             description: 'In a galaxy far far away...',

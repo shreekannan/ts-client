@@ -26,6 +26,7 @@ describe('EngineModule', () => {
         jest.spyOn(PlaceOS, 'realtime', 'get').mockReturnValue(realtime);
         jest.spyOn(PlaceOS, 'systems', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'drivers', 'get').mockReturnValue(null as any);
+        jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
         module = new EngineModule(service, {
             id: 'mod_test',
             driver_id: 'dep-001',

@@ -201,4 +201,23 @@ export class EngineModule extends EngineResource<EngineModulesService> {
         await PlaceOS.realtime.debug(binding_details);
         return () => PlaceOS.realtime.ignore({ ...binding_details, name: 'ignore' });
     }
+
+    /**
+     * Save any changes made to the server
+     */
+    public save(type: 'put' | 'patch' = 'patch', keep_system: boolean = false): Promise<EngineModule> {
+        const metadata: HashMap = this.toJSON(true, keep_system);
+        return this.saveWith(type, metadata) as any;
+    }
+
+    /**
+     * Convert object into plain object
+     */
+    public toJSON(this: EngineModule, with_changes: boolean = true, keep_system: boolean = false): HashMap {
+        const obj = super.toJSON(with_changes);
+        if (obj.role !== EngineDriverRole.Logic && !keep_system) {
+            delete obj.control_system_id;
+        }
+        return obj;
+    }
 }
