@@ -42,7 +42,8 @@ export class EngineZone extends EngineResource<EngineZonesService> {
             for (const level in EncryptionLevel) {
                 if (!isNaN(Number(level)) && !this.settings[level]) {
                     this.settings[level] = new EngineSettings(PlaceOS.settings, {
-                        encryption_level: level
+                        parent_id: this.id,
+                        encryption_level: +level
                     });
                 }
             }
