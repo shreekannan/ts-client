@@ -16,7 +16,8 @@ export const USER_MUTABLE_FIELDS = [
     'first_name',
     'last_name',
     'support',
-    'sys_admin'
+    'sys_admin',
+    'ui_theme'
 ] as const;
 type UserMutableTuple = typeof USER_MUTABLE_FIELDS;
 export type UserMutableFields = UserMutableTuple[number];
@@ -54,6 +55,8 @@ export class EngineUser extends EngineResource<EngineUsersService> {
     public readonly support: boolean;
     /** Whether user is a system admin role */
     public readonly sys_admin: boolean;
+    /** Name of the active theme on the displayed UI */
+    public readonly ui_theme: string;
 
     constructor(protected _service: EngineUsersService, raw_data: HashMap) {
         super(_service, raw_data);
@@ -70,6 +73,7 @@ export class EngineUser extends EngineResource<EngineUsersService> {
         this.last_name = raw_data.last_name || '';
         this.support = !!raw_data.support;
         this.sys_admin = !!raw_data.sys_admin;
+        this.ui_theme = raw_data.ui_theme || '';
     }
 
     public storePendingChange(
