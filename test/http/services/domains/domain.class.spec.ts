@@ -88,4 +88,8 @@ describe('EngineDomain', () => {
         expect(domain.internals).not.toBe(new_settings);
         expect(domain.changes.internals).toBe(new_settings);
     });
+
+    it('should allow converting to JSON object', () => {
+        expect(domain.toJSON()).toBeTruthy();
+    });
 });

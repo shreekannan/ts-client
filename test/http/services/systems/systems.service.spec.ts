@@ -129,4 +129,10 @@ describe('EngineSystemsService', () => {
         expect(http.delete).toBeCalledWith(`/api/engine/v2/systems/test/triggers/a_trigger`);
     });
 
+    it('allow getting settings', async () => {
+        http.get.mockReturnValueOnce(of([]));
+        const value = await service.settings('test');
+        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/settings`);
+    });
+
 });

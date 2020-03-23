@@ -70,4 +70,10 @@ describe('EngineModuleService', () => {
         expect(http.get).toBeCalledWith('/api/engine/v2/modules/test/state');
         expect(ping).toBe(response);
     });
+
+    it('allow getting settings', async () => {
+        http.get.mockReturnValueOnce(of([]));
+        const value = await service.settings('test');
+        expect(http.get).toBeCalledWith(`/api/engine/v2/modules/test/settings`);
+    });
 });
