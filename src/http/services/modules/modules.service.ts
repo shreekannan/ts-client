@@ -1,6 +1,8 @@
+import { PlaceOS } from '../../../placeos';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceService } from '../resources/resources.service';
+import { EngineSettings } from '../settings/settings.class';
 import { EngineModule } from './module.class';
 import { EngineModulePingOptions, EngineModuleQueryOptions } from './module.interfaces';
 
@@ -60,6 +62,16 @@ export class EngineModulesService extends EngineResourceService<EngineModule> {
      */
     public stateLookup(id: string, key: string): Promise<HashMap> {
         return this.task(id, `state/${key}`, undefined, 'get');
+    }
+
+    /**
+     * Fetch settings of driver associated with the module
+     * @param id Module ID
+     */
+    public settings(id: string): Promise<EngineSettings[]> {
+        return this.task(id, 'settings', undefined, 'get', list =>
+            list.map((item: HashMap) => new EngineSettings(PlaceOS.settings, item))
+        );
     }
 
     /**

@@ -3,6 +3,7 @@ import { EngineResourceService } from '../resources/resources.service';
 import { PlaceOS } from '../../../placeos';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
+import { EngineSettings } from '../settings/settings.class';
 import { EngineTrigger } from '../triggers/trigger.class';
 import { EngineSystem } from './system.class';
 import {
@@ -178,6 +179,16 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      */
     public removeTrigger(id: string, trigger_id: string): Promise<void> {
         return this.task(id, `triggers/${trigger_id}`, undefined, 'delete');
+    }
+
+    /**
+     * Fetch settings of modules, zones and drivers associated with the system
+     * @param id System ID
+     */
+    public settings(id: string): Promise<EngineSettings[]> {
+        return this.task(id, 'settings', undefined, 'get', list =>
+            list.map((item: HashMap) => new EngineSettings(PlaceOS.settings, item))
+        );
     }
 
     /**
