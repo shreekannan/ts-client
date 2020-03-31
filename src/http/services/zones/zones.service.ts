@@ -2,7 +2,14 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceService } from '../resources/resources.service';
 import { EngineZone } from './zone.class';
-import { EngineZoneQueryOptions, EngineZoneShowOptions } from './zone.interfaces';
+import {
+    EngineChildZoneMetadata,
+    EngineChildZoneMetadataOptions,
+    EngineZoneMetadata,
+    EngineZoneMetadataOptions,
+    EngineZoneQueryOptions,
+    EngineZoneShowOptions
+} from './zone.interfaces';
 
 export class EngineZonesService extends EngineResourceService<EngineZone> {
     /* istanbul ignore next */
@@ -45,6 +52,58 @@ export class EngineZonesService extends EngineResourceService<EngineZone> {
         args: any[] = []
     ): Promise<HashMap> {
         return this.task(id, `${module}_${index}/${method}`, args);
+    }
+
+    /**
+     * Retrieve all metadata for the given zone
+     * @param id ID of the zone
+     * @param query_params Query parameters to pass to the request
+     */
+    public listMetadata(
+        id: string,
+        query_params: EngineZoneMetadataOptions = {}
+    ): Promise<HashMap> {
+        return this.task(id, 'metadata', query_params, 'get');
+    }
+
+    /**
+     * Add new zone metadata for the given key
+     * @param id ID of the zone
+     * @param form_data New metadata values
+     */
+    public createMetadata(id: string, form_data: EngineZoneMetadata): Promise<HashMap> {
+        return this.updateMetadata(id, form_data);
+    }
+
+    /**
+     * Update zone metadata for the given key
+     * @param id ID of the zone
+     * @param form_data New metadata values
+     */
+    public updateMetadata(id: string, form_data: EngineZoneMetadata): Promise<HashMap> {
+        return this.task(id, 'metadata', form_data, 'post');
+    }
+
+    public deleteMetadata(id: string, query_params: EngineZoneMetadataOptions): Promise<HashMap> {
+        return this.task(id, 'metadata', query_params, 'delete');
+    }
+
+    /**
+     * Retrieve all metadata for the given zone's children
+     * @param id ID of the zone
+     * @param query_params Query parameters to pass to the request
+     */
+    public listChildMetadata(
+        id: string,
+        query_params: EngineChildZoneMetadataOptions = {}
+    ): Promise<EngineChildZoneMetadata[]> {
+        return this.task(id, 'children/metadata', query_params, 'get', (list: HashMap[]) =>
+            list.map(item => ({
+                zone: new EngineZone(this, item.zone),
+                metadata: item.metadata,
+                keys: Object.keys(item.metadata)
+            }))
+        );
     }
 
     /**

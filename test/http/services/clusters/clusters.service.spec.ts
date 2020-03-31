@@ -34,10 +34,14 @@ describe('EngineClustersService', () => {
     });
 
     it('allow querying clusters show', async () => {
+        jest.useFakeTimers();
         http.get.mockReturnValueOnce(of([{ driver: 'test' }]));
         const result = await service.show('test');
+        jest.runOnlyPendingTimers();
         expect(http.get).toBeCalledWith('/api/engine/v2/cluster/test');
         expect(result[0]).toBeInstanceOf(EngineProcess);
+        jest.runOnlyPendingTimers();
+        jest.useRealTimers();
     });
 
     it('allow querying clusters killing processes', async () => {

@@ -6,9 +6,16 @@ import { EngineResource } from '../resources/resource.class';
 import { EngineSettings } from '../settings/settings.class';
 import { EncryptionLevel } from '../settings/settings.interfaces';
 import { EngineTrigger } from '../triggers/trigger.class';
+import { EngineChildZoneMetadata, EngineZoneMetadataOptions } from './zone.interfaces';
 import { EngineZonesService } from './zones.service';
 
-export const ZONE_MUTABLE_FIELDS = ['name', 'description', 'triggers', 'tags'] as const;
+export const ZONE_MUTABLE_FIELDS = [
+    'name',
+    'description',
+    'parent_id',
+    'triggers',
+    'tags'
+] as const;
 type ZoneMutableTuple = typeof ZONE_MUTABLE_FIELDS;
 export type ZoneMutableFields = ZoneMutableTuple[number];
 
@@ -22,6 +29,8 @@ export class EngineZone extends EngineResource<EngineZonesService> {
     ] = [null, null, null, null];
     /** Description of the zone's purpose */
     public readonly description: string;
+    /** ID of the parent zone */
+    public readonly parent_id: string;
     /** List of triggers associated with the zone */
     public readonly triggers: readonly string[];
     /** List of tags associated with the zone */
@@ -35,6 +44,7 @@ export class EngineZone extends EngineResource<EngineZonesService> {
         this.tags = raw_data.tags || '';
         this.triggers = raw_data.triggers || [];
         this.settings = raw_data.settings || [null, null, null, null];
+        this.parent_id = raw_data.parent_id || '';
         PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
             if (typeof this.settings !== 'object') {
                 (this as any).settings = [null, null, null, null];
@@ -53,6 +63,22 @@ export class EngineZone extends EngineResource<EngineZonesService> {
                 );
             }
         });
+    }
+
+    /**
+     * Retrieve metadata for zone
+     * @param query_params Query parameters to add to the request
+     */
+    public metadata(query_params?: EngineZoneMetadataOptions): Promise<HashMap> {
+        return this._service.listMetadata(this.id, query_params);
+    }
+
+    /**
+     * Retrieve metadata for zone's children
+     * @param query_params Query parameters to add to the request
+     */
+    public childMetadata(query_params?: EngineZoneMetadataOptions): Promise<EngineChildZoneMetadata[]> {
+        return this._service.listChildMetadata(this.id, query_params);
     }
 
     public storePendingChange(key: ZoneMutableFields, value: EngineZone[ZoneMutableFields]): this {

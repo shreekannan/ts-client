@@ -30,18 +30,19 @@ export class EngineClustersService extends EngineResourceService<any> {
         if (!this._promises[key]) {
             this._promises[key] = new Promise<EngineProcess[]>((resolve, reject) => {
                 const url = `${this.api_route}/${id}${query ? '?' + query : ''}`;
+                const error =  (e?: HttpError) => {
+                    if (e) { reject(e); }
+                    delete this._promises[key];
+                };
                 let result: EngineProcess[];
                 this.http.get(url).subscribe(
                     (resp: any) => {
                         (result = resp.map((item: HashMap) => new EngineProcess(this, id, item)));
                     },
-                    (e: HttpError) => {
-                        reject(e);
-                        delete this._promises[key];
-                    },
+                    error,
                     () => {
                         resolve(result);
-                        this.timeout(key, () => delete this._promises[key], 1000);
+                        this.timeout(key, error, 1000);
                     }
                 );
             });

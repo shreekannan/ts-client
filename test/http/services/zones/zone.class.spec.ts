@@ -10,7 +10,9 @@ describe('EngineZone', () => {
         service = {
             reload: jest.fn(),
             remove: jest.fn(),
-            update: jest.fn()
+            update: jest.fn(),
+            listMetadata: jest.fn(),
+            listChildMetadata: jest.fn()
         };
         jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'triggers', 'get').mockReturnValue(null as any);
@@ -58,5 +60,15 @@ describe('EngineZone', () => {
 
     it('should expose class name', () => {
         expect(zone.created_at).toEqual(999);
+    });
+
+    it('should allow getting metadata', () => {
+        zone.metadata();
+        expect(service.listMetadata).toBeCalledWith('dep-test', undefined);
+    });
+
+    it('should allow getting child metadata', () => {
+        zone.childMetadata();
+        expect(service.listChildMetadata).toBeCalledWith('dep-test', undefined);
     });
 });

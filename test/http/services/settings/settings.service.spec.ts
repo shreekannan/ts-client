@@ -1,4 +1,4 @@
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { EngineSettings } from '../../../../src/http/services/settings/settings.class';
 import { EngineSettingsService } from '../../../../src/http/services/settings/settings.service';
@@ -6,6 +6,29 @@ import { EngineSettingsService } from '../../../../src/http/services/settings/se
 describe('EngineSettingsService', () => {
     let service: EngineSettingsService;
     let http: any;
+
+    async function testRequest(
+        method: 'get' | 'post' | 'patch' | 'put' | 'delete',
+        fn: any,
+        result: any,
+        test1: any[],
+        test2: any[]
+    ) {
+        const item = result.hasOwnProperty('results') ? result.results : result;
+        http[method]
+            .mockReturnValueOnce(of(result))
+            .mockReturnValueOnce(of(result));
+        const value = await (service as any)[fn](...test1);
+        jest.runOnlyPendingTimers();
+        if (method === 'delete') {
+            expect(value).toBeFalsy();
+        } else {
+            expect(value).toBeInstanceOf(Array);
+        }
+        // Test request with parameters
+        await (service as any)[fn](...test2);
+        jest.runOnlyPendingTimers();
+    }
 
     beforeEach(() => {
         http = {
@@ -37,5 +60,21 @@ describe('EngineSettingsService', () => {
         const result = await service.show('test');
         expect(http.get).toBeCalledWith('/api/engine/v2/settings/test');
         expect(result).toBeInstanceOf(EngineSettings);
+    });
+
+    it('should allow querying the history endpoint', async () => {
+        const item = { id: 'test', name: 'Test' };
+        await testRequest('get', 'history', [item], ['test'], ['test', { cache: 100, test: true }]);
+        expect(http.get).toBeCalledWith('/api/engine/v2/settings/test/history');
+    });
+
+    it('should save history request totals', async () => {
+        const item = { id: 'test', name: 'Test' };
+        http.responseHeaders.mockReturnValue({ 'X-Total-Count': 10 });
+        await testRequest('get', 'history', { total: 10, results: [item] }, ['test', { offset: 10 }], [{ offset: 10 }]);
+        http.responseHeaders.mockReturnValue({ 'X-Total-Count': 25 });
+        await testRequest('get', 'history', { total: 25, results: undefined }, ['test', { test: true }], [{ test: true }]);
+        expect(service.total).toBe(10);
+        expect(service.last_total).toBe(25);
     });
 });
