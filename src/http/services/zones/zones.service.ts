@@ -62,7 +62,7 @@ export class EngineZonesService extends EngineResourceService<EngineZone> {
     public listMetadata(
         id: string,
         query_params: EngineZoneMetadataOptions = {}
-    ): Promise<HashMap> {
+    ): Promise<HashMap<EngineZoneMetadata>> {
         return this.task(id, 'metadata', query_params, 'get');
     }
 
@@ -71,7 +71,7 @@ export class EngineZonesService extends EngineResourceService<EngineZone> {
      * @param id ID of the zone
      * @param form_data New metadata values
      */
-    public createMetadata(id: string, form_data: EngineZoneMetadata): Promise<HashMap> {
+    public createMetadata(id: string, form_data: EngineZoneMetadata): Promise<EngineZoneMetadata> {
         return this.updateMetadata(id, form_data);
     }
 
@@ -80,11 +80,11 @@ export class EngineZonesService extends EngineResourceService<EngineZone> {
      * @param id ID of the zone
      * @param form_data New metadata values
      */
-    public updateMetadata(id: string, form_data: EngineZoneMetadata): Promise<HashMap> {
+    public updateMetadata(id: string, form_data: EngineZoneMetadata): Promise<EngineZoneMetadata> {
         return this.task(id, 'metadata', form_data, 'post');
     }
 
-    public deleteMetadata(id: string, query_params: EngineZoneMetadataOptions): Promise<HashMap> {
+    public deleteMetadata(id: string, query_params: EngineZoneMetadataOptions): Promise<void> {
         return this.task(id, 'metadata', query_params, 'delete');
     }
 

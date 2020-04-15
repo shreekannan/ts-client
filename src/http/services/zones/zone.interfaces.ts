@@ -37,7 +37,7 @@ export interface EngineChildZoneMetadata {
     /** Zone associated with the metadata */
     readonly zone: EngineZone;
     /** Metadata for zone */
-    readonly metadata: HashMap;
+    readonly metadata: HashMap<EngineZoneMetadata>;
     /** List of the root keys in the metadata */
     readonly keys: string[];
 }
