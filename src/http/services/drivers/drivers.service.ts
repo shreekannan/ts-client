@@ -29,6 +29,14 @@ export class EngineDriversService extends EngineResourceService<EngineDriver> {
     }
 
     /**
+     * Checks if the driver has been compiled on the server. Resolves if compiled, rejects otherwise
+     * @param id Driver ID
+     */
+    public isCompiled(id: string): Promise<void> {
+        return this.task(id, 'compiled', undefined, 'get');
+    }
+
+    /**
      * Convert API data into local interface
      * @param item Raw API data
      */

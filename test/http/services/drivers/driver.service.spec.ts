@@ -36,4 +36,10 @@ describe('EngineDriversService', () => {
         await service.reload('test');
         expect(http.post).toBeCalledWith('/api/engine/v2/drivers/test/reload', {});
     });
+
+    it('allow checking if a driver is compiled', async () => {
+        http.get.mockReturnValueOnce(of(null));
+        await service.isCompiled('test');
+        expect(http.get).toBeCalledWith('/api/engine/v2/drivers/test/compiled');
+    });
 });
