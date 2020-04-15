@@ -76,4 +76,10 @@ describe('EngineModuleService', () => {
         const value = await service.settings('test');
         expect(http.get).toBeCalledWith(`/api/engine/v2/modules/test/settings`);
     });
+
+    it('allow loading modules', async () => {
+        http.post.mockReturnValueOnce(of([]));
+        const value = await service.load('test');
+        expect(http.post).toBeCalledWith(`/api/engine/v2/modules/test/load`, {});
+    });
 });

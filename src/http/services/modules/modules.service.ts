@@ -65,6 +65,14 @@ export class EngineModulesService extends EngineResourceService<EngineModule> {
     }
 
     /**
+     * Manually load module into PlaceOS core. Only use if module should be loaded but isn't present.
+     * @param id Module ID
+     */
+    public load(id: string): Promise<void> {
+        return this.task(id, 'load', undefined, 'post');
+    }
+
+    /**
      * Fetch settings of driver associated with the module
      * @param id Module ID
      */
