@@ -157,7 +157,7 @@ export class EngineHttpClient {
             const header_map: HashMap<string> = {};
             header_lines.forEach((line) => {
                 const parts = line.split(': ');
-                const header = parts.shift() || '';
+                const header = (parts.shift() || '').toLowerCase();
                 const value = parts.join(': ');
                 header_map[header] = value;
             });

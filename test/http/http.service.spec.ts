@@ -54,7 +54,7 @@ describe('EngineHttpClient', () => {
                         url: 'test'
                     },
                     xhr: {
-                        getAllResponseHeaders: jest.fn().mockImplementation(() => 'Authorisation:test\r\nX-Total-Count:100')
+                        getAllResponseHeaders: jest.fn().mockImplementation(() => 'Authorisation:test\r\nx-total-count:100')
                     }
                 } as any)
             );

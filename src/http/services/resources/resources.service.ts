@@ -96,8 +96,8 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
                     },
                     () => {
                         const headers = this.http.responseHeaders(url);
-                        if (headers['X-Total-Count']) {
-                            const total = +headers['X-Total-Count'] || 0;
+                        if (headers['x-total-count']) {
+                            const total = +headers['x-total-count'] || 0;
                             query.length < 2 || query.length < 12 && query.indexOf('offset=') >= 0
                                 ? this._total = total
                                 : this._last_total = total;
