@@ -116,6 +116,13 @@ describe('EngineSystemsService', () => {
         expect(value).toEqual([]);
     });
 
+    it('allow listing zones', async () => {
+        http.get.mockReturnValueOnce(of([]));
+        const value = await service.listZones('test');
+        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/zones`);
+        expect(value).toEqual([]);
+    });
+
     it('allow adding triggers', async () => {
         http.post.mockReturnValueOnce(of({}));
         const value = await service.addTrigger('test', {});

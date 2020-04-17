@@ -5,6 +5,7 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineSettings } from '../settings/settings.class';
 import { EngineTrigger } from '../triggers/trigger.class';
+import { EngineZone } from '../zones/zone.class';
 import { EngineSystem } from './system.class';
 import {
     EngineModuleFunctionMap,
@@ -145,6 +146,16 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      */
     public types(id: string): Promise<HashMap<number>> {
         return this.task(id, 'count', undefined, 'get');
+    }
+
+    /**
+     * Get list of triggers for system
+     * @param id System ID
+     */
+    public listZones(id: string): Promise<EngineZone[]> {
+        return this.task(id, 'zones', undefined, 'get', (list: any[]) =>
+            list.map(item => new EngineZone(PlaceOS.zones, item))
+        );
     }
 
     /**
