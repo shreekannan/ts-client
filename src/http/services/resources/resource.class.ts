@@ -1,5 +1,6 @@
 import { Subject, Subscription } from 'rxjs';
 
+import { cleanObject } from '../../../utilities/general.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
 import { ResourceService } from './resources.interface';
 import { EngineDataClassEvent, EngineDataEventType } from './resources.interface';
@@ -115,7 +116,8 @@ export abstract class EngineResource<T extends ResourceService<any>> {
                 delete obj[key];
             }
         }
-        return with_changes ? { ...obj, ...this._changes } : obj;
+        const output = with_changes ? { ...obj, ...this._changes } : obj;
+        return cleanObject(output, [undefined, null, '']);
     }
 
     /**

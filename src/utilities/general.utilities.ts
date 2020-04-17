@@ -169,3 +169,17 @@ export function parseLinkHeader(header: string): HashMap<string> {
     }
     return links;
 }
+
+/**
+ * Remove properties from object with given values
+ * @param object Object to clean
+ * @param delete_values List of property values to remove
+ */
+export function cleanObject(object: HashMap, delete_values: any[]) {
+    for (const key in object) {
+        if (object.hasOwnProperty(key) && delete_values.indexOf(object[key]) >= 0) {
+            delete object[key];
+        }
+    }
+    return object;
+}

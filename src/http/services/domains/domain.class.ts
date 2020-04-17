@@ -39,8 +39,12 @@ export class EngineDomain extends EngineResource<EngineDomainsService> {
 
     public toJSON(this: EngineDomain, with_changes: boolean = true): HashMap {
         const obj = super.toJSON(with_changes);
-        obj.config = JSON.parse(this.config);
-        obj.internals = JSON.parse(this.internals);
+        if (this.config) {
+            obj.config = JSON.parse(this.config);
+        }
+        if (this.internals) {
+            obj.internals = JSON.parse(this.internals);
+        }
         return obj;
     }
 }
