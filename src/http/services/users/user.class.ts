@@ -17,7 +17,9 @@ export const USER_MUTABLE_FIELDS = [
     'last_name',
     'support',
     'sys_admin',
-    'ui_theme'
+    'ui_theme',
+    'password',
+    'confirm_password'
 ] as const;
 type UserMutableTuple = typeof USER_MUTABLE_FIELDS;
 export type UserMutableFields = UserMutableTuple[number];
@@ -57,6 +59,10 @@ export class EngineUser extends EngineResource<EngineUsersService> {
     public readonly sys_admin: boolean;
     /** Name of the active theme on the displayed UI */
     public readonly ui_theme: string;
+    /** Password */
+    private password = '';
+    /** Password */
+    private confirm_password = '';
 
     constructor(protected _service: EngineUsersService, raw_data: HashMap) {
         super(_service, raw_data);
