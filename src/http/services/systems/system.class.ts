@@ -18,6 +18,7 @@ export const SYSTEM_MUTABLE_FIELDS = [
     'bookable',
     'installed_ui_devices',
     'support_url',
+    'map_id',
     'modules',
     'zones'
 ] as const;
@@ -46,6 +47,8 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
     public readonly installed_ui_devices: number;
     /** Support URL for the system */
     public readonly support_url: string;
+    /** ID on the SVG Map associated with this system */
+    public readonly map_id: string;
     /** List of module IDs that belong to the system */
     public readonly modules: readonly string[];
     /** List of the zone IDs that the system belongs */
@@ -62,6 +65,7 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
         this.bookable = raw_data.bookable || false;
         this.installed_ui_devices = raw_data.installed_ui_devices || 0;
         this.support_url = raw_data.support_url || '';
+        this.map_id = raw_data.map_id || '';
         this.modules = raw_data.modules || [];
         this.zones = raw_data.zones || [];
         this.settings = raw_data.settings || [null, null, null, null];
