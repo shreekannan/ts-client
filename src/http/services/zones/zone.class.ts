@@ -14,7 +14,14 @@ export const ZONE_MUTABLE_FIELDS = [
     'description',
     'parent_id',
     'triggers',
-    'tags'
+    'tags',
+    'location',
+    'display_name',
+    'code',
+    'type',
+    'count',
+    'capacity',
+    'map_id'
 ] as const;
 type ZoneMutableTuple = typeof ZONE_MUTABLE_FIELDS;
 export type ZoneMutableFields = ZoneMutableTuple[number];
@@ -35,6 +42,20 @@ export class EngineZone extends EngineResource<EngineZonesService> {
     public readonly triggers: readonly string[];
     /** List of tags associated with the zone */
     public readonly tags: string;
+    /** Geo-location details associated with the zone */
+    public readonly location: string;
+    /** Custom display name for the zone */
+    public readonly display_name: string;
+    /** Organisational code associated with the zone */
+    public readonly code: string;
+    /** Organisational categorisation of the zone */
+    public readonly type: string;
+    /** Count of resources associated with the zone */
+    public readonly count: number;
+    /** Amount of physical capacity associated with the zone */
+    public readonly capacity: number;
+    /** ID or URL of or in a map associated with the zone */
+    public readonly map_id: string;
     /** List of modules associated with the system. Only available from the show method with the `complete` query parameter */
     public trigger_list: readonly EngineTrigger[] = [];
 
@@ -45,6 +66,13 @@ export class EngineZone extends EngineResource<EngineZonesService> {
         this.triggers = raw_data.triggers || [];
         this.settings = raw_data.settings || [null, null, null, null];
         this.parent_id = raw_data.parent_id || '';
+        this.location = raw_data.location || '';
+        this.display_name = raw_data.display_name || '';
+        this.code = raw_data.code || '';
+        this.type = raw_data.type || '';
+        this.count = raw_data.count || 0;
+        this.capacity = raw_data.capacity || 0;
+        this.map_id = raw_data.map_id || '';
         PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
             if (typeof this.settings !== 'object') {
                 (this as any).settings = [null, null, null, null];
