@@ -64,6 +64,17 @@ export interface EngineAuthOptions {
     username?: string;
     /** Password for the user being authorised */
     password?: string;
+    /** Application secret */
+    client_secret?: string;
+}
+
+export interface EngineAuthCredentials extends HashMap {
+    /** Name of the user being authenticated */
+    username: string;
+    /** Password associated with the user */
+    password: string;
+    /** Application secret */
+    client_secret: string;
 }
 
 export interface EngineTokenResponse {

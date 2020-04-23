@@ -5,6 +5,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { generateNonce, getFragments, log, removeFragment } from '../utilities/general.utilities';
 import { HashMap } from '../utilities/types.utilities';
 import {
+    EngineAuthCredentials,
     EngineAuthOptions,
     EngineAuthority,
     EngineTokenResponse,
@@ -210,7 +211,7 @@ export class EngineAuthService {
                             }
                         ];
                         if (this.options && this.options.auth_type === 'password') {
-                            this.generateTokenWithCredentials(this.options as any).then(...token_handlers);
+                            this.generateTokenWithCredentials((this.options || {}) as any).then(...token_handlers);
                         } else if (this._code || this.refresh_token) {
                             this.generateToken().then(...token_handlers);
                         } else {
@@ -474,9 +475,10 @@ export class EngineAuthService {
      * Geneate a token URL for basic auth with the given credentials
      * @param credentials Credentials to add to the token
      */
-    private createCredentialsURL(credentials: { username: string, password: string }) {
+    private createCredentialsURL(credentials: EngineAuthCredentials) {
         const refresh_uri = this.options.token_uri || '/auth/token';
         let url = refresh_uri + `?client_id=${encodeURIComponent(this._client_id)}`;
+        url += `&client_secret=${encodeURIComponent(credentials.client_secret)}`;
         url += `&grant_type=password`;
         url += `&redirect_uri=${encodeURIComponent(this.options.redirect_uri)}`;
         url += `&username=${encodeURIComponent(credentials.username)}`;
@@ -523,7 +525,7 @@ export class EngineAuthService {
     /**
      * Generate new tokens from a username and password
      */
-    private generateTokenWithCredentials(credentials: { username: string, password: string }) {
+    private generateTokenWithCredentials(credentials: EngineAuthCredentials) {
         return this.generateTokenWithUrl(this.createCredentialsURL(credentials));
     }
 
