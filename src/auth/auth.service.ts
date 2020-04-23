@@ -5,7 +5,6 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { generateNonce, getFragments, log, removeFragment } from '../utilities/general.utilities';
 import { HashMap } from '../utilities/types.utilities';
 import {
-    EngineAuthCredentials,
     EngineAuthOptions,
     EngineAuthority,
     EngineTokenResponse,
@@ -211,7 +210,9 @@ export class EngineAuthService {
                             }
                         ];
                         if (this.options && this.options.auth_type === 'password') {
-                            this.generateTokenWithCredentials((this.options || {}) as any).then(...token_handlers);
+                            this.generateTokenWithCredentials((this.options || {}) as any).then(
+                                ...token_handlers
+                            );
                         } else if (this._code || this.refresh_token) {
                             this.generateToken().then(...token_handlers);
                         } else {
@@ -473,16 +474,18 @@ export class EngineAuthService {
 
     /**
      * Geneate a token URL for basic auth with the given credentials
-     * @param credentials Credentials to add to the token
+     * @param options Credentials to add to the token
      */
-    private createCredentialsURL(credentials: EngineAuthCredentials) {
+    private createCredentialsURL(options: EngineAuthOptions) {
         const refresh_uri = this.options.token_uri || '/auth/token';
         let url = refresh_uri + `?client_id=${encodeURIComponent(this._client_id)}`;
-        url += `&client_secret=${encodeURIComponent(credentials.client_secret)}`;
+        url += `&client_secret=${encodeURIComponent(options.client_secret || '')}`;
         url += `&grant_type=password`;
         url += `&redirect_uri=${encodeURIComponent(this.options.redirect_uri)}`;
-        url += `&username=${encodeURIComponent(credentials.username)}`;
-        url += `&password=${encodeURIComponent(credentials.password)}`;
+        url += `&authority=${encodeURIComponent(this._authority ? this._authority.id : '')}`;
+        url += `&username=${encodeURIComponent(options.username || '')}`;
+        url += `&password=${encodeURIComponent(options.password || '')}`;
+        url += `&scope=${encodeURIComponent(options.scope || '')}`;
         return url;
     }
 
@@ -525,8 +528,8 @@ export class EngineAuthService {
     /**
      * Generate new tokens from a username and password
      */
-    private generateTokenWithCredentials(credentials: EngineAuthCredentials) {
-        return this.generateTokenWithUrl(this.createCredentialsURL(credentials));
+    private generateTokenWithCredentials(options: EngineAuthOptions) {
+        return this.generateTokenWithUrl(this.createCredentialsURL(options));
     }
 
     /**
