@@ -104,6 +104,11 @@ export class EngineAuthService {
         return this._storage.getItem(`${this._client_id}_refresh_token`) || '';
     }
 
+    /** Host domain of the PlaceOS server */
+    public get host(): string {
+        return this.options && this.options.host ? (this.options.host || '') : '';
+    }
+
     /** Whether the application has an authentication token */
     public get has_token(): boolean {
         return !!this.token;
@@ -281,7 +286,7 @@ export class EngineAuthService {
                 engine.log('Auth', `Fixed: ${this.fixed_device} | Trusted: ${this.trusted}`);
                 engine.log('Auth', `Loading authority...`);
                 let authority: EngineAuthority;
-                engine.ajax.get('/auth/authority').subscribe(
+                engine.ajax.get(`${this.host}/auth/authority`).subscribe(
                     resp =>
                         (authority =
                             resp.response && typeof resp.response === 'object'
