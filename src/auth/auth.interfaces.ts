@@ -41,6 +41,7 @@ export interface EngineAuthority {
 }
 
 export interface EngineAuthOptions {
+    auth_type?: 'oauth' | 'password';
     /** Host name and port of the engine server */
     host?: string;
     /** URI for authorizing the user */
@@ -59,6 +60,10 @@ export interface EngineAuthOptions {
     handle_login?: boolean;
     /** Whether system is in mock mode */
     mock?: boolean;
+    /** Username of the user to be authorised */
+    username?: string;
+    /** Password for the user being authorised */
+    password?: string;
 }
 
 export interface EngineTokenResponse {

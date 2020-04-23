@@ -4,7 +4,12 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { generateNonce, getFragments, log, removeFragment } from '../utilities/general.utilities';
 import { HashMap } from '../utilities/types.utilities';
-import { EngineAuthOptions, EngineAuthority, EngineTokenResponse, MOCK_AUTHORITY } from './auth.interfaces';
+import {
+    EngineAuthOptions,
+    EngineAuthority,
+    EngineTokenResponse,
+    MOCK_AUTHORITY
+} from './auth.interfaces';
 
 import * as _dayjs from 'dayjs';
 // tslint:disable-next-line:no-duplicate-imports
@@ -64,7 +69,7 @@ export class EngineAuthService {
         /* istanbul ignore else */
         if (this.authority) {
             /* istanbul ignore else */
-            if (!(/[2-9]\.[0-9]+\.[0-9]+/g).test(this.authority.version || '')) {
+            if (!/[2-9]\.[0-9]+\.[0-9]+/g.test(this.authority.version || '')) {
                 return `/control/api`;
             }
         }
@@ -189,17 +194,20 @@ export class EngineAuthService {
                         delete this._promises.authorise;
                         resolve(this.token);
                     } else {
-                        if (this._code || this.refresh_token) {
-                            this.generateToken().then(
-                                _ => {
-                                    delete this._promises.authorise;
-                                    resolve(this.token);
-                                },
-                                _ => {
-                                    delete this._promises.authorise;
-                                    reject(_);
-                                }
-                            );
+                        const token_handlers = [
+                            (_: any) => {
+                                delete this._promises.authorise;
+                                resolve(this.token);
+                            },
+                            (_: any) => {
+                                delete this._promises.authorise;
+                                reject(_);
+                            }
+                        ];
+                        if (this.options && this.options.auth_type === 'password') {
+                            this.generateTokenWithCredentials(this.options as any).then(...token_handlers);
+                        } else if (this._code || this.refresh_token) {
+                            this.generateToken().then(...token_handlers);
                         } else {
                             if (authority.session) {
                                 engine.log('Auth', 'Users has session. Authorising application...');
@@ -260,7 +268,7 @@ export class EngineAuthService {
      */
     private loadAuthority(tries: number = 0) {
         if (!this._promises.load_authority) {
-            this._promises.load_authority = new Promise((resolve) => {
+            this._promises.load_authority = new Promise(resolve => {
                 this._online.next(false);
                 if (this.options.mock) {
                     // Setup mock authority
@@ -276,13 +284,18 @@ export class EngineAuthService {
                 engine.ajax.get('/auth/authority').subscribe(
                     resp =>
                         (authority =
-                            resp.response && typeof resp.response === 'object' ? resp.response : null),
+                            resp.response && typeof resp.response === 'object'
+                                ? resp.response
+                                : null),
                     err => {
                         engine.log('Auth', `Failed to load authority(${err})`);
                         this._online.next(false);
                         delete this._promises.load_authority;
                         // Retry if authority fails to load
-                        setTimeout(() => this.loadAuthority(tries).then(_ => resolve()), 300 * Math.min(20, ++tries));
+                        setTimeout(
+                            () => this.loadAuthority(tries).then(_ => resolve()),
+                            300 * Math.min(20, ++tries)
+                        );
                     },
                     () => {
                         if (authority) {
@@ -295,7 +308,10 @@ export class EngineAuthService {
                             this.authorise('').then(response, response);
                         } else {
                             // Retry if authority fails to load
-                            setTimeout(() => this.loadAuthority(tries).then(_ => resolve()), 300 * Math.min(20, ++tries));
+                            setTimeout(
+                                () => this.loadAuthority(tries).then(_ => resolve()),
+                                300 * Math.min(20, ++tries)
+                            );
                         }
                     }
                 );
@@ -317,14 +333,20 @@ export class EngineAuthService {
                         resolve(this.token);
                     } else {
                         engine.log('Auth', 'No token. Checking URL for auth credentials...');
-                        this.checkForAuthParameters().then(_ => resolve(_), _ => reject(_));
+                        this.checkForAuthParameters().then(
+                            _ => resolve(_),
+                            _ => reject(_)
+                        );
                     }
                     this._promises.check_token = undefined;
                 } else {
                     engine.log('Auth', 'Waiting for authority before checking token...');
                     setTimeout(() => {
                         this._promises.check_token = undefined;
-                        this.checkToken().then(_ => resolve(_), _ => reject(_));
+                        this.checkToken().then(
+                            _ => resolve(_),
+                            _ => reject(_)
+                        );
                     }, 300);
                 }
             });
@@ -444,6 +466,20 @@ export class EngineAuthService {
     }
 
     /**
+     * Geneate a token URL for basic auth with the given credentials
+     * @param credentials Credentials to add to the token
+     */
+    private createCredentialsURL(credentials: { username: string, password: string }) {
+        const refresh_uri = this.options.token_uri || '/auth/token';
+        let url = refresh_uri + `?client_id=${encodeURIComponent(this._client_id)}`;
+        url += `&grant_type=password`;
+        url += `&redirect_uri=${encodeURIComponent(this.options.redirect_uri)}`;
+        url += `&username=${encodeURIComponent(credentials.username)}`;
+        url += `&password=${encodeURIComponent(credentials.password)}`;
+        return url;
+    }
+
+    /**
      * Revoke the current access token
      */
     private revokeToken(): Promise<void> {
@@ -475,14 +511,27 @@ export class EngineAuthService {
     /**
      * Generate new tokens from a auth code or refresh token
      */
-    private generateToken(): Promise<void> {
+    private generateToken() {
+        return this.generateTokenWithUrl(this.createRefreshURL());
+    }
+
+    /**
+     * Generate new tokens from a username and password
+     */
+    private generateTokenWithCredentials(credentials: { username: string, password: string }) {
+        return this.generateTokenWithUrl(this.createCredentialsURL(credentials));
+    }
+
+    /**
+     * Make a request to the tokens endpoint with the given URL
+     */
+    private generateTokenWithUrl(url: string): Promise<void> {
         /* istanbul ignore else */
         if (!this._promises.generate_tokens) {
             this._promises.generate_tokens = new Promise<void>((resolve, reject) => {
-                const token_url = this.createRefreshURL();
                 engine.log('Auth', 'Generating new token...');
                 let tokens: EngineTokenResponse;
-                engine.ajax.post(token_url, '').subscribe(
+                engine.ajax.post(url, '').subscribe(
                     resp => {
                         tokens = resp.response;
                     },
@@ -493,32 +542,10 @@ export class EngineAuthService {
                     },
                     () => {
                         if (tokens) {
-                            // Store access token
-                            if (tokens.access_token) {
-                                this._storage.setItem(
-                                    `${this._client_id}_access_token`,
-                                    tokens.access_token
-                                );
-                            }
-                            // Store refresh token
-                            if (tokens.refresh_token) {
-                                this._storage.setItem(
-                                    `${this._client_id}_refresh_token`,
-                                    tokens.refresh_token
-                                );
-                            }
-                            // Store token expiry time
-                            if (tokens.expires_in) {
-                                const expires_at = dayjs().add(
-                                    parseInt(tokens.expires_in, 10),
-                                    's'
-                                );
-                                this._storage.setItem(
-                                    `${this._client_id}_expires_at`,
-                                    `${expires_at.valueOf()}`
-                                );
-                            }
+                            this._storeTokenDetails(tokens);
                             resolve();
+                        } else {
+                            reject();
                         }
                         delete this._promises.generate_tokens;
                     }
@@ -526,6 +553,22 @@ export class EngineAuthService {
             });
         }
         return this._promises.generate_tokens as Promise<void>;
+    }
+
+    private _storeTokenDetails(details: EngineTokenResponse) {
+        // Store access token
+        if (details.access_token) {
+            this._storage.setItem(`${this._client_id}_access_token`, details.access_token);
+        }
+        // Store refresh token
+        if (details.refresh_token) {
+            this._storage.setItem(`${this._client_id}_refresh_token`, details.refresh_token);
+        }
+        // Store token expiry time
+        if (details.expires_in) {
+            const expires_at = dayjs().add(parseInt(details.expires_in, 10), 's');
+            this._storage.setItem(`${this._client_id}_expires_at`, `${expires_at.valueOf()}`);
+        }
     }
 
     /**

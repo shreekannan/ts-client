@@ -16,6 +16,7 @@ describe('EngineSettings', () => {
             update: jest.fn()
         };
         item = generateMockSettings();
+        item = generateMockSettings({ name: 'Test' });
         settings = new EngineSettings(service, item);
     });
 

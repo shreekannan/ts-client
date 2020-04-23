@@ -19,6 +19,7 @@ describe('EngineSystemsService', () => {
         };
         service = new EngineSystemsService(http);
         (PlaceOS as any)._triggers = {};
+        (PlaceOS as any)._zones = {};
     });
 
     it('should create instance', () => {
@@ -109,18 +110,25 @@ describe('EngineSystemsService', () => {
         expect(value).toEqual({ test: 0 });
     });
 
+    it('allow adding modules', async () => {
+        http.put.mockReturnValueOnce(of({}));
+        const value = await service.addModule('test', 'mod1');
+        expect(http.put).toBeCalledWith(`/api/engine/v2/systems/test/module/mod1`, {});
+        expect(value).toEqual({});
+    });
+
     it('allow listing triggers', async () => {
-        http.get.mockReturnValueOnce(of([]));
+        http.get.mockReturnValueOnce(of([{ id: '1' }]));
         const value = await service.listTriggers('test');
         expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/triggers`);
-        expect(value).toEqual([]);
+        expect(value.length).toBe(1);
     });
 
     it('allow listing zones', async () => {
-        http.get.mockReturnValueOnce(of([]));
+        http.get.mockReturnValueOnce(of([{ id: '1' }]));
         const value = await service.listZones('test');
         expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/zones`);
-        expect(value).toEqual([]);
+        expect(value.length).toBe(1);
     });
 
     it('allow adding triggers', async () => {
