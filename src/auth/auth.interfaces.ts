@@ -44,6 +44,8 @@ export interface EngineAuthOptions {
     auth_type?: 'oauth' | 'password';
     /** Host name and port of the engine server */
     host?: string;
+    /** Whether application uses TLS/SSL */
+    secure?: boolean;
     /** URI for authorizing the user */
     auth_uri: string;
     /** URI for generating new tokens */

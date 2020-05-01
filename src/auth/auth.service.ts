@@ -60,7 +60,8 @@ export class EngineAuthService {
 
     /** API Endpoint for the retrieved version of engine */
     public get api_endpoint() {
-        const host = `${location.protocol}//${this.options.host || location.host}`;
+        const secure = this.options.secure || location.protocol.indexOf('https') >= 0;
+        const host = `${secure ? 'https:' : 'http:'}//${this.options.host || location.host}`;
         return `${host}${this.route}`;
     }
 
@@ -288,40 +289,43 @@ export class EngineAuthService {
                 engine.log('Auth', `Fixed: ${this.fixed_device} | Trusted: ${this.trusted}`);
                 engine.log('Auth', `Loading authority...`);
                 let authority: EngineAuthority;
-                engine.ajax.get(`${location.protocol}//${this.host}/auth/authority`).subscribe(
-                    resp =>
-                        (authority =
-                            resp.response && typeof resp.response === 'object'
-                                ? resp.response
-                                : null),
-                    err => {
-                        engine.log('Auth', `Failed to load authority(${err})`);
-                        this._online.next(false);
-                        delete this._promises.load_authority;
-                        // Retry if authority fails to load
-                        setTimeout(
-                            () => this.loadAuthority(tries).then(_ => resolve()),
-                            300 * Math.min(20, ++tries)
-                        );
-                    },
-                    () => {
-                        if (authority) {
-                            this._authority = authority;
-                            const response = () => {
-                                this._online.next(true);
-                                setTimeout(() => delete this._promises.load_authority, 500);
-                                resolve();
-                            };
-                            this.authorise('').then(response, response);
-                        } else {
+                const secure = this.options.secure || location.protocol.indexOf('https') >= 0;
+                engine.ajax
+                    .get(`${secure ? 'https:' : 'http:'}//${this.host}/auth/authority`)
+                    .subscribe(
+                        resp =>
+                            (authority =
+                                resp.response && typeof resp.response === 'object'
+                                    ? resp.response
+                                    : null),
+                        err => {
+                            engine.log('Auth', `Failed to load authority(${err})`);
+                            this._online.next(false);
+                            delete this._promises.load_authority;
                             // Retry if authority fails to load
                             setTimeout(
                                 () => this.loadAuthority(tries).then(_ => resolve()),
                                 300 * Math.min(20, ++tries)
                             );
+                        },
+                        () => {
+                            if (authority) {
+                                this._authority = authority;
+                                const response = () => {
+                                    this._online.next(true);
+                                    setTimeout(() => delete this._promises.load_authority, 500);
+                                    resolve();
+                                };
+                                this.authorise('').then(response, response);
+                            } else {
+                                // Retry if authority fails to load
+                                setTimeout(
+                                    () => this.loadAuthority(tries).then(_ => resolve()),
+                                    300 * Math.min(20, ++tries)
+                                );
+                            }
                         }
-                    }
-                );
+                    );
             });
         }
         return this._promises.load_authority;
