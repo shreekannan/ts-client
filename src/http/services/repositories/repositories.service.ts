@@ -27,7 +27,7 @@ export class EngineRepositoriesService extends EngineResourceService<EngineRepos
      * @param id ID of the repository
      * @param query Addition query parameters to pass to the request
      */
-    public async listCommits(id: string, query: EngineRepositoryCommitQuery): Promise<string[]> {
+    public async listCommits(id: string, query: EngineRepositoryCommitQuery = {}): Promise<string[]> {
         return await this.task(id, 'commits', query, 'get');
     }
 

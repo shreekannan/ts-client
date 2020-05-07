@@ -9,7 +9,7 @@ export enum EngineRepositoryType {
 
 export interface EngineRepositoryCommitQuery {
     /** URL encoded name of the driver being requested */
-    driver: string;
+    driver?: string;
 }
 
 export interface EngineRepositoryDetailsQuery {
