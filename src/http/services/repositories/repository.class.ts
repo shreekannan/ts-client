@@ -34,7 +34,7 @@ export class EngineRepository extends EngineResource<EngineRepositoriesService> 
         this.description = raw_data.description || '';
         this.uri = raw_data.uri || '';
         this.commit_hash = raw_data.commit_hash || '';
-        this.type = raw_data.type || EngineRepositoryType.Driver;
+        this.type = typeof raw_data.type === 'number' ? raw_data.type : EngineRepositoryType.Driver;
     }
 
     public storePendingChange(
