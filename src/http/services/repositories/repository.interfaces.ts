@@ -12,6 +12,17 @@ export interface EngineRepositoryCommitQuery {
     driver?: string;
 }
 
+export interface GitCommitDetails {
+    /** Name of the commit author */
+    author: string;
+    /** Short hash of the commit */
+    commit: string;
+    /** ISO datetime string for commit  */
+    date: string;
+    /** Commit summary */
+    subject: string;
+}
+
 export interface EngineRepositoryDetailsQuery {
     /** URL encoded name of the driver being requested */
     driver: string;
