@@ -11,7 +11,7 @@ import { Dayjs, default as _rollupDayjs } from 'dayjs';
  */
 const dayjs = _rollupDayjs || _dayjs;
 
-export const REPOSITORY_MUTABLE_FIELDS = ['name', 'folder_name', 'description', 'uri', 'commit_hash', 'type'] as const;
+export const REPOSITORY_MUTABLE_FIELDS = ['name', 'folder_name', 'description', 'uri', 'commit_hash', 'repo_type'] as const;
 type RepositoryMutableTuple = typeof REPOSITORY_MUTABLE_FIELDS;
 export type RepositoryMutableFields = RepositoryMutableTuple[number];
 
@@ -26,7 +26,12 @@ export class EngineRepository extends EngineResource<EngineRepositoriesService> 
     /** Hash of the commit at the head of the repository */
     public readonly commit_hash: string;
     /** Repository type */
-    public readonly type: EngineRepositoryType;
+    public readonly repo_type: EngineRepositoryType;
+
+    /** Repository type */
+    public get type(): EngineRepositoryType {
+        return this.repo_type;
+    }
 
     constructor(protected _service: EngineRepositoriesService, raw_data: HashMap) {
         super(_service, raw_data);
@@ -34,7 +39,7 @@ export class EngineRepository extends EngineResource<EngineRepositoriesService> 
         this.description = raw_data.description || '';
         this.uri = raw_data.uri || '';
         this.commit_hash = raw_data.commit_hash || '';
-        this.type = typeof raw_data.type === 'number' ? raw_data.type : EngineRepositoryType.Driver;
+        this.repo_type = typeof raw_data.repo_type === 'string' ? raw_data.repo_type as any : EngineRepositoryType.Driver;
     }
 
     public storePendingChange(

@@ -2,9 +2,9 @@
 /** Type of repository */
 export enum EngineRepositoryType {
     /** Repository is a collection of Driver logic */
-    Driver = 0,
+    Driver = 'Driver',
     /** Repository is a collection of interfaces */
-    Interface = 1
+    Interface = 'Interface'
 }
 
 export interface EngineRepositoryCommitQuery {
