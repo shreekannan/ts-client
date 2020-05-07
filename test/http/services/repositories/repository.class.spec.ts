@@ -13,7 +13,7 @@ describe('EngineRepository', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        mock_data = generateMockRepository({ type: EngineRepositoryType.Driver });
+        mock_data = generateMockRepository({ repo_type: EngineRepositoryType.Driver });
         repository = new EngineRepository(service, mock_data);
     });
 
@@ -67,8 +67,8 @@ describe('EngineRepository', () => {
     });
 
     it('should allow setting type', () => {
-        repository.storePendingChange('type', EngineRepositoryType.Interface);
-        expect(repository.type).not.toBe(EngineRepositoryType.Interface);
-        expect(repository.changes.type).toBe(EngineRepositoryType.Interface);
+        repository.storePendingChange('repo_type', EngineRepositoryType.Interface);
+        expect(repository.repo_type).not.toBe(EngineRepositoryType.Interface);
+        expect(repository.changes.repo_type).toBe(EngineRepositoryType.Interface);
     });
 });

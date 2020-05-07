@@ -19,7 +19,7 @@ export function generateMockRepository(overrides: any = {}) {
         description: faker.lorem.paragraph(),
         uri: `https://github.com/placeos/${company}-drivers`,
         commit_hash: 'HEAD',
-        type: Math.floor(Math.random() * 999_999_999) % 2,
+        repo_type: Math.floor(Math.random() * 999_999_999) % 2,
         ...overrides
     };
 }
