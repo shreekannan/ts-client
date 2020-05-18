@@ -14,6 +14,7 @@ import {
     SimpleNetworkError
 } from './websocket.interfaces';
 
+import dayjs from 'dayjs';
 import { engine, EngineAuthService } from '../auth/auth.service';
 import { log } from '../utilities/general.utilities';
 
@@ -175,7 +176,10 @@ export class EngineWebsocket {
                 } else {
                     setTimeout(() => {
                         delete this.requests[key];
-                        this.send(request, tries).then(_ => resolve(_), _ => reject(_));
+                        this.send(request, tries).then(
+                            _ => resolve(_),
+                            _ => reject(_)
+                        );
                     }, 300 * Math.min(20, ++tries));
                 }
             });
@@ -196,7 +200,7 @@ export class EngineWebsocket {
                 this.handleSuccess(message);
             } else if (message.type === 'debug') {
                 engine_socket.log('WS', `[DEBUG] ${message.mod}${message.klass} →`, message.msg);
-                const meta = message.meta || { mod: '', index: ''};
+                const meta = message.meta || { mod: '', index: '' };
                 this.debug_events.next({
                     mod_id: message.mod || '<empty>',
                     module: `${meta.mod}_${meta.index}`,
@@ -349,8 +353,10 @@ export class EngineWebsocket {
     protected createWebsocket() {
         const secure = this.options.secure || location.protocol.indexOf('https') >= 0;
         const host = this.options.host || location.host;
-        const url = `ws${secure ? 's' : ''}://${host}${this.route}?bearer_token=${this.auth.token}${
-            this.options.fixed ? '&fixed_device=true' : ''
+        const expiry = `expires=${dayjs().add(2, 's').toDate().toUTCString()};`;
+        document.cookie = `bearer_token=${this.auth.token}; ${expiry} path=${this.route}`;
+        const url = `ws${secure ? 's' : ''}://${host}${this.route}${
+            this.options.fixed ? '?fixed_device=true' : ''
         }`;
         engine.log('WS', `Connecting to ws${secure ? 's' : ''}://${host}${this.route}`);
         this.websocket = engine_socket.websocket({
