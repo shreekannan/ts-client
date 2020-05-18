@@ -91,13 +91,13 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
     }
 
     /**
-     * Live load/reload the driver
+     * Recompile and reload the driver executable
      */
-    public reload(): Promise<void> {
+    public recompile(): Promise<void> {
         /* istanbul ignore else */
         if (!this.id) {
-            throw new Error('You must save the module before it can be started');
+            throw new Error('You must save the module before it can be compiled');
         }
-        return this._service.reload(this.id);
+        return this._service.recompile(this.id);
     }
 }

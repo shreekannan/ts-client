@@ -5,7 +5,6 @@ import { bytesToDisplay } from '../../../utilities/general.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
 
 export class EngineCluster {
-    public static service: EngineClustersService;
     /** Unique identifier of the application */
     public readonly id: string;
     /** List of running drivers */
@@ -34,10 +33,6 @@ export class EngineCluster {
     public readonly memory_usage: number;
     /** Total amount of memory used by the cluster root process in KB */
     public readonly core_memory: number;
-
-    private get _service(): EngineClustersService {
-        return EngineCluster.service;
-    }
 
     constructor(raw_data: HashMap = {}) {
         this.id = raw_data.id || '';

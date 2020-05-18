@@ -22,11 +22,11 @@ export class EngineDriversService extends EngineResourceService<EngineDriver> {
     }
 
     /**
-     * Live loads or reloads the latest version of the given driver
+     * Recompiles and reloads the latest version of the given driver
      * @param id Driver ID
      */
-    public reload(id: string): Promise<void> {
-        return this.task(id, 'reload');
+    public recompile(id: string): Promise<void> {
+        return this.task(id, 'recompile');
     }
 
     /**

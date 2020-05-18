@@ -11,7 +11,7 @@ export class EngineClustersService extends EngineResourceService<any> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineCluster.service = this;
+        // EngineCluster.service = this;
         EngineProcess.service = this;
         this._name = 'Clusters';
         this._api_route = 'cluster';
@@ -39,7 +39,7 @@ export class EngineClustersService extends EngineResourceService<any> {
                 let result: EngineProcess[];
                 this.http.get(url).subscribe(
                     (resp: any) => {
-                        (result = resp.map((item: HashMap) => new EngineProcess(this, id, item)));
+                        (result = resp.map((item: HashMap) => new EngineProcess(id, item)));
                     },
                     error,
                     () => {
@@ -61,6 +61,6 @@ export class EngineClustersService extends EngineResourceService<any> {
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineCluster(this, item);
+        return new EngineCluster(item);
     }
 }
