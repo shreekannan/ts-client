@@ -14,7 +14,8 @@ describe('EngineDriver', () => {
             update: jest.fn()
         };
         jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
-        driver = new EngineDriver(service, {
+        EngineDriver.setService('EngineDriver', service);
+        driver = new EngineDriver({
             id: 'dep-test',
             description: 'In a galaxy far far away...',
             module_name: 'SteamShip',
@@ -117,7 +118,7 @@ describe('EngineDriver', () => {
         service.reload.mockReturnValue(Promise.resolve());
         await driver.reload();
         expect(service.reload).toBeCalledWith('dep-test');
-        const new_driver = new EngineDriver(service, {});
+        const new_driver = new EngineDriver({});
         try {
             new_driver.reload();
             throw new Error('Failed to error');

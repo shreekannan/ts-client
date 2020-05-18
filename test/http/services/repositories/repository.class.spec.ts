@@ -14,7 +14,8 @@ describe('EngineRepository', () => {
             update: jest.fn()
         };
         mock_data = generateMockRepository({ repo_type: EngineRepositoryType.Driver });
-        repository = new EngineRepository(service, mock_data);
+        EngineRepository.setService('EngineRepository', service);
+        repository = new EngineRepository(mock_data);
     });
 
     it('should create instance', () => {

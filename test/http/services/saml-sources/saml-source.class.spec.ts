@@ -10,7 +10,8 @@ describe('EngineSamlSource', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        auth_source = new EngineSAMLSource(service, {
+        EngineSAMLSource.setService('EngineSAMLSource', service);
+        auth_source = new EngineSAMLSource({
             id: 'dep-test',
             authority_id: 'test-authority',
             idp_cert: 'test',

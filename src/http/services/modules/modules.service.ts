@@ -10,6 +10,7 @@ export class EngineModulesService extends EngineResourceService<EngineModule> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineModule.setService('EngineModule', this);
         this._name = 'Module';
         this._api_route = 'modules';
     }
@@ -78,7 +79,7 @@ export class EngineModulesService extends EngineResourceService<EngineModule> {
      */
     public settings(id: string): Promise<EngineSettings[]> {
         return this.task(id, 'settings', undefined, 'get', list =>
-            list.map((item: HashMap) => new EngineSettings(PlaceOS.settings, item))
+            list.map((item: HashMap) => new EngineSettings(item))
         );
     }
 
@@ -87,6 +88,6 @@ export class EngineModulesService extends EngineResourceService<EngineModule> {
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineModule(this, item);
+        return new EngineModule(item);
     }
 }

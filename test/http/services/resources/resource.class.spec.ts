@@ -15,7 +15,8 @@ describe('EngineResource', () => {
         service.add.mockReturnValue(Promise.resolve());
         service.delete.mockReturnValue(Promise.resolve());
         service.update.mockReturnValue(Promise.resolve());
-        resource = new Resource(service, { id: 'test', name: 'Test', created_at: 999 });
+        Resource.setService('EngineResource', service);
+        resource = new Resource({ id: 'test', name: 'Test', created_at: 999 });
     });
 
     it('should expose id', () => {

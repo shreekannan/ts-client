@@ -10,6 +10,7 @@ export class EngineSettingsService extends EngineResourceService<EngineSettings>
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineSettings.setService('EngineSettings', this);
         this._name = 'Settings';
         this._api_route = 'settings';
     }
@@ -75,6 +76,6 @@ export class EngineSettingsService extends EngineResourceService<EngineSettings>
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineSettings(this, item);
+        return new EngineSettings(item);
     }
 }

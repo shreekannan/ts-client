@@ -59,13 +59,15 @@ export class EngineUser extends EngineResource<EngineUsersService> {
     public readonly sys_admin: boolean;
     /** Name of the active theme on the displayed UI */
     public readonly ui_theme: string;
+    /** Class type of required service */
+    protected __type: string = 'EngineZone';
     /** Password */
     private password = '';
     /** Password */
     private confirm_password = '';
 
-    constructor(protected _service: EngineUsersService, raw_data: HashMap) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap = {}) {
+        super(raw_data);
         this.authority_id = raw_data.authority_id || '';
         this.email = raw_data.email || '';
         this.email_digest = raw_data.email_digest || '';

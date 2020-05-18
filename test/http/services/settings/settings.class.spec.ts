@@ -17,7 +17,8 @@ describe('EngineSettings', () => {
         };
         item = generateMockSettings();
         item = generateMockSettings({ name: 'Test' });
-        settings = new EngineSettings(service, item);
+        EngineSettings.setService('EngineSettings', service);
+        settings = new EngineSettings(item);
     });
 
     it('should create instance', () => {

@@ -25,6 +25,6 @@ export class EngineDomainsService extends EngineResourceService<EngineDomain> {
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineDomain(this, item);
+        return new EngineDomain(item);
     }
 }

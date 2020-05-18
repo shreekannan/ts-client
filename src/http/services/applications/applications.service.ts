@@ -8,6 +8,7 @@ export class EngineApplicationsService extends EngineResourceService<EngineAppli
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineApplication.setService('EngineApplication', this);
         this._name = 'Application';
         this._api_route = 'oauth_apps';
     }
@@ -25,6 +26,6 @@ export class EngineApplicationsService extends EngineResourceService<EngineAppli
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineApplication(this, item);
+        return new EngineApplication(item);
     }
 }

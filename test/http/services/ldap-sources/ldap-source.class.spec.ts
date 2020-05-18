@@ -10,7 +10,8 @@ describe('EngineLdapSource', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        auth_source = new EngineLDAPSource(service, {
+        EngineLDAPSource.setService('EngineLDAPSource', service);
+        auth_source = new EngineLDAPSource({
             id: 'dep-test',
             authority_id: 'test-authority',
             host: 'test',

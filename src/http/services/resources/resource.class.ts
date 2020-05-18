@@ -10,6 +10,24 @@ type BaseMutableTuple = typeof BASE_MUTABLE_FIELDS;
 export type BaseMutableFields = BaseMutableTuple[number];
 
 export abstract class EngineResource<T extends ResourceService<any>> {
+
+    /** Service for managing model on the server */
+    protected get _service(): T {
+        return EngineResource._service_map[this.__type] as any;
+    }
+
+    /**
+     * Get map of changes to the resources
+     */
+    public get changes(): HashMap {
+        return { ...this._changes };
+    }
+    /** Set the services used to handle data model requests */
+    public static setService(type: string, service: ResourceService): void {
+        EngineResource._service_map[type] = service;
+    }
+    /** Map of available services for child classes */
+    private static _service_map: HashMap<ResourceService> = {};
     /** Unique Identifier of the object */
     public readonly id: string;
     /** Human readable name of the object */
@@ -18,13 +36,8 @@ export abstract class EngineResource<T extends ResourceService<any>> {
     public readonly created_at: number;
     /** Subject for change events to the class object */
     public readonly changeEvents = new Subject<EngineDataClassEvent>();
-
-    /**
-     * Get map of changes to the resources
-     */
-    public get changes(): HashMap {
-        return { ...this._changes };
-    }
+    /** Class type of required service */
+    protected __type: string = 'EngineResource';
     /** Map of unsaved property changes */
     protected _changes: HashMap = {};
     /** Map of local property names to server ones */
@@ -34,7 +47,7 @@ export abstract class EngineResource<T extends ResourceService<any>> {
     /** Subscription for initialisation events */
     protected _init_sub?: Subscription;
 
-    constructor(protected _service: T, raw_data: HashMap) {
+    constructor(raw_data: HashMap = {}) {
         this.id = raw_data.id || '';
         this.name = raw_data.name || '';
         this.created_at = raw_data.created_at || 0;

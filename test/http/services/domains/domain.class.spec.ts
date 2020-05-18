@@ -10,7 +10,8 @@ describe('EngineDomain', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        domain = new EngineDomain(service, {
+        EngineDomain.setService('EngineDomain', service);
+        domain = new EngineDomain({
             id: 'dep-test',
             domain: 'here.today',
             login_url: 'somewhere.today',

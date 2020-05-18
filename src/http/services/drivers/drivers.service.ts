@@ -8,6 +8,7 @@ export class EngineDriversService extends EngineResourceService<EngineDriver> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineDriver.setService('EngineDriver', this);
         this._name = 'Driver';
         this._api_route = 'drivers';
     }
@@ -41,6 +42,6 @@ export class EngineDriversService extends EngineResourceService<EngineDriver> {
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineDriver(this, item);
+        return new EngineDriver(item);
     }
 }

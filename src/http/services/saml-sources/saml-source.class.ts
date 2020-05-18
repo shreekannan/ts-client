@@ -61,9 +61,11 @@ export class EngineSAMLSource extends EngineResource<EngineSAMLSourcesService> {
     public readonly idp_slo_target_url: string;
     /** Value to use as default RelayState for single log outs */
     public readonly slo_default_relay_state: string;
+    /** Class type of required service */
+    protected __type: string = 'EngineSAMLSource';
 
-    constructor(protected _service: EngineSAMLSourcesService, raw_data: HashMap) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap = {}) {
+        super(raw_data);
         this.authority_id = raw_data.authority_id || '';
         this.issuer = raw_data.issuer || '';
         this.idp_sso_target_url_runtime_params = raw_data.idp_sso_target_url_runtime_params || {};

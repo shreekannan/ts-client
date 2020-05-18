@@ -43,9 +43,11 @@ export class EngineLDAPSource extends EngineResource<EngineLDAPSourcesService> {
      * e.g. (&(uid=%{username})(memberOf=cn=myapp-users,ou=groups,dc=example,dc=com))
      */
     public readonly filter: string;
+    /** Class type of required service */
+    protected __type: string = 'EngineLDAPSource';
 
-    constructor(protected _service: EngineLDAPSourcesService, raw_data: HashMap) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap = {}) {
+        super(raw_data);
         this.authority_id = raw_data.authority_id || '';
         this.host = raw_data.host || '';
         this.port = raw_data.port || 636;

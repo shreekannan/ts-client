@@ -15,6 +15,7 @@ export class EngineZonesService extends EngineResourceService<EngineZone> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineZone.setService('EngineZone', this);
         this._name = 'Zone';
         this._api_route = 'zones';
     }
@@ -99,7 +100,7 @@ export class EngineZonesService extends EngineResourceService<EngineZone> {
     ): Promise<EngineChildZoneMetadata[]> {
         return this.task(id, 'children/metadata', query_params, 'get', (list: HashMap[]) =>
             list.map(item => ({
-                zone: new EngineZone(this, item.zone),
+                zone: new EngineZone(item.zone),
                 metadata: item.metadata,
                 keys: Object.keys(item.metadata)
             }))
@@ -111,6 +112,6 @@ export class EngineZonesService extends EngineResourceService<EngineZone> {
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineZone(this, item);
+        return new EngineZone(item);
     }
 }

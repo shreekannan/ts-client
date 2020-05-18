@@ -28,7 +28,7 @@ export class EngineProcess {
     /** Whether the process is being killed */
     private _killing: boolean = false;
 
-    constructor(protected _service: EngineClustersService, private _cluster_id: string, raw_data: HashMap) {
+    constructor(protected _service: EngineClustersService, private _cluster_id: string, raw_data: HashMap = {}) {
         this.id = raw_data.id || raw_data.driver || '';
         this.modules = raw_data.modules || [];
         this.running = raw_data.running || false;

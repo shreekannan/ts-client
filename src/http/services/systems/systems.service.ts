@@ -17,6 +17,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineSystem.setService('EngineSystem', this);
         this._name = 'System';
         this._api_route = 'systems';
     }
@@ -154,7 +155,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      */
     public listZones(id: string): Promise<EngineZone[]> {
         return this.task(id, 'zones', undefined, 'get', (list: any[]) =>
-            list.map(item => new EngineZone(PlaceOS.zones, item))
+            list.map(item => new EngineZone(item))
         );
     }
 
@@ -164,7 +165,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      */
     public listTriggers(id: string): Promise<EngineTrigger[]> {
         return this.task(id, 'triggers', undefined, 'get', (list: any[]) =>
-            list.map(item => new EngineTrigger(PlaceOS.triggers, item))
+            list.map(item => new EngineTrigger(item))
         );
     }
 
@@ -179,7 +180,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
             'triggers',
             data,
             'post',
-            (item: any) => new EngineTrigger(PlaceOS.triggers, item)
+            (item: any) => new EngineTrigger(item)
         );
     }
 
@@ -198,7 +199,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      */
     public settings(id: string): Promise<EngineSettings[]> {
         return this.task(id, 'settings', undefined, 'get', list =>
-            list.map((item: HashMap) => new EngineSettings(PlaceOS.settings, item))
+            list.map((item: HashMap) => new EngineSettings(item))
         );
     }
 
@@ -207,6 +208,6 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineSystem(this, item);
+        return new EngineSystem(item);
     }
 }

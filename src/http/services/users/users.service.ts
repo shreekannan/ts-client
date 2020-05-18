@@ -8,6 +8,7 @@ export class EngineUsersService extends EngineResourceService<EngineUser> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineUser.setService('EngineUser', this);
         this._name = 'User';
         this._api_route = 'users';
     }
@@ -32,6 +33,6 @@ export class EngineUsersService extends EngineResourceService<EngineUser> {
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineUser(this, item);
+        return new EngineUser(item);
     }
 }

@@ -34,7 +34,7 @@ export class EngineCluster {
     /** Total amount of memory used by the cluster root process in KB */
     public readonly core_memory: number;
 
-    constructor(protected _service: EngineClustersService, raw_data: HashMap) {
+    constructor(protected _service: EngineClustersService, raw_data: HashMap = {}) {
         this.id = raw_data.id || '';
         this.compiled_drivers = raw_data.compiled_drivers || [];
         this.available_repositories = raw_data.available_repositories || [];

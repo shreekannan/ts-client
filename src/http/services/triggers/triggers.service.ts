@@ -8,6 +8,7 @@ export class EngineTriggersService extends EngineResourceService<EngineTrigger> 
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineTrigger.setService('EngineTrigger', this);
         this._name = 'Trigger';
         this._api_route = 'triggers';
     }
@@ -34,6 +35,6 @@ export class EngineTriggersService extends EngineResourceService<EngineTrigger> 
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineTrigger(this, item);
+        return new EngineTrigger(item);
     }
 }

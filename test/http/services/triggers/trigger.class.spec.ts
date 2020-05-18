@@ -24,7 +24,8 @@ describe('EngineTrigger', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        trigger = new EngineTrigger(service, {
+        EngineTrigger.setService('EngineTrigger', service);
+        trigger = new EngineTrigger({
             id: 'tri-test',
             control_system_id: 'sys-42',
             description: 'In a galaxy far far away...',
@@ -55,7 +56,7 @@ describe('EngineTrigger', () => {
         } catch (e) {
             expect(e).toEqual(new Error('Property "system_id" is not editable.'));
         }
-        const trig = new EngineTrigger(service, {});
+        const trig = new EngineTrigger({});
         trig.storePendingChange('system_id', 'life-is-42');
         expect(trig.system_id).not.toBe('life-is-42');
         expect(trig.changes.system_id).toBe('life-is-42');
@@ -137,10 +138,10 @@ describe('EngineTrigger', () => {
     });
 
     it('should have default values', () => {
-        trigger = new EngineTrigger(service, {});
+        trigger = new EngineTrigger({});
         expect(trigger.actions).toBeInstanceOf(Object);
         expect(trigger.conditions).toBeInstanceOf(Object);
-        trigger = new EngineTrigger(service, { actions: {}, conditions: {} });
+        trigger = new EngineTrigger({ actions: {}, conditions: {} });
         expect(trigger.actions).toBeInstanceOf(Object);
         expect(trigger.conditions).toBeInstanceOf(Object);
     });

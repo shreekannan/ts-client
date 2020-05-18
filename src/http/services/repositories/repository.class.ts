@@ -27,14 +27,16 @@ export class EngineRepository extends EngineResource<EngineRepositoriesService> 
     public readonly commit_hash: string;
     /** Repository type */
     public readonly repo_type: EngineRepositoryType;
+    /** Class type of required service */
+    protected __type: string = 'EngineRepository';
 
     /** Repository type */
     public get type(): EngineRepositoryType {
         return this.repo_type;
     }
 
-    constructor(protected _service: EngineRepositoriesService, raw_data: HashMap) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap = {}) {
+        super(raw_data);
         this.folder_name = raw_data.folder_name || '';
         this.description = raw_data.description || '';
         this.uri = raw_data.uri || '';

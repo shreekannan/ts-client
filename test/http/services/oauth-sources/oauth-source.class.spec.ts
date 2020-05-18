@@ -10,7 +10,8 @@ describe('EngineOAuthSource', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        auth_source = new EngineOAuthSource(service, {
+        EngineOAuthSource.setService('EngineOAuthSource', service);
+        auth_source = new EngineOAuthSource({
             id: 'dep-test',
             authority_id: 'test-authority',
             client_id: 'test',

@@ -77,13 +77,15 @@ export class EngineModule extends EngineResource<EngineModulesService> {
         EngineSettings | null,
         EngineSettings | null
     ] = [null, null, null, null];
+    /** Class type of required service */
+    protected __type: string = 'EngineModule';
     /** ID of the system associated with the module */
     public get system_id(): string {
         return this.control_system_id;
     }
 
-    constructor(protected _service: EngineModulesService, raw_data: HashMap) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap = {}) {
+        super(raw_data);
         this.driver_id = raw_data.driver_id || raw_data.dependency_id || '';
         this.control_system_id = raw_data.control_system_id || '';
         this.ip = raw_data.ip || '';
@@ -99,33 +101,24 @@ export class EngineModule extends EngineResource<EngineModulesService> {
         this.connected = raw_data.connected || false;
         this.running = raw_data.running || false;
         this.updated_at = raw_data.updated_at || 0;
-        try {
-            this.system = new EngineSystem(
-                PlaceOS.systems,
-                raw_data.control_system || raw_data.system || {}
-            );
-            this.driver = new EngineDriver(
-                PlaceOS.drivers,
-                raw_data.dependency || raw_data.driver || {}
-            );
-        } catch (error) {
-            const str = 'error';
-            console[str](error);
-        }
+        this.system = new EngineSystem(
+            raw_data.control_system || raw_data.system
+        );
+        this.driver = new EngineDriver(
+            raw_data.dependency || raw_data.driver
+        );
         this.settings = raw_data.settings || [null, null, null, null];
-        PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
-            if (typeof this.settings !== 'object') {
-                (this as any).settings = [null, null, null, null];
+        if (typeof this.settings !== 'object') {
+            (this as any).settings = [null, null, null, null];
+        }
+        for (const level in EncryptionLevel) {
+            if (!isNaN(Number(level)) && !this.settings[level]) {
+                this.settings[level] = new EngineSettings({
+                    parent_id: this.id,
+                    encryption_level: +level
+                });
             }
-            for (const level in EncryptionLevel) {
-                if (!isNaN(Number(level)) && !this.settings[level]) {
-                    this.settings[level] = new EngineSettings(PlaceOS.settings, {
-                        parent_id: this.id,
-                        encryption_level: +level
-                    });
-                }
-            }
-        });
+        }
     }
 
     public storePendingChange(

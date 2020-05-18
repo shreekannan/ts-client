@@ -14,9 +14,10 @@ describe('EngineZone', () => {
             listMetadata: jest.fn(),
             listChildMetadata: jest.fn()
         };
+        EngineZone.setService('EngineZone', service);
         jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'triggers', 'get').mockReturnValue(null as any);
-        zone = new EngineZone(service, {
+        zone = new EngineZone({
             id: 'dep-test',
             description: 'In a galaxy far far away...',
             settings: { settings_string: '{ today: false, future: \'Yeah!\' }' },

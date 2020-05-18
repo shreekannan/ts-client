@@ -8,6 +8,7 @@ export class EngineLDAPSourcesService extends EngineResourceService<EngineLDAPSo
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineLDAPSource.setService('EngineLDAPSource', this);
         this._name = 'LDAP Authentication Source';
         this._api_route = 'ldap_auths';
     }
@@ -25,6 +26,6 @@ export class EngineLDAPSourcesService extends EngineResourceService<EngineLDAPSo
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineLDAPSource(this, item);
+        return new EngineLDAPSource(item);
     }
 }

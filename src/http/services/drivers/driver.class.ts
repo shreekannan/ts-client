@@ -54,9 +54,11 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
         EngineSettings | null,
         EngineSettings | null
     ];
+    /** Class type of required service */
+    protected __type: string = 'EngineDriver';
 
-    constructor(protected _service: EngineDriversService, raw_data: HashMap) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap = {}) {
+        super(raw_data);
         this.description = raw_data.description || '';
         this.module_name = raw_data.module_name || '';
         this.role = raw_data.role || EngineDriverRole.Logic;
@@ -68,19 +70,17 @@ export class EngineDriver extends EngineResource<EngineDriversService> {
         this.file_name = raw_data.file_name || '';
         this.commit = raw_data.commit || '';
         this.settings = raw_data.settings || [null, null, null, null];
-        PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
-            if (typeof this.settings !== 'object') {
-                (this as any).settings = [null, null, null, null];
+        if (typeof this.settings !== 'object') {
+            (this as any).settings = [null, null, null, null];
+        }
+        for (const level in EncryptionLevel) {
+            if (!isNaN(Number(level)) && !this.settings[level]) {
+                this.settings[level] = new EngineSettings({
+                    parent_id: this.id,
+                    encryption_level: +level
+                });
             }
-            for (const level in EncryptionLevel) {
-                if (!isNaN(Number(level)) && !this.settings[level]) {
-                    this.settings[level] = new EngineSettings(PlaceOS.settings, {
-                        parent_id: this.id,
-                        encryption_level: +level
-                    });
-                }
-            }
-        });
+        }
     }
 
     public storePendingChange(

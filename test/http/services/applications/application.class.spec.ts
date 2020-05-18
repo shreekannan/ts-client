@@ -10,7 +10,8 @@ describe('EngineApplication', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        application = new EngineApplication(service, {
+        EngineApplication.setService('EngineApplication', service);
+        application = new EngineApplication({
             id: 'dep-test',
             owner_id: 'test-man',
             uid: 'no-so-unique',

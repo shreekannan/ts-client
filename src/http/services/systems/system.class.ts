@@ -1,6 +1,4 @@
-import { first } from 'rxjs/operators';
 
-import { PlaceOS } from '../../../placeos';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineModule } from '../modules/module.class';
 import { EngineResource } from '../resources/resource.class';
@@ -55,9 +53,11 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
     public readonly zones: readonly string[];
     /** List of modules associated with the system. Only available from the show method with the `complete` query parameter */
     public module_list: readonly EngineModule[] = [];
+    /** Class type of required service */
+    protected __type: string = 'EngineSystem';
 
-    constructor(protected _service: EngineSystemsService, raw_data: HashMap) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap = {}) {
+        super(raw_data);
         this.description = raw_data.description || '';
         this.email = raw_data.email || '';
         this.capacity = raw_data.capacity || 0;
@@ -69,24 +69,22 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
         this.modules = raw_data.modules || [];
         this.zones = raw_data.zones || [];
         this.settings = raw_data.settings || [null, null, null, null];
-        PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
-            if (typeof this.settings !== 'object') {
-                (this as any).settings = [null, null, null, null];
+        if (typeof this.settings !== 'object') {
+            (this as any).settings = [null, null, null, null];
+        }
+        for (const level in EncryptionLevel) {
+            if (!isNaN(Number(level)) && !this.settings[level]) {
+                this.settings[level] = new EngineSettings({
+                    parent_id: this.id,
+                    encryption_level: +level
+                });
             }
-            for (const level in EncryptionLevel) {
-                if (!isNaN(Number(level)) && !this.settings[level]) {
-                    this.settings[level] = new EngineSettings(PlaceOS.settings, {
-                        parent_id: this.id,
-                        encryption_level: +level
-                    });
-                }
-            }
-            if (raw_data.module_data && raw_data.module_data instanceof Array) {
-                this.module_list = raw_data.module_data.map(
-                    mod => new EngineModule(PlaceOS.modules, mod)
-                );
-            }
-        });
+        }
+        if (raw_data.module_data && raw_data.module_data instanceof Array) {
+            this.module_list = raw_data.module_data.map(
+                mod => new EngineModule(mod)
+            );
+        }
     }
 
     public storePendingChange(

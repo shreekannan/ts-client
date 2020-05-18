@@ -9,6 +9,7 @@ export class EngineRepositoriesService extends EngineResourceService<EngineRepos
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineRepository.setService('EngineRepository', this);
         this._name = 'Repository';
         this._api_route = 'repositories';
     }
@@ -54,6 +55,6 @@ export class EngineRepositoriesService extends EngineResourceService<EngineRepos
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineRepository(this, item);
+        return new EngineRepository(item);
     }
 }

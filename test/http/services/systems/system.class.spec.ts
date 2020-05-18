@@ -20,7 +20,8 @@ describe('EngineSystem', () => {
         };
         jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'modules', 'get').mockReturnValue(null as any);
-        system = new EngineSystem(service, {
+        EngineSystem.setService('EngineSystem', service);
+        system = new EngineSystem({
             id: 'sys-test',
             description: 'A description',
             email: 'system@placeos.com',
@@ -109,7 +110,7 @@ describe('EngineSystem', () => {
     });
 
     it('should error on tasks when system has no ID', async () => {
-        const sys = new EngineSystem(service, {});
+        const sys = new EngineSystem({});
         try {
             await sys.start();
             throw Error('Error');
@@ -153,7 +154,7 @@ describe('EngineSystem', () => {
         let value = await system.addModule('test');
         expect(value).toBe(system);
         service.update.mockReturnValue(
-            Promise.resolve(new EngineSystem(service, { ...system, ...system.changes }))
+            Promise.resolve(new EngineSystem({ ...system, ...system.changes }))
         );
         value = await system.addModule('new module');
         expect(service.update).toBeCalledTimes(1);
@@ -170,7 +171,7 @@ describe('EngineSystem', () => {
         let value = await system.addZone('test');
         expect(value).toBe(system);
         service.update.mockReturnValue(
-            Promise.resolve(new EngineSystem(service, { ...system, ...system.changes }))
+            Promise.resolve(new EngineSystem({ ...system, ...system.changes }))
         );
         value = await system.addZone('new zone');
         expect(service.update).toBeCalledTimes(1);
@@ -181,7 +182,7 @@ describe('EngineSystem', () => {
         let value = await system.removeZone('no zone');
         expect(value).toBe(system);
         service.update.mockReturnValue(
-            Promise.resolve(new EngineSystem(service, { ...system, ...system.changes }))
+            Promise.resolve(new EngineSystem({ ...system, ...system.changes }))
         );
         value = await system.removeZone('test');
         expect(service.update).toBeCalledTimes(1);

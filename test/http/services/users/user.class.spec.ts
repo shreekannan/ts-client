@@ -10,7 +10,8 @@ describe('EngineUser', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        user = new EngineUser(service, {
+        EngineUser.setService('EngineUser', service);
+        user = new EngineUser({
             id: 'dep-test',
             authority_id: 'On who\'s authority',
             email: 'jon@tron.game',
@@ -37,7 +38,7 @@ describe('EngineUser', () => {
 
     it('should allow setting Authority ID on new users', () => {
         expect(() => user.storePendingChange('authority_id', 'empty-authority')).toThrowError();
-        const new_user = new EngineUser(service, {});
+        const new_user = new EngineUser({});
         new_user.storePendingChange('authority_id', 'my-authority');
         expect(new_user.authority_id).not.toBe('my-authority');
         expect(new_user.changes.authority_id).toBe('my-authority');

@@ -8,6 +8,7 @@ export class EngineSAMLSourcesService extends EngineResourceService<EngineSAMLSo
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineSAMLSource.setService('EngineSAMLSource', this);
         this._name = 'SAML Authentication Source';
         this._api_route = 'saml_auths';
     }
@@ -25,6 +26,6 @@ export class EngineSAMLSourcesService extends EngineResourceService<EngineSAMLSo
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineSAMLSource(this, item);
+        return new EngineSAMLSource(item);
     }
 }

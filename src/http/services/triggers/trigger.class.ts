@@ -43,6 +43,8 @@ export class EngineTrigger extends EngineResource<EngineTriggersService> {
     public readonly control_system_id: string;
     /** ID of the zone associated with the trigger */
     public readonly zone_id: string;
+    /** Class type of required service */
+    protected __type: string = 'EngineTrigger';
 
     /** ID of the system associated with the trigger */
     public get system_id(): string {
@@ -77,11 +79,8 @@ export class EngineTrigger extends EngineResource<EngineTriggersService> {
     /** Conditions for activating the trigger */
     private _conditions: TriggerConditions;
 
-    constructor(
-        protected _service: EngineTriggersService,
-        raw_data: HashMap
-    ) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap = {}) {
+        super(raw_data);
         this.description = raw_data.description || '';
         this._actions = raw_data.actions || { functions: [], mailers: [] };
         this._conditions = raw_data.conditions || { comparisons: [], time_dependents: [] };

@@ -19,9 +19,11 @@ export class EngineDomain extends EngineResource<EngineDomainsService> {
     public readonly config: string;
     /** Internal settings for the domain */
     public readonly internals: string;
+    /** Class type of required service */
+    protected __type: string = 'EngineDomain';
 
-    constructor(protected _service: EngineDomainsService, raw_data: HashMap) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap = {}) {
+        super(raw_data);
         this.description = raw_data.description || '';
         this.dom = raw_data.domain || raw_data.dom || '';
         this.login_url = raw_data.login_url || '';

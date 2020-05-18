@@ -58,9 +58,11 @@ export class EngineZone extends EngineResource<EngineZonesService> {
     public readonly map_id: string;
     /** List of modules associated with the system. Only available from the show method with the `complete` query parameter */
     public trigger_list: readonly EngineTrigger[] = [];
+    /** Class type of required service */
+    protected __type: string = 'EngineZone';
 
-    constructor(protected _service: EngineZonesService, raw_data: HashMap) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap = {}) {
+        super(raw_data);
         this.description = raw_data.description || '';
         this.tags = raw_data.tags || '';
         this.triggers = raw_data.triggers || [];
@@ -73,24 +75,22 @@ export class EngineZone extends EngineResource<EngineZonesService> {
         this.count = raw_data.count || 0;
         this.capacity = raw_data.capacity || 0;
         this.map_id = raw_data.map_id || '';
-        PlaceOS.initialised.pipe(first(has_inited => has_inited)).subscribe(() => {
-            if (typeof this.settings !== 'object') {
-                (this as any).settings = [null, null, null, null];
+        if (typeof this.settings !== 'object') {
+            (this as any).settings = [null, null, null, null];
+        }
+        for (const level in EncryptionLevel) {
+            if (!isNaN(Number(level)) && !this.settings[level]) {
+                this.settings[level] = new EngineSettings({
+                    parent_id: this.id,
+                    encryption_level: +level
+                });
             }
-            for (const level in EncryptionLevel) {
-                if (!isNaN(Number(level)) && !this.settings[level]) {
-                    this.settings[level] = new EngineSettings(PlaceOS.settings, {
-                        parent_id: this.id,
-                        encryption_level: +level
-                    });
-                }
-            }
-            if (raw_data.trigger_data && raw_data.trigger_data instanceof Array) {
-                this.trigger_list = raw_data.trigger_data.map(
-                    trigger => new EngineTrigger(PlaceOS.triggers, trigger)
-                );
-            }
-        });
+        }
+        if (raw_data.trigger_data && raw_data.trigger_data instanceof Array) {
+            this.trigger_list = raw_data.trigger_data.map(
+                trigger => new EngineTrigger(trigger)
+            );
+        }
     }
 
     /**

@@ -47,9 +47,11 @@ export class EngineOAuthSource extends EngineResource<EngineOAuthSourcesService>
     public readonly scope: string;
     /** URL to grab user's profile details with a valid token */
     public readonly raw_info_url: string;
+    /** Class type of required service */
+    protected __type: string = 'EngineOAuthSource';
 
-    constructor(protected _service: EngineOAuthSourcesService, raw_data: HashMap) {
-        super(_service, raw_data);
+    constructor(raw_data: HashMap) {
+        super(raw_data);
         this.authority_id = raw_data.authority_id || '';
         this.client_id = raw_data.client_id || '';
         this.client_secret = raw_data.client_secret || '';

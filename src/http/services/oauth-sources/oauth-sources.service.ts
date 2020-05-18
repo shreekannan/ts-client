@@ -8,6 +8,7 @@ export class EngineOAuthSourcesService extends EngineResourceService<EngineOAuth
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineOAuthSource.setService('EngineOAuthSource', this);
         this._name = 'OAuth Authentication Source';
         this._api_route = 'oauth_auths';
     }
@@ -25,6 +26,6 @@ export class EngineOAuthSourcesService extends EngineResourceService<EngineOAuth
      * @param item Raw API data
      */
     protected process(item: HashMap) {
-        return new EngineOAuthSource(this, item);
+        return new EngineOAuthSource(item);
     }
 }

@@ -27,7 +27,8 @@ describe('EngineModule', () => {
         jest.spyOn(PlaceOS, 'systems', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'drivers', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
-        module = new EngineModule(service, {
+        EngineModule.setService('EngineModule', service);
+        module = new EngineModule({
             id: 'mod_test',
             driver_id: 'dep-001',
             control_system_id: 'sys-001',
@@ -64,7 +65,7 @@ describe('EngineModule', () => {
         } catch (e) {
             expect(e).not.toEqual(new Error('Failed to throw error'));
         }
-        const new_mod = new EngineModule(service, {});
+        const new_mod = new EngineModule({});
         new_mod.storePendingChange('driver_id', 'another-dep');
         expect(new_mod.driver_id).not.toBe('another-dep');
         expect(new_mod.changes.driver_id).toBe('another-dep');
@@ -82,7 +83,7 @@ describe('EngineModule', () => {
         } catch (e) {
             expect(e).not.toEqual(new Error('Failed to throw error'));
         }
-        const new_mod = new EngineModule(service, {});
+        const new_mod = new EngineModule({});
         new_mod.storePendingChange('control_system_id', 'another-sys');
         expect(new_mod.control_system_id).not.toBe('another-sys');
         expect(new_mod.changes.control_system_id).toBe('another-sys');
@@ -173,7 +174,7 @@ describe('EngineModule', () => {
         } catch (e) {
             expect(e).not.toEqual(new Error('Failed to throw error'));
         }
-        const new_mod = new EngineModule(service, {});
+        const new_mod = new EngineModule({});
         new_mod.storePendingChange('role', EngineDriverRole.Service);
         expect(new_mod.role).not.toBe(EngineDriverRole.Service);
         expect(new_mod.changes.role).toBe(EngineDriverRole.Service);
@@ -212,7 +213,7 @@ describe('EngineModule', () => {
         service.start.mockReturnValue(Promise.resolve());
         await module.start();
         expect(service.start).toBeCalledWith('mod_test');
-        const new_mod = new EngineModule(service, {});
+        const new_mod = new EngineModule({});
         try {
             new_mod.start();
             throw new Error('Failed to error');
@@ -225,7 +226,7 @@ describe('EngineModule', () => {
         service.stop.mockReturnValue(Promise.resolve());
         await module.stop();
         expect(service.stop).toBeCalledWith('mod_test');
-        const new_mod = new EngineModule(service, {});
+        const new_mod = new EngineModule({});
         try {
             new_mod.stop();
             throw new Error('Failed to error');
@@ -239,7 +240,7 @@ describe('EngineModule', () => {
         const response = await module.ping();
         expect(service.ping).toBeCalledWith('mod_test');
         expect(response).toEqual({});
-        const new_mod = new EngineModule(service, {});
+        const new_mod = new EngineModule({});
         try {
             new_mod.ping();
             throw new Error('Failed to error');
@@ -255,7 +256,7 @@ describe('EngineModule', () => {
         expect(response).toEqual({});
         response = await module.stateLookup('lookup_value');
         expect(service.stateLookup).toBeCalledWith('mod_test', 'lookup_value');
-        const new_mod = new EngineModule(service, {});
+        const new_mod = new EngineModule({});
         try {
             new_mod.state();
             throw new Error('Failed to error');
@@ -269,7 +270,7 @@ describe('EngineModule', () => {
         const response = await module.state();
         expect(service.state).toBeCalledWith('mod_test');
         expect(response).toEqual({});
-        const new_mod = new EngineModule(service, {});
+        const new_mod = new EngineModule({});
         try {
             new_mod.state();
             throw new Error('Failed to error');
