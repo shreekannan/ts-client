@@ -9,7 +9,7 @@ describe('EngineDriver', () => {
 
     beforeEach(() => {
         service = {
-            reload: jest.fn(),
+            recompile: jest.fn(),
             remove: jest.fn(),
             update: jest.fn()
         };
@@ -114,13 +114,13 @@ describe('EngineDriver', () => {
         expect(driver.commit).toBe('some-hash');
     });
 
-    it('should allow reloading the driver', async () => {
-        service.reload.mockReturnValue(Promise.resolve());
-        await driver.reload();
-        expect(service.reload).toBeCalledWith('dep-test');
+    it('should allow recompiling the driver', async () => {
+        service.recompile.mockReturnValue(Promise.resolve());
+        await driver.recompile();
+        expect(service.recompile).toBeCalledWith('dep-test');
         const new_driver = new EngineDriver({});
         try {
-            new_driver.reload();
+            new_driver.recompile();
             throw new Error('Failed to error');
         } catch (e) {
             expect(e).not.toEqual(new Error('Failed to error'));

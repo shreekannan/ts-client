@@ -1,6 +1,4 @@
-import { first } from 'rxjs/operators';
 
-import { PlaceOS } from '../../../placeos';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineResource } from '../resources/resource.class';
 import { EngineSettings } from '../settings/settings.class';

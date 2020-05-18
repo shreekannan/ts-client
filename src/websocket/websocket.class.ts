@@ -1,6 +1,8 @@
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
+import { engine, EngineAuthService } from '../auth/auth.service';
+import { log } from '../utilities/general.utilities';
 import {
     EngineCommandRequest,
     EngineCommandRequestMetadata,
@@ -14,9 +16,13 @@ import {
     SimpleNetworkError
 } from './websocket.interfaces';
 
-import dayjs from 'dayjs';
-import { engine, EngineAuthService } from '../auth/auth.service';
-import { log } from '../utilities/general.utilities';
+import * as _dayjs from 'dayjs';
+// tslint:disable-next-line:no-duplicate-imports
+import { Dayjs, default as _rollupDayjs } from 'dayjs';
+/**
+ * @hidden
+ */
+const dayjs = _rollupDayjs || _dayjs;
 
 /** Time in seconds to ping the server to keep the websocket connection alive */
 const KEEP_ALIVE = 20;
