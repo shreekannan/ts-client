@@ -10,7 +10,7 @@ describe('EngineCluster', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        EngineCluster.service = service;
+        // EngineCluster.service = service;
         application = new EngineCluster({
             id: '01E2PRBSNE4GXM9WGVM7M3KEZX',
             compiled_drivers: ['drivers_aca_private_helper_fe33588'],
