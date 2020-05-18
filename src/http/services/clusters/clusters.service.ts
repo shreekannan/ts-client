@@ -11,6 +11,8 @@ export class EngineClustersService extends EngineResourceService<any> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        EngineCluster.service = this;
+        EngineProcess.service = this;
         this._name = 'Clusters';
         this._api_route = 'cluster';
     }

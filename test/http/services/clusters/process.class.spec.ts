@@ -12,7 +12,8 @@ describe('EngineProcess', () => {
             update: jest.fn(),
             delete: jest.fn()
         };
-        process = new EngineProcess(service, 'test-cluster', {
+        EngineProcess.service = service;
+        process = new EngineProcess('test-cluster', {
             driver: '/app/bin/drivers/drivers_aca_private_helper_fe33588',
             modules: ['mod-ETbLjPMTRfb'],
             running: true,

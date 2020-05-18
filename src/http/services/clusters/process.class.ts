@@ -5,6 +5,8 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineCluster } from './cluster.class';
 
 export class EngineProcess {
+
+    public static service: EngineClustersService;
     /** Unique identifier of the application */
     public readonly id: string;
     /** List of module IDs that are running in this process */
@@ -28,7 +30,11 @@ export class EngineProcess {
     /** Whether the process is being killed */
     private _killing: boolean = false;
 
-    constructor(protected _service: EngineClustersService, private _cluster_id: string, raw_data: HashMap = {}) {
+    private get _service(): EngineClustersService {
+        return EngineProcess.service;
+    }
+
+    constructor(private _cluster_id: string, raw_data: HashMap = {}) {
         this.id = raw_data.id || raw_data.driver || '';
         this.modules = raw_data.modules || [];
         this.running = raw_data.running || false;
