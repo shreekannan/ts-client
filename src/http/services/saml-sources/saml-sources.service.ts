@@ -2,13 +2,14 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineAuthSourceQueryOptions } from '../auth-sources/auth-source.interfaces';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineSAMLSource } from './saml-source.class';
 
 export class EngineSAMLSourcesService extends EngineResourceService<EngineSAMLSource> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineSAMLSource.setService('EngineSAMLSource', this);
+        ServiceManager.setService(EngineSAMLSource, this);
         this._name = 'SAML Authentication Source';
         this._api_route = 'saml_auths';
     }

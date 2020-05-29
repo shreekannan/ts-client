@@ -2,12 +2,14 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceQueryOptions } from '../resources/resources.interface';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineDomain } from './domain.class';
 
 export class EngineDomainsService extends EngineResourceService<EngineDomain> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
+        ServiceManager.setService(EngineDomain, this);
         this._name = 'Domain';
         this._api_route = 'domains';
     }

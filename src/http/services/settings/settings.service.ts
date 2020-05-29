@@ -3,6 +3,7 @@ import { parseLinkHeader } from '../../../utilities/general.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineSettings } from './settings.class';
 import { EngineSettingsQueryOptions } from './settings.interfaces';
 
@@ -10,7 +11,7 @@ export class EngineSettingsService extends EngineResourceService<EngineSettings>
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineSettings.setService('EngineSettings', this);
+        ServiceManager.setService(EngineSettings, this);
         this._name = 'Settings';
         this._api_route = 'settings';
     }

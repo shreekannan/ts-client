@@ -1,3 +1,4 @@
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 import { EngineTrigger } from '../../../../src/http/services/triggers/trigger.class';
 import {
     TriggerActions,
@@ -24,7 +25,7 @@ describe('EngineTrigger', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        EngineTrigger.setService('EngineTrigger', service);
+        ServiceManager.setService(EngineTrigger, service);
         trigger = new EngineTrigger({
             id: 'tri-test',
             control_system_id: 'sys-42',

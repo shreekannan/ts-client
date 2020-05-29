@@ -3,6 +3,7 @@ import { EngineResourceService } from '../resources/resources.service';
 import { PlaceOS } from '../../../placeos';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineSettings } from '../settings/settings.class';
 import { EngineTrigger } from '../triggers/trigger.class';
 import { EngineZone } from '../zones/zone.class';
@@ -17,7 +18,7 @@ export class EngineSystemsService extends EngineResourceService<EngineSystem> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineSystem.setService('EngineSystem', this);
+        ServiceManager.setService(EngineSystem, this);
         this._name = 'System';
         this._api_route = 'systems';
     }

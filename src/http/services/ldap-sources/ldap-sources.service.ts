@@ -2,13 +2,14 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineAuthSourceQueryOptions } from '../auth-sources/auth-source.interfaces';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineLDAPSource } from './ldap-source.class';
 
 export class EngineLDAPSourcesService extends EngineResourceService<EngineLDAPSource> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineLDAPSource.setService('EngineLDAPSource', this);
+        ServiceManager.setService(EngineLDAPSource, this);
         this._name = 'LDAP Authentication Source';
         this._api_route = 'ldap_auths';
     }

@@ -1,4 +1,5 @@
 import { EngineSAMLSource } from '../../../../src/http/services/saml-sources/saml-source.class';
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 
 describe('EngineSamlSource', () => {
     let auth_source: EngineSAMLSource;
@@ -10,7 +11,7 @@ describe('EngineSamlSource', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        EngineSAMLSource.setService('EngineSAMLSource', service);
+        ServiceManager.setService(EngineSAMLSource, service);
         auth_source = new EngineSAMLSource({
             id: 'dep-test',
             authority_id: 'test-authority',

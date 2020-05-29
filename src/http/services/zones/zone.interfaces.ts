@@ -5,7 +5,7 @@ import { EngineZone } from './zone.class';
 /** Mapping of available query paramters for the zones index endpoint */
 export interface EngineZoneQueryOptions extends EngineResourceQueryOptions {
     /** List of space seperated tags to filter the results */
-    tag?: string;
+    tags?: string;
     /** ID of the system to filter the results */
     control_system_id?: string;
     /** ID of the parent zone to filter the results */
@@ -49,5 +49,5 @@ export interface EngineZoneMetadata {
     /** Description of what this metadata represents */
     readonly description: string;
     /** Metadata associated with this key. */
-    readonly details: HashMap;
+    readonly details: HashMap | any[];
 }

@@ -1,4 +1,5 @@
-import { EngineSettings } from '../../../../src/http/services/settings/settings.class';
+
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 import { EngineZone } from '../../../../src/http/services/zones/zone.class';
 import { PlaceOS } from '../../../../src/placeos';
 
@@ -14,7 +15,7 @@ describe('EngineZone', () => {
             listMetadata: jest.fn(),
             listChildMetadata: jest.fn()
         };
-        EngineZone.setService('EngineZone', service);
+        ServiceManager.setService(EngineZone, service);
         jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'triggers', 'get').mockReturnValue(null as any);
         zone = new EngineZone({

@@ -1,3 +1,4 @@
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 import { EngineUser } from '../../../../src/http/services/users/user.class';
 
 describe('EngineUser', () => {
@@ -10,7 +11,7 @@ describe('EngineUser', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        EngineUser.setService('EngineUser', service);
+        ServiceManager.setService(EngineUser, service);
         user = new EngineUser({
             id: 'dep-test',
             authority_id: 'On who\'s authority',

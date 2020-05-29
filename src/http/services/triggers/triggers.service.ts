@@ -2,13 +2,14 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceQueryOptions } from '../resources/resources.interface';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineTrigger } from './trigger.class';
 
 export class EngineTriggersService extends EngineResourceService<EngineTrigger> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineTrigger.setService('EngineTrigger', this);
+        ServiceManager.setService(EngineTrigger, this);
         this._name = 'Trigger';
         this._api_route = 'triggers';
     }

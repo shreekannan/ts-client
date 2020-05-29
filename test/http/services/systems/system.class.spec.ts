@@ -1,3 +1,4 @@
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 import { EngineSettings } from '../../../../src/http/services/settings/settings.class';
 import { EngineSystem } from '../../../../src/http/services/systems/system.class';
 import { PlaceOS } from '../../../../src/placeos';
@@ -20,7 +21,7 @@ describe('EngineSystem', () => {
         };
         jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'modules', 'get').mockReturnValue(null as any);
-        EngineSystem.setService('EngineSystem', service);
+        ServiceManager.setService(EngineSystem, service);
         system = new EngineSystem({
             id: 'sys-test',
             description: 'A description',

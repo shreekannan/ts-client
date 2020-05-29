@@ -6,6 +6,7 @@ import { parseLinkHeader } from '../../../utilities/general.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
 import { HttpError } from '../../http.interfaces';
 import { EngineHttpClient } from '../../http.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineResource } from './resource.class';
 import { ResourceService } from './resources.interface';
 
@@ -58,6 +59,7 @@ export abstract class EngineResourceService<T extends EngineResource<any>> exten
 
     constructor(protected http: EngineHttpClient) {
         super();
+        ServiceManager.setService(EngineResource, this);
         this._name = 'Base';
         this._api_route = 'base';
         this._initialised = true;

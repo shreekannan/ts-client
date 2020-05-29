@@ -1,4 +1,5 @@
 import { EngineResource } from '../../../../src/http/services/resources/resource.class';
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 
 class Resource extends EngineResource<any> {}
 
@@ -15,7 +16,7 @@ describe('EngineResource', () => {
         service.add.mockReturnValue(Promise.resolve());
         service.delete.mockReturnValue(Promise.resolve());
         service.update.mockReturnValue(Promise.resolve());
-        Resource.setService('EngineResource', service);
+        ServiceManager.setService(EngineResource, service);
         resource = new Resource({ id: 'test', name: 'Test', created_at: 999 });
     });
 

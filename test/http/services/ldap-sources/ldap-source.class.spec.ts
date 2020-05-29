@@ -1,4 +1,5 @@
 import { EngineLDAPSource } from '../../../../src/http/services/ldap-sources/ldap-source.class';
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 
 describe('EngineLdapSource', () => {
     let auth_source: EngineLDAPSource;
@@ -10,7 +11,7 @@ describe('EngineLdapSource', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        EngineLDAPSource.setService('EngineLDAPSource', service);
+        ServiceManager.setService(EngineLDAPSource, service);
         auth_source = new EngineLDAPSource({
             id: 'dep-test',
             authority_id: 'test-authority',

@@ -2,6 +2,7 @@ import { EngineSettings } from '../../../../src/http/services/settings/settings.
 import { generateMockSettings } from '../../../../src/http/services/settings/settings.utilities';
 
 import * as dayjs from 'dayjs';
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 import { EncryptionLevel } from '../../../../src/http/services/settings/settings.interfaces';
 
 describe('EngineSettings', () => {
@@ -17,7 +18,7 @@ describe('EngineSettings', () => {
         };
         item = generateMockSettings();
         item = generateMockSettings({ name: 'Test' });
-        EngineSettings.setService('EngineSettings', service);
+        ServiceManager.setService(EngineSettings, service);
         settings = new EngineSettings(item);
     });
 

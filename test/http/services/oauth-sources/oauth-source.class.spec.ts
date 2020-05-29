@@ -1,4 +1,5 @@
 import { EngineOAuthSource } from '../../../../src/http/services/oauth-sources/oauth-source.class';
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 
 describe('EngineOAuthSource', () => {
     let auth_source: EngineOAuthSource;
@@ -10,7 +11,7 @@ describe('EngineOAuthSource', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        EngineOAuthSource.setService('EngineOAuthSource', service);
+        ServiceManager.setService(EngineOAuthSource, service);
         auth_source = new EngineOAuthSource({
             id: 'dep-test',
             authority_id: 'test-authority',

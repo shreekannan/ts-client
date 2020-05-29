@@ -25,8 +25,6 @@ export class EngineApplication extends EngineResource<EngineApplicationsService>
     public readonly redirect_uri: string;
     /** Skip authorization checks for the application */
     public readonly skip_authorization: boolean;
-    /** Class type of required service */
-    protected __type: string = 'EngineApplication';
 
     constructor(raw_data: HashMap = {}) {
         super(raw_data);

@@ -2,6 +2,7 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineDriverDetails } from '../drivers/drivers.interfaces';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineRepository } from './repository.class';
 import { EngineRepositoryCommitQuery, EngineRepositoryDetailsQuery, EngineRepositoryPullQuery, GitCommitDetails } from './repository.interfaces';
 
@@ -9,7 +10,7 @@ export class EngineRepositoriesService extends EngineResourceService<EngineRepos
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineRepository.setService('EngineRepository', this);
+        ServiceManager.setService(EngineRepository, this);
         this._name = 'Repository';
         this._api_route = 'repositories';
     }

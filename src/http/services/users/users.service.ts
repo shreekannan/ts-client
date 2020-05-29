@@ -1,6 +1,7 @@
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineUser } from './user.class';
 import { EngineUserQueryOptions } from './user.interfaces';
 
@@ -8,7 +9,7 @@ export class EngineUsersService extends EngineResourceService<EngineUser> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineUser.setService('EngineUser', this);
+        ServiceManager.setService(EngineUser, this);
         this._name = 'User';
         this._api_route = 'users';
     }

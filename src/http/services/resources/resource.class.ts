@@ -2,6 +2,7 @@ import { Subject, Subscription } from 'rxjs';
 
 import { cleanObject } from '../../../utilities/general.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
+import { ServiceManager } from '../service-manager.class';
 import { ResourceService } from './resources.interface';
 import { EngineDataClassEvent, EngineDataEventType } from './resources.interface';
 
@@ -13,7 +14,7 @@ export abstract class EngineResource<T extends ResourceService<any>> {
 
     /** Service for managing model on the server */
     protected get _service(): T {
-        return EngineResource._service_map[this.__type] as any;
+        return ServiceManager.serviceFor((this as any).constructor);
     }
 
     /**
@@ -21,10 +22,6 @@ export abstract class EngineResource<T extends ResourceService<any>> {
      */
     public get changes(): HashMap {
         return { ...this._changes };
-    }
-    /** Set the services used to handle data model requests */
-    public static setService(type: string, service: ResourceService): void {
-        EngineResource._service_map[type] = service;
     }
     /** Map of available services for child classes */
     private static _service_map: HashMap<ResourceService> = {};
@@ -116,6 +113,7 @@ export abstract class EngineResource<T extends ResourceService<any>> {
         delete obj._changes;
         delete obj._init_sub;
         delete obj._server_names;
+        delete obj.__type;
         /** Remove unneeded public members */
         delete obj.changeEvents;
         delete obj.created_at;

@@ -1,6 +1,7 @@
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineDriver } from './driver.class';
 import { EngineDriverQueryOptions } from './drivers.interfaces';
 
@@ -8,7 +9,7 @@ export class EngineDriversService extends EngineResourceService<EngineDriver> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineDriver.setService('EngineDriver', this);
+        ServiceManager.setService(EngineDriver, this);
         this._name = 'Driver';
         this._api_route = 'drivers';
     }

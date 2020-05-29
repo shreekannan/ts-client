@@ -1,4 +1,5 @@
 import { EngineDomain } from '../../../../src/http/services/domains/domain.class';
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 
 describe('EngineDomain', () => {
     let domain: EngineDomain;
@@ -10,7 +11,7 @@ describe('EngineDomain', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        EngineDomain.setService('EngineDomain', service);
+        ServiceManager.setService(EngineDomain, service);
         domain = new EngineDomain({
             id: 'dep-test',
             domain: 'here.today',

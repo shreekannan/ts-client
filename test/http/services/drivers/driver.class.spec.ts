@@ -1,6 +1,6 @@
 import { EngineDriver } from '../../../../src/http/services/drivers/driver.class';
 import { EngineDriverRole } from '../../../../src/http/services/drivers/drivers.enums';
-import { EngineSettings } from '../../../../src/http/services/settings/settings.class';
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 import { PlaceOS } from '../../../../src/placeos';
 
 describe('EngineDriver', () => {
@@ -14,7 +14,7 @@ describe('EngineDriver', () => {
             update: jest.fn()
         };
         jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
-        EngineDriver.setService('EngineDriver', service);
+        ServiceManager.setService(EngineDriver, service);
         driver = new EngineDriver({
             id: 'dep-test',
             description: 'In a galaxy far far away...',

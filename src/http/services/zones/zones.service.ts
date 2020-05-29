@@ -1,6 +1,7 @@
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineZone } from './zone.class';
 import {
     EngineChildZoneMetadata,
@@ -15,7 +16,7 @@ export class EngineZonesService extends EngineResourceService<EngineZone> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineZone.setService('EngineZone', this);
+        ServiceManager.setService(EngineZone, this);
         this._name = 'Zone';
         this._api_route = 'zones';
     }

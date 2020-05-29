@@ -58,8 +58,6 @@ export class EngineZone extends EngineResource<EngineZonesService> {
     public readonly map_id: string;
     /** List of modules associated with the system. Only available from the show method with the `complete` query parameter */
     public trigger_list: readonly EngineTrigger[] = [];
-    /** Class type of required service */
-    protected __type: string = 'EngineZone';
 
     constructor(raw_data: HashMap = {}) {
         super(raw_data);

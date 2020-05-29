@@ -1,5 +1,6 @@
 import { EngineDriverRole } from '../../../../src/http/services/drivers/drivers.enums';
 import { EngineModule } from '../../../../src/http/services/modules/module.class';
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 import { EngineSettings } from '../../../../src/http/services/settings/settings.class';
 import { PlaceOS } from '../../../../src/placeos';
 
@@ -27,7 +28,7 @@ describe('EngineModule', () => {
         jest.spyOn(PlaceOS, 'systems', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'drivers', 'get').mockReturnValue(null as any);
         jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
-        EngineModule.setService('EngineModule', service);
+        ServiceManager.setService(EngineModule, service);
         module = new EngineModule({
             id: 'mod_test',
             driver_id: 'dep-001',

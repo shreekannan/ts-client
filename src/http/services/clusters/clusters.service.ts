@@ -3,6 +3,7 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { HttpError } from '../../http.interfaces';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineCluster } from './cluster.class';
 import { EngineClusterQueryOptions } from './cluster.interfaces';
 import { EngineProcess } from './process.class';
@@ -11,7 +12,8 @@ export class EngineClustersService extends EngineResourceService<any> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        // EngineCluster.service = this;
+        ServiceManager.setService(EngineCluster, this);
+        ServiceManager.setService(EngineProcess, this);
         EngineProcess.service = this;
         this._name = 'Clusters';
         this._api_route = 'cluster';

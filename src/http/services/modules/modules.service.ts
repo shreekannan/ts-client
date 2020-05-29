@@ -2,6 +2,7 @@ import { PlaceOS } from '../../../placeos';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineSettings } from '../settings/settings.class';
 import { EngineModule } from './module.class';
 import { EngineModulePingOptions, EngineModuleQueryOptions } from './module.interfaces';
@@ -10,7 +11,7 @@ export class EngineModulesService extends EngineResourceService<EngineModule> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineModule.setService('EngineModule', this);
+        ServiceManager.setService(EngineModule, this);
         this._name = 'Module';
         this._api_route = 'modules';
     }

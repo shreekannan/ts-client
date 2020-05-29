@@ -1,6 +1,7 @@
 import { EngineRepository } from '../../../../src/http/services/repositories/repository.class';
 import { EngineRepositoryType } from '../../../../src/http/services/repositories/repository.interfaces';
 import { generateMockRepository } from '../../../../src/http/services/repositories/repository.utilities';
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 
 describe('EngineRepository', () => {
     let repository: EngineRepository;
@@ -14,7 +15,7 @@ describe('EngineRepository', () => {
             update: jest.fn()
         };
         mock_data = generateMockRepository({ repo_type: EngineRepositoryType.Driver });
-        EngineRepository.setService('EngineRepository', service);
+        ServiceManager.setService(EngineRepository, service);
         repository = new EngineRepository(mock_data);
     });
 

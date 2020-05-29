@@ -1,6 +1,7 @@
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineApplication } from './application.class';
 import { EngineApplicationQueryOptions } from './application.interfaces';
 
@@ -8,7 +9,7 @@ export class EngineApplicationsService extends EngineResourceService<EngineAppli
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineApplication.setService('EngineApplication', this);
+        ServiceManager.setService(EngineApplication, this);
         this._name = 'Application';
         this._api_route = 'oauth_apps';
     }

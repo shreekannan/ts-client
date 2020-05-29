@@ -1,4 +1,5 @@
 import { EngineApplication } from '../../../../src/http/services/applications/application.class';
+import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 
 describe('EngineApplication', () => {
     let application: EngineApplication;
@@ -10,7 +11,7 @@ describe('EngineApplication', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        EngineApplication.setService('EngineApplication', service);
+        ServiceManager.setService(EngineApplication, service);
         application = new EngineApplication({
             id: 'dep-test',
             owner_id: 'test-man',

@@ -2,13 +2,14 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineAuthSourceQueryOptions } from '../auth-sources/auth-source.interfaces';
 import { EngineResourceService } from '../resources/resources.service';
+import { ServiceManager } from '../service-manager.class';
 import { EngineOAuthSource } from './oauth-source.class';
 
 export class EngineOAuthSourcesService extends EngineResourceService<EngineOAuthSource> {
     /* istanbul ignore next */
     constructor(protected http: EngineHttpClient) {
         super(http);
-        EngineOAuthSource.setService('EngineOAuthSource', this);
+        ServiceManager.setService(EngineOAuthSource, this);
         this._name = 'OAuth Authentication Source';
         this._api_route = 'oauth_auths';
     }
