@@ -14,7 +14,7 @@ export abstract class EngineResource<T extends ResourceService<any>> {
 
     /** Service for managing model on the server */
     protected get _service(): T {
-        return ServiceManager.serviceFor((this as any).constructor);
+        return ServiceManager.serviceFor((this as any).constructor) || ServiceManager.serviceFor(EngineResource);
     }
 
     /**

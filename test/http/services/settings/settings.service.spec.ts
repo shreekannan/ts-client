@@ -63,18 +63,22 @@ describe('EngineSettingsService', () => {
     });
 
     it('should allow querying the history endpoint', async () => {
+        jest.useFakeTimers();
         const item = { id: 'test', name: 'Test' };
         await testRequest('get', 'history', [item], ['test'], ['test', { cache: 100, test: true }]);
         expect(http.get).toBeCalledWith('/api/engine/v2/settings/test/history');
+        jest.useRealTimers();
     });
 
     it('should save history request totals', async () => {
+        jest.useFakeTimers();
         const item = { id: 'test', name: 'Test' };
         http.responseHeaders.mockReturnValue({ 'x-total-count': 10 });
         await testRequest('get', 'history', { total: 10, results: [item] }, ['test', { offset: 10 }], [{ offset: 10 }]);
         http.responseHeaders.mockReturnValue({ 'x-total-count': 25 });
         await testRequest('get', 'history', { total: 25, results: undefined }, ['test', { test: true }], [{ test: true }]);
-        expect(service.total).toBe(10);
+        expect(service.total).toBe(25);
         expect(service.last_total).toBe(25);
+        jest.useRealTimers();
     });
 });

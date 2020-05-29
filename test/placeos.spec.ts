@@ -24,6 +24,7 @@ import { EngineClustersService } from '../src/http/services/clusters/clusters.se
 import { EngineLDAPSourcesService } from '../src/http/services/ldap-sources/ldap-sources.service';
 import { EngineOAuthSourcesService } from '../src/http/services/oauth-sources/oauth-sources.service';
 import { EngineSAMLSourcesService } from '../src/http/services/saml-sources/saml-sources.service';
+import { ServiceManager } from '../src/http/services/service-manager.class';
 
 describe('PlaceOS', () => {
     it('constuctor throws error', () => {
@@ -146,6 +147,12 @@ describe('PlaceOS', () => {
         it('should be using mock services', () => {
             expect(PlaceOS.http).toBeInstanceOf(MockEngineHttpClient);
             expect(PlaceOS.realtime).toBeInstanceOf(MockEngineWebsocket);
+        });
+
+        describe('ServiceManager', () => {
+            it('should error on new', () => {
+                expect(() => new ServiceManager()).toThrowError();
+            });
         });
     });
 });

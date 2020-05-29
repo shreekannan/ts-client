@@ -9,7 +9,7 @@ export function toQueryString(map: HashMap) {
     if (map) {
         for (const key in map) {
             if (map.hasOwnProperty(key) && map[key] !== undefined && map[key] !== null) {
-                str += `${str ? '&' : ''}${key}=${map[key]}`;
+                str += `${str ? '&' : ''}${key}=${encodeURIComponent(map[key])}`;
             }
         }
     }

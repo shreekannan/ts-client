@@ -1,4 +1,4 @@
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { EngineRepositoriesService } from '../../../../src/http/services/repositories/repositories.service';
 import { EngineRepository } from '../../../../src/http/services/repositories/repository.class';
@@ -32,6 +32,22 @@ describe('EngineRepositoriesService', () => {
         expect(http.get).toBeCalledWith('/api/engine/v2/repositories');
         expect(result).toBeInstanceOf(Array);
         expect(result[0]).toBeInstanceOf(EngineRepository);
+    });
+
+    it('should allow listing interfaces', async () => {
+        jest.useFakeTimers();
+        // expect.assertions(4);
+        // http.get
+        //     .mockImplementationOnce(() => throwError(true));
+        // await expect(service.listInterfaces()).rejects.toBeTruthy();
+        jest.runOnlyPendingTimers();
+        http.get.mockReturnValueOnce(of({ 'www-core': 'abcdef' }));
+        const result = await service.listInterfaces();
+        expect(http.get).toBeCalledWith('/api/engine/v2/repositories/interfaces');
+        expect(result).toBeInstanceOf(Object);
+        expect(result.hasOwnProperty('www-core')).toBeTruthy();
+        jest.runOnlyPendingTimers();
+        jest.useRealTimers();
     });
 
     it('should allow querying repositories show', async () => {
@@ -76,7 +92,9 @@ describe('EngineRepositoriesService', () => {
         };
         http.get.mockReturnValueOnce(of(driver));
         const result = await service.driverDetails('test', { driver: 'test', commit: 'hash' });
-        expect(http.get).toBeCalledWith('/api/engine/v2/repositories/test/details?driver=test&commit=hash');
+        expect(http.get).toBeCalledWith(
+            '/api/engine/v2/repositories/test/details?driver=test&commit=hash'
+        );
         expect(result).toBeInstanceOf(Object);
         expect(result).toBe(driver);
     });
