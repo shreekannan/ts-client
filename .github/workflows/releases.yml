@@ -28,7 +28,7 @@ jobs:
     - name: Cache node modules
       uses: actions/cache@v1
       env:
-        cache-name: cache-node-modules
+        cache-name: ts-client-node-modules
       with:
         path: node_modules
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
@@ -39,6 +39,9 @@ jobs:
 
     - name: Install node modules
       run: npm install
+
+    - name: Build Library
+      run: npm run build
 
     - name: Update application version
       env:
