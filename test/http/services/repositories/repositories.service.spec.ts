@@ -65,6 +65,12 @@ describe('EngineRepositoriesService', () => {
         expect(result[0]).toBe('path/to/driver.cr');
     });
 
+    it('should allow pulling changes to repositories', async () => {
+        http.post.mockReturnValueOnce(of());
+        const result = await service.pullCommit('test');
+        expect(http.post).toBeCalledWith('/api/engine/v2/repositories/test/pull', {});
+    });
+
     it('should allow querying the commit list for a repository', async () => {
         const commit = {
             commit: 'hash',
