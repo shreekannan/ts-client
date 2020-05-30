@@ -41,12 +41,15 @@ jobs:
       run: npm install
 
     - name: Update application version
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: npm run semantic-release
 
     - name: Deploy documents
       run: npm run deploy-docs
 
-    - name: Google Chat Notification
+    - name: G-Chat Success Notify
       uses: Co-qn/google-chat-notification@releases/v1
       with:
         name: Build
@@ -54,7 +57,7 @@ jobs:
         status: ${{ job.status }}
       if: success()
 
-    - name: Google Chat Notification
+    - name: G-Chat Failed Notify
       uses: Co-qn/google-chat-notification@releases/v1
       with:
         name: Build
@@ -62,7 +65,7 @@ jobs:
         status: ${{ job.status }}
       if: failure()
 
-    - name: Google Chat Notification
+    - name: G-Chat Cancelled Notify
       uses: Co-qn/google-chat-notification@releases/v1
       with:
         name: Build
