@@ -33,8 +33,6 @@ export abstract class EngineResource<T extends ResourceService<any>> {
     public readonly created_at: number;
     /** Subject for change events to the class object */
     public readonly changeEvents = new Subject<EngineDataClassEvent>();
-    /** Class type of required service */
-    protected __type: string = 'EngineResource';
     /** Map of unsaved property changes */
     protected _changes: HashMap = {};
     /** Map of local property names to server ones */

@@ -24,6 +24,7 @@ import { EngineUsersService } from './http/services/users/users.service';
 import { EngineZonesService } from './http/services/zones/zones.service';
 import { EngineWebsocketOptions } from './websocket/websocket.interfaces';
 
+import { PlaceMQTTBrokerService } from './http/services/broker/brokers.service';
 import { EngineClustersService } from './http/services/clusters/clusters.service';
 import { EngineLDAPSourcesService } from './http/services/ldap-sources/ldap-sources.service';
 import { EngineOAuthSourcesService } from './http/services/oauth-sources/oauth-sources.service';
@@ -74,6 +75,11 @@ export class PlaceOS {
     /** HTTP service for engine LDAP authentication sources */
     public static get ldap_sources(): EngineLDAPSourcesService {
         return this.checkProperty(this._ldap_sources);
+    }
+
+    /** HTTP service for engine auth sources */
+    public static get brokers(): PlaceMQTTBrokerService {
+        return this.checkProperty(this._brokers);
     }
 
     /** HTTP service for engine domains */
@@ -166,6 +172,7 @@ export class PlaceOS {
                 this._saml_sources = new EngineSAMLSourcesService(this._http);
                 this._ldap_sources = new EngineLDAPSourcesService(this._http);
                 this._domains = new EngineDomainsService(this._http);
+                this._brokers = new PlaceMQTTBrokerService(this._http);
                 this._drivers = new EngineDriversService(this._http);
                 this._modules = new EngineModulesService(this._http);
                 this._repositories = new EngineRepositoriesService(this._http);
@@ -204,6 +211,8 @@ export class PlaceOS {
     private static _domains: EngineDomainsService;
     /** HTTP service for engine drivers */
     private static _drivers: EngineDriversService;
+    /** HTTP service for MQTT Brokers */
+    private static _brokers: PlaceMQTTBrokerService;
     /** Http service for engine modules */
     private static _modules: EngineModulesService;
     /** HTTP service for engine repositories */

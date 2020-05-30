@@ -23,6 +23,9 @@ export * from './http/services/saml-sources/saml-source.class';
 export * from './http/services/ldap-sources/ldap-sources.service';
 export * from './http/services/ldap-sources/ldap-source.class';
 
+export * from './http/services/broker/brokers.service';
+export * from './http/services/broker/broker.class';
+
 export * from './http/services/domains/domains.service';
 export * from './http/services/domains/domain.class';
 
