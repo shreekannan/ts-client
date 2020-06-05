@@ -41,7 +41,7 @@ export class EngineZone extends EngineResource<EngineZonesService> {
     /** List of triggers associated with the zone */
     public readonly triggers: readonly string[];
     /** List of tags associated with the zone */
-    public readonly tags: string;
+    public readonly tags: string[];
     /** Geo-location details associated with the zone */
     public readonly location: string;
     /** Custom display name for the zone */
@@ -62,7 +62,7 @@ export class EngineZone extends EngineResource<EngineZonesService> {
     constructor(raw_data: HashMap = {}) {
         super(raw_data);
         this.description = raw_data.description || '';
-        this.tags = raw_data.tags || '';
+        this.tags = raw_data.tags || [];
         this.triggers = raw_data.triggers || [];
         this.settings = raw_data.settings || [null, null, null, null];
         this.parent_id = raw_data.parent_id || '';
