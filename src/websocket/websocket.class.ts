@@ -360,7 +360,7 @@ export class EngineWebsocket {
         const secure = this.options.secure || location.protocol.indexOf('https') >= 0;
         const host = this.options.host || location.host;
         const expiry = `expires=${dayjs().add(2, 's').toDate().toUTCString()};`;
-        document.cookie = `bearer_token=${this.auth.token}; ${expiry} path=${this.route}`;
+        document.cookie = `bearer_token=${this.auth.token}; ${expiry} path=${this.route}; Secure; SameSite=None`;
         const url = `ws${secure ? 's' : ''}://${host}${this.route}${
             this.options.fixed ? '?fixed_device=true' : ''
         }`;
