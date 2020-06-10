@@ -1,5 +1,6 @@
 import { Subject } from 'rxjs';
 
+import { PlaceSystemsMock } from '../../../src/websocket/mock/mock-system-register.class';
 import {
     engine_mock_socket,
     MockEngineWebsocket
@@ -14,20 +15,16 @@ describe('MockEngineWebsocket', () => {
         jest.useFakeTimers();
         fake_socket = new Subject<any>();
         // spy = spyOn(engine_mock_socket, 'websocket').and.returnValue(fake_socket);
-        window.control = {
-            systems: {
-                'sys-A0': {
-                    Test: [
-                        {
-                            test: 10,
-                            $testCall() {
-                                return (this as any)._system.Test[0].test++;
-                            }
-                        }
-                    ]
+        PlaceSystemsMock.register('sys-A0', {
+            Test: [
+                {
+                    test: 10,
+                    $testCall() {
+                        return (this as any)._system.Test[0].test++;
+                    }
                 }
-            }
-        } as any;
+            ]
+        });
         auth = { token: 'test', refreshAuthority: () => null };
         spyOn(engine_mock_socket, 'log');
         websocket = new MockEngineWebsocket(auth, {
@@ -37,6 +34,7 @@ describe('MockEngineWebsocket', () => {
     });
 
     afterEach(() => {
+        PlaceSystemsMock.deregister('sys-A0');
         jest.useRealTimers();
     });
 
@@ -77,7 +75,7 @@ describe('MockEngineWebsocket', () => {
             expect(websocket.value(binding)).toBe(10);
             promise = websocket.unbind(binding);
             promise.then(() => {
-                window.control.systems['sys-A0'].Test[0].test = 20;
+                PlaceSystemsMock.systems['sys-A0'].Test[0].test = 20;
                 jest.runOnlyPendingTimers();
                 expect(websocket.value).not.toBe(20);
                 done();

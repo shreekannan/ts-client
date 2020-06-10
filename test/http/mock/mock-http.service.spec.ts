@@ -1,5 +1,6 @@
 import { of } from 'rxjs';
 import { engine_http } from '../../../src/http/http.service';
+import { PlaceHttpMock } from '../../../src/http/mock/mock-http-register.class';
 import { MockHttpRequestHandlerOptions } from '../../../src/http/mock/mock-http.interfaces';
 import { MockEngineHttpClient } from '../../../src/http/mock/mock-http.service';
 
@@ -20,18 +21,15 @@ describe('MockEngineHttpClient', () => {
 
     beforeEach(() => {
         auth = { has_token: true, refreshAuthority: () => null };
-        const global_handler: MockHttpRequestHandlerOptions = {
-            path: 'test/path',
-            method: 'GET',
-            metadata: {},
-            callback: r => 'test'
-        };
-        window.control = { handlers: global_handlers };
+        for (const handler of global_handlers) {
+            PlaceHttpMock.register(handler);
+        }
         service = new MockEngineHttpClient(auth);
         jest.useFakeTimers();
     });
 
     afterEach(() => {
+        PlaceHttpMock.deregister('test/path');
         jest.useRealTimers();
     });
 

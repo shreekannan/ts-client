@@ -173,20 +173,18 @@ To use the mock services you can pass `mock: true` into the initialisation objec
 
 ### Websockets
 
-To write mocks for the the realtime(websocket) API you'll need to add your systems to `window.control.systems` before initialising PlaceOS.
+To write mocks for the the realtime(websocket) API you'll need to register your systems in `PlaceSystemsMock` before initialising PlaceOS.
 
 ```typescript
-window.control.systems = {
-    "my-system": {
-        "MyModule": [
-            {
-                power: true,
-                $power_on: function () { this.power = true },
-                $power_off: function () { this.power = false }
-            }
-        ]
-    }
-}
+PlaceSystemsMock.register('my-system', {
+    "MyModule": [
+        {
+            power: true,
+            $power_on: function () { this.power = true },
+            $power_off: function () { this.power = false }
+        }
+    ]
+});
 ```
 
 Note that executable methods on mock systems are namespaced with `$` as real systems in engine allow for methods to have the same name as variables.
@@ -204,48 +202,42 @@ my_mod.exec('power_off'); // The listen callback will now emit false
 Some methods may need access to other modules within the system, for this a property is appended on runtime called `_system` which allows for access to the parent system
 
 ```typescript
-window.control.systems = {
-    "my-system": {
-        "MyModule": [
-            {
-                $lights_off: function () { this._system.MyOtherModule[0].lights = false; }
-            }
-        ]
-        "MyOtherModule": [
-            {
-                lights: true,
-            }
-        ]
-    }
-}
+PlaceSystemsMock.register('my-system', {
+    "MyModule": [
+        {
+            $lights_off: function () { this._system.MyOtherModule[0].lights = false; }
+        }
+    ]
+    "MyOtherModule": [
+        {
+            lights: true,
+        }
+    ]
+});
 ```
 
 ### HTTP Requests
 
-HTTP API Requests can be mocked in a similar way to the realtime API by adding handlers to `window.control.handlers`
+HTTP API Requests can be mocked in a similar way to the realtime API by registering handlers with `PlaceHttpMock`
 
 ```typescript
-window.control.handlers = [
-    {
-        path: '/api/engine/v2/systems',
-        metadata: {},
-        method: 'GET',
-        callback: (request) => my_mock_systems
-    }
-]
+PlaceHttpMock.register({
+    path: '/api/engine/v2/systems',
+    metadata: {},
+    method: 'GET',
+    callback: (request) => my_mock_systems
+});
 ```
 
 Paths allow for route parameters and will pass the value in the callback input.
 
 ```typescript
-window.control.handlers = [
-    {
-        path: '/api/engine/v2/systems/:system_id',
-        ...
-        callback: (request) =>
-            my_mock_systems.find(sys => sys.id === request.route_params.system_id)
-    }
-]
+PlaceHttpMock.register({
+    path: '/api/engine/v2/systems/:system_id',
+    ...
+    callback: (request) =>
+        my_mock_systems.find(sys => sys.id === request.route_params.system_id)
+});
 ```
 
 Query parameters are also available on the callback input.

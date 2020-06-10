@@ -13,6 +13,7 @@ import {
     HttpVoidOptions
 } from '../http.interfaces';
 import { EngineHttpClient } from '../http.service';
+import { PlaceHttpMock } from './mock-http-register.class';
 import {
     MockHttpRequest,
     MockHttpRequestHandler,
@@ -25,24 +26,16 @@ declare global {
     }
 }
 
-/* istanbul ignore else */
-if (!window.control) {
-    window.control = {};
-}
-
 export class MockEngineHttpClient extends EngineHttpClient {
     /** Mapping of handlers for http requests */
     private _handlers: HashMap<MockHttpRequestHandler> = {};
 
     constructor(protected _auth: EngineAuthService) {
         super(_auth);
-        // Register global space mock request handlers
-        /* istanbul ignore else */
-        if (window.control && window.control.handlers) {
-            const handlers: MockHttpRequestHandlerOptions[] = window.control.handlers || [];
-            for (const handler of handlers) {
-                this.register(handler.path, handler.metadata, handler.method, handler.callback);
-            }
+        // Register mock request handlers
+        const handlers: MockHttpRequestHandlerOptions[] = PlaceHttpMock.handlers;
+        for (const handler of handlers) {
+            this.register(handler.path, handler.metadata, handler.method, handler.callback);
         }
     }
 

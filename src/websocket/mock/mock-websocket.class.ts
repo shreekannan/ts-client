@@ -12,28 +12,13 @@ import { EngineAuthService } from '../../auth/auth.service';
 import { log } from '../../utilities/general.utilities';
 import { MockEngineWebsocketModule } from './mock-engine-module.class';
 import { MockEngineWebsocketSystem } from './mock-engine-system.class';
+import { PlaceSystemsMock } from './mock-system-register.class';
 
 /**
  * Method store to allow attaching spies for testing
  * @hidden
  */
 export const engine_mock_socket = { log };
-
-declare global {
-    interface Window {
-        control: any;
-    }
-}
-
-/* istanbul ignore else */
-if (!window.control) {
-    window.control = {};
-}
-
-/* istanbul ignore else */
-if (!window.control.systems) {
-    window.control.systems = {};
-}
 
 export class MockEngineWebsocket extends EngineWebsocket {
     protected websocket: any;
@@ -42,19 +27,6 @@ export class MockEngineWebsocket extends EngineWebsocket {
 
     constructor(protected auth: EngineAuthService, protected options: EngineWebsocketOptions) {
         super(auth, options);
-        // Convert static objects on the window into
-        /* istanbul ignore else */
-        if (window.control && window.control.systems) {
-            const systems: { [id: string]: MockEngineWebsocketSystem } = window.control.systems;
-            for (const key in systems) {
-                /* istanbul ignore else */
-                if (!(window.control.systems[key] instanceof MockEngineWebsocketSystem)) {
-                    window.control.systems[key] = new MockEngineWebsocketSystem(
-                        window.control.systems[key]
-                    );
-                }
-            }
-        }
     }
 
     /**
@@ -72,7 +44,7 @@ export class MockEngineWebsocket extends EngineWebsocket {
      */
     protected send(request: EngineCommandRequest): Promise<any> {
         const key = `${request.sys}|${request.mod}_${request.index}|${request.name}`;
-        const system: MockEngineWebsocketSystem = window.control.systems[request.sys];
+        const system: MockEngineWebsocketSystem = PlaceSystemsMock.systems[request.sys];
         const module: MockEngineWebsocketModule =
             system && system[request.mod] ? system[request.mod][request.index - 1 || 0] : null;
         if (module) {
