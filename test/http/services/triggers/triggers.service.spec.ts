@@ -1,5 +1,6 @@
 import { of } from 'rxjs';
 
+import { EngineSystem } from '../../../../src/http/services/systems/system.class';
 import { EngineTrigger } from '../../../../src/http/services/triggers/trigger.class';
 import { EngineTriggersService } from '../../../../src/http/services/triggers/triggers.service';
 
@@ -37,5 +38,12 @@ describe('EngineTriggersService', () => {
         const result = await service.show('test');
         expect(http.get).toBeCalledWith('/api/engine/v2/triggers/test');
         expect(result).toBeInstanceOf(EngineTrigger);
+    });
+
+    it('allow listing systems with trigger', async () => {
+        http.get.mockReturnValueOnce(of([{ id: 'test' }]));
+        const result = await service.listSystems('test');
+        expect(http.get).toBeCalledWith('/api/engine/v2/triggers/test/instances');
+        expect(result[0]).toBeInstanceOf(EngineSystem);
     });
 });
