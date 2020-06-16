@@ -31,7 +31,7 @@ describe('EngineAuthService', () => {
             id: 'test-authority',
             name: 'localhost:4200',
             description: '',
-            dom: 'localhost:4200',
+            domain: 'localhost:4200',
             login_url: `/login?continue={{url}}`,
             logout_url: `/logout`,
             session: false,

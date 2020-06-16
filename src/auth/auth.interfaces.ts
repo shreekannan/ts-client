@@ -4,7 +4,7 @@ export const MOCK_AUTHORITY = {
     id: 'mock-authority',
     name: 'localhost:4200',
     description: '',
-    dom: 'localhost:4200',
+    domain: 'localhost:4200',
     login_url: `/login?continue={{url}}`,
     logout_url: `/logout`,
     session: true,
@@ -21,7 +21,7 @@ export interface EngineAuthority {
     /** Description of the authority site */
     readonly description: string;
     /** Domain of the authority */
-    readonly dom: string;
+    readonly domain: string;
     /** URL for user to login for authentication */
     readonly login_url: string;
     /** URL for user to clear authentication details */
