@@ -30,13 +30,13 @@ describe('EngineDomain', () => {
     });
 
     it('should expose domain', () => {
-        expect(domain.dom).toBe('here.today');
+        expect(domain.domain).toBe('here.today');
     });
 
     it('should allow setting description', () => {
-        domain.storePendingChange('dom', 'another.dom');
-        expect(domain.dom).not.toBe('another.dom');
-        expect(domain.changes.dom).toBe('another.dom');
+        domain.storePendingChange('domain', 'another.domain');
+        expect(domain.domain).not.toBe('another.domain');
+        expect(domain.changes.domain).toBe('another.domain');
     });
 
     it('should expose login URL', () => {
@@ -44,9 +44,9 @@ describe('EngineDomain', () => {
     });
 
     it('should allow setting login URL', () => {
-        domain.storePendingChange('login_url', 'some.dom');
-        expect(domain.login_url).not.toBe('some.dom');
-        expect(domain.changes.login_url).toBe('some.dom');
+        domain.storePendingChange('login_url', 'some.domain');
+        expect(domain.login_url).not.toBe('some.domain');
+        expect(domain.changes.login_url).toBe('some.domain');
     });
 
     it('should expose logout URL', () => {
@@ -54,9 +54,9 @@ describe('EngineDomain', () => {
     });
 
     it('should allow setting logout URL', () => {
-        domain.storePendingChange('logout_url', 'koko-doko.dom');
-        expect(domain.logout_url).not.toBe('koko-doko.dom');
-        expect(domain.changes.logout_url).toBe('koko-doko.dom');
+        domain.storePendingChange('logout_url', 'koko-doko.domain');
+        expect(domain.logout_url).not.toBe('koko-doko.domain');
+        expect(domain.changes.logout_url).toBe('koko-doko.domain');
     });
 
     it('should expose description', () => {
