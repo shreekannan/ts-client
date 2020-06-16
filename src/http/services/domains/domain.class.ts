@@ -25,7 +25,7 @@ export class EngineDomain extends EngineResource<EngineDomainsService> {
     constructor(raw_data: HashMap = {}) {
         super(raw_data);
         this.description = raw_data.description || '';
-        this.domain = raw_data.domain || raw_data.dom || '';
+        this.domain = raw_data.domain || '';
         this.login_url = raw_data.login_url || '';
         this.logout_url = raw_data.logout_url || '';
         this.config = raw_data.config || '{}';
