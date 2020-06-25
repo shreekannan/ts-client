@@ -38,7 +38,7 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
     /** Capacity of the space associated with the system */
     public readonly capacity: number;
     /** Features associated with the system */
-    public readonly features: string;
+    public readonly features: string[];
     /** Whether system is bookable by end users */
     public readonly bookable: boolean;
     /** Count of UI devices attached to the system */
@@ -61,7 +61,7 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
         this.description = raw_data.description || '';
         this.email = raw_data.email || '';
         this.capacity = raw_data.capacity || 0;
-        this.features = raw_data.features || '';
+        this.features = raw_data.features || [];
         this.bookable = raw_data.bookable || false;
         this.installed_ui_devices = raw_data.installed_ui_devices || 0;
         this.support_url = raw_data.support_url || '';
