@@ -17,7 +17,7 @@ describe('EngineResource', () => {
         service.delete.mockReturnValue(Promise.resolve());
         service.update.mockReturnValue(Promise.resolve());
         ServiceManager.setService(EngineResource, service);
-        resource = new Resource({ id: 'test', name: 'Test', created_at: 999 });
+        resource = new Resource({ id: 'test', name: 'Test', created_at: 999, updated_at: 999 });
     });
 
     it('should expose id', () => {
@@ -73,5 +73,9 @@ describe('EngineResource', () => {
 
     it('should expose creation time', () => {
         expect(resource.created_at).toEqual(999);
+    });
+
+    it('should expose updated time', () => {
+        expect(resource.updated_at).toEqual(999);
     });
 });
