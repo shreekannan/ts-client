@@ -154,7 +154,8 @@ export class PlaceOS {
                 // Initialise websocket API
                 const websocket_options: EngineWebsocketOptions = {
                     fixed: this._auth_service.fixed_device,
-                    host: options.host || location.host
+                    host: options.host || location.host,
+                    secure: options.secure
                 };
                 this._websocket =
                     options.mock !== true
