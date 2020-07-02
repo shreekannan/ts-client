@@ -1,6 +1,11 @@
 import { EngineResource } from '../../../../src/http/services/resources/resource.class';
 import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 
+class Resource extends EngineResource<any> {
+    /** ID of the Resource */
+    public id: string;
+}
+
 describe('EngineResource', () => {
     let resource: Resource;
     let service: any;
