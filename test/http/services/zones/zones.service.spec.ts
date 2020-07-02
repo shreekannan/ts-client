@@ -45,40 +45,4 @@ describe('EngineZonesService', () => {
         expect(http.post).toBeCalledWith('/api/engine/v2/zones/test/jim_1/exec', []);
     });
 
-    it('allow querying zone metadata', async () => {
-        http.get.mockReturnValueOnce(of({ id: 'test' }));
-        const result = await service.listMetadata('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/zones/test/metadata');
-        expect(result).toBeInstanceOf(Object);
-    });
-
-    it('allow querying zone child metadata', async () => {
-        http.get.mockReturnValueOnce(of([{ zone: { id: 'test' }, metadata: { testing: 'blah' } }]));
-        const result = await service.listChildMetadata('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/zones/test/children/metadata');
-        expect(result.length).toBe(1);
-        expect(result[0].zone).toBeInstanceOf(EngineZone);
-        expect(result[0].keys).toEqual(['testing']);
-    });
-
-    it('allow adding/updating zone metadata', async () => {
-        http.post.mockReturnValueOnce(of({ name: 'test' }));
-        const result = await service.createMetadata('test', {
-            name: 'test',
-            description: 'test',
-            details: {}
-        });
-        expect(http.post).toBeCalledWith('/api/engine/v2/zones/test/metadata', {
-            name: 'test',
-            description: 'test',
-            details: {}
-        });
-        expect(result).toBeTruthy();
-    });
-
-    it('allow deleting zone metadata', async () => {
-        http.delete.mockReturnValueOnce(of());
-        await service.deleteMetadata('test', { name: 'catering' });
-        expect(http.delete).toBeCalledWith('/api/engine/v2/zones/test/metadata?name=catering');
-    });
 });

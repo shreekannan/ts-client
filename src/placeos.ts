@@ -27,6 +27,7 @@ import { EngineWebsocketOptions } from './websocket/websocket.interfaces';
 import { PlaceMQTTBrokerService } from './http/services/broker/brokers.service';
 import { EngineClustersService } from './http/services/clusters/clusters.service';
 import { EngineLDAPSourcesService } from './http/services/ldap-sources/ldap-sources.service';
+import { PlaceMetadataService } from './http/services/metadata/metadata.service';
 import { EngineOAuthSourcesService } from './http/services/oauth-sources/oauth-sources.service';
 import { EngineSAMLSourcesService } from './http/services/saml-sources/saml-sources.service';
 
@@ -47,88 +48,94 @@ export class PlaceOS {
         return this.checkProperty(this._auth_service);
     }
 
-    /** Service for binding to engine's realtime API */
+    /** Service for binding to place's realtime API */
     public static get bindings(): EngineBindingService {
         return this.checkProperty(this._binding_service);
     }
 
-    /** Interface for engine realtime API communications */
+    /** Interface for place realtime API communications */
     public static get realtime(): EngineWebsocket {
         return this.checkProperty(this._websocket);
     }
 
-    /** HTTP service for engine applications */
+    /** HTTP service for place applications */
     public static get applications(): EngineApplicationsService {
         return this.checkProperty(this._applications);
     }
 
-    /** HTTP service for engine OAuth authentication sources */
+    /** HTTP service for place OAuth authentication sources */
     public static get oauth_sources(): EngineOAuthSourcesService {
         return this.checkProperty(this._oauth_sources);
     }
 
-    /** HTTP service for engine SAML authentication sources */
+    /** HTTP service for place SAML authentication sources */
     public static get saml_sources(): EngineSAMLSourcesService {
         return this.checkProperty(this._saml_sources);
     }
 
-    /** HTTP service for engine LDAP authentication sources */
+    /** HTTP service for place LDAP authentication sources */
     public static get ldap_sources(): EngineLDAPSourcesService {
         return this.checkProperty(this._ldap_sources);
     }
 
-    /** HTTP service for engine auth sources */
+    /** HTTP service for place auth sources */
     public static get brokers(): PlaceMQTTBrokerService {
         return this.checkProperty(this._brokers);
     }
 
-    /** HTTP service for engine domains */
+    /** HTTP service for place domains */
     public static get domains(): EngineDomainsService {
         return this.checkProperty(this._domains);
     }
 
-    /** HTTP service for engine drivers */
+    /** HTTP service for place drivers */
     public static get drivers(): EngineDriversService {
         return this.checkProperty(this._drivers);
     }
 
-    /** HTTP service for engine modules */
+    /** HTTP service for place modules */
     public static get modules(): EngineModulesService {
         return this.checkProperty(this._modules);
     }
 
-    /** HTTP service for engine systems */
+    /** HTTP service for place respositories */
     public static get repositories(): EngineRepositoriesService {
         return this.checkProperty(this._repositories);
     }
 
-    /** HTTP service for engine systems */
+    /** HTTP service for place systems */
     public static get systems(): EngineSystemsService {
         return this.checkProperty(this._systems);
     }
 
+    /** HTTP service for place triggers */
     public static get triggers(): EngineTriggersService {
         return this.checkProperty(this._triggers);
     }
 
-    /** HTTP service for engine auth sources */
+    /** HTTP service for place auth sources */
     public static get users(): EngineUsersService {
         return this.checkProperty(this._users);
     }
 
-    /** HTTP service for engine settings */
+    /** HTTP service for place settings */
     public static get settings(): EngineSettingsService {
         return this.checkProperty(this._settings);
     }
 
-    /** HTTP service for engine auth sources */
+    /** HTTP service for place auth sources */
     public static get zones(): EngineZonesService {
         return this.checkProperty(this._zones);
     }
 
-    /** @hidden HTTP service for engine clusters */
+    /** @hidden HTTP service for place clusters */
     public static get clusters(): EngineClustersService {
         return this.checkProperty(this._clusters);
+    }
+
+    /** @hidden HTTP service for place metadata */
+    public static get metadata(): PlaceMetadataService {
+        return this.checkProperty(this._metadata);
     }
 
     /** Observable for the intialised state of PlaceOS */
@@ -182,6 +189,7 @@ export class PlaceOS {
                 this._settings = new EngineSettingsService(this._http);
                 this._triggers = new EngineTriggersService(this._http);
                 this._zones = new EngineZonesService(this._http);
+                this._metadata = new PlaceMetadataService(this._http);
                 this._clusters = new EngineClustersService(this._http);
                 this._initialised.next(true);
                 if (this._sub) {
@@ -228,6 +236,8 @@ export class PlaceOS {
     private static _settings: EngineSettingsService;
     /** HTTP service for engine zones */
     private static _zones: EngineZonesService;
+    /** HTTP service for engine zones */
+    private static _metadata: PlaceMetadataService;
     /** HTTP service for engine clusters */
     private static _clusters: EngineClustersService;
     /** Initialisation subscription */
@@ -254,6 +264,7 @@ export class PlaceOS {
             '_settings',
             '_users',
             '_zones',
+            '_metadata',
             '_clusters'
         ];
         for (const key of keys) {

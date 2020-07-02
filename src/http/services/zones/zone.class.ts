@@ -1,12 +1,9 @@
-import { first } from 'rxjs/operators';
 
-import { PlaceOS } from '../../../placeos';
 import { HashMap } from '../../../utilities/types.utilities';
 import { EngineResource } from '../resources/resource.class';
 import { EngineSettings } from '../settings/settings.class';
 import { EncryptionLevel } from '../settings/settings.interfaces';
 import { EngineTrigger } from '../triggers/trigger.class';
-import { EngineChildZoneMetadata, EngineZoneMetadataOptions } from './zone.interfaces';
 import { EngineZonesService } from './zones.service';
 
 export const ZONE_MUTABLE_FIELDS = [
@@ -89,22 +86,6 @@ export class EngineZone extends EngineResource<EngineZonesService> {
                 trigger => new EngineTrigger(trigger)
             );
         }
-    }
-
-    /**
-     * Retrieve metadata for zone
-     * @param query_params Query parameters to add to the request
-     */
-    public metadata(query_params?: EngineZoneMetadataOptions): Promise<HashMap> {
-        return this._service.listMetadata(this.id, query_params);
-    }
-
-    /**
-     * Retrieve metadata for zone's children
-     * @param query_params Query parameters to add to the request
-     */
-    public childMetadata(query_params?: EngineZoneMetadataOptions): Promise<EngineChildZoneMetadata[]> {
-        return this._service.listChildMetadata(this.id, query_params);
     }
 
     public storePendingChange(key: ZoneMutableFields, value: EngineZone[ZoneMutableFields]): this {

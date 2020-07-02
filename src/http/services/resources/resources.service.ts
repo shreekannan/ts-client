@@ -10,7 +10,12 @@ import { ServiceManager } from '../service-manager.class';
 import { EngineResource } from './resource.class';
 import { ResourceService } from './resources.interface';
 
-export abstract class EngineResourceService<T extends EngineResource<any>> extends EngineBaseClass
+export interface Resource extends HashMap {
+    /** ID of resources */
+    id: string;
+}
+
+export abstract class EngineResourceService<T extends Resource> extends EngineBaseClass
     implements ResourceService<T> {
     /** Whether service has been initialised */
     public get initialised() {

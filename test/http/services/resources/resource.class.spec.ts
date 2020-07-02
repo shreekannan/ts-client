@@ -1,8 +1,6 @@
 import { EngineResource } from '../../../../src/http/services/resources/resource.class';
 import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 
-class Resource extends EngineResource<any> {}
-
 describe('EngineResource', () => {
     let resource: Resource;
     let service: any;
@@ -39,13 +37,6 @@ describe('EngineResource', () => {
     });
 
     it('should allow saving new resource', async () => {
-        expect.assertions(2);
-        try {
-            await resource.save();
-            throw Error('Failed to throw');
-        } catch (e) {
-            expect(e).toBe('No changes have been made');
-        }
         resource.storePendingChange('name', 'Another Test');
         (resource as any).id = undefined;
         await resource.save();

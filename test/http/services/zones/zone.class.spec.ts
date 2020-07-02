@@ -64,13 +64,4 @@ describe('EngineZone', () => {
         expect(zone.created_at).toEqual(999);
     });
 
-    it('should allow getting metadata', () => {
-        zone.metadata();
-        expect(service.listMetadata).toBeCalledWith('dep-test', undefined);
-    });
-
-    it('should allow getting child metadata', () => {
-        zone.childMetadata();
-        expect(service.listChildMetadata).toBeCalledWith('dep-test', undefined);
-    });
 });

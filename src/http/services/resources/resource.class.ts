@@ -147,27 +147,23 @@ export abstract class EngineResource<T extends ResourceService<any>> {
      * @param data Metadata to save to the server
      */
     protected saveWith(type: string, data: HashMap) {
-        if (Object.keys(this._changes).length > 0) {
-            return new Promise<EngineResource<any>>((resolve, reject) => {
-                const on_error = (err: any) => reject(err);
-                this.id
-                    ? this._service.update(this.id, data, { version: this._version }, type as any).then(
-                          (updated_item: EngineResource<any>) => {
-                              this.emit('item_saved', updated_item);
-                              resolve(updated_item);
-                          },
-                          on_error
-                      )
-                    : this._service.add(data).then(
-                        (new_item: EngineResource<any>) => {
-                              this.emit('item_saved', new_item);
-                              resolve(new_item);
-                          },
-                          on_error
-                      );
-            });
-        } else {
-            return Promise.reject('No changes have been made');
-        }
+        return new Promise<EngineResource<any>>((resolve, reject) => {
+            const on_error = (err: any) => reject(err);
+            this.id
+                ? this._service.update(this.id, data, { version: this._version }, type as any).then(
+                        (updated_item: EngineResource<any>) => {
+                            this.emit('item_saved', updated_item);
+                            resolve(updated_item);
+                        },
+                        on_error
+                    )
+                : this._service.add(data).then(
+                    (new_item: EngineResource<any>) => {
+                            this.emit('item_saved', new_item);
+                            resolve(new_item);
+                        },
+                        on_error
+                    );
+        });
     }
 }
