@@ -61,6 +61,11 @@ export * from './http/services/settings/settings.service';
 export * from './http/services/settings/settings.interfaces';
 export * from './http/services/settings/settings.class';
 
+export * from './http/services/metadata/metadata.service';
+export * from './http/services/metadata/metadata.interfaces';
+export * from './http/services/metadata/metadata.class';
+export * from './http/services/metadata/zone-metadata.class';
+
 export * from './http/services/zones/zones.service';
 export * from './http/services/zones/zone.interfaces';
 export * from './http/services/zones/zone.class';
