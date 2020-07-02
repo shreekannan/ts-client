@@ -201,7 +201,13 @@ export class EngineWebsocket {
     protected onMessage(message: EngineResponse | 'pong'): void {
         if (message !== 'pong' && message instanceof Object) {
             if (message.type === 'notify' && message.meta) {
-                this.handleNotify(message.meta, message.value);
+                let value = message.value;
+                try {
+                    value = JSON.parse(message.value);
+                } catch (e) {
+                    log('WS', '[ERROR] Unable to parse JSON in notify value');
+                }
+                this.handleNotify(message.meta, value);
             } else if (message.type === 'success') {
                 this.handleSuccess(message);
             } else if (message.type === 'debug') {
