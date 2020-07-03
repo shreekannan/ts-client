@@ -27,10 +27,19 @@ describe('PlaceMetadataService', () => {
     });
 
     it('allow querying metadata show', async () => {
-        http.get.mockReturnValueOnce(of({ parent_id: 'test' }));
-        const result = await service.show('test');
+        jest.useFakeTimers();
+        http.get
+            .mockReturnValueOnce(of({ md: { parent_id: 'test' } }));
+        let result: any = await service.show('test');
         expect(http.get).toBeCalledWith('/api/engine/v2/metadata/test');
+        expect(result.md).toBeInstanceOf(PlaceMetadata);
+        jest.runOnlyPendingTimers();
+        http.get.mockReturnValueOnce(of({ parent_id: 'test' }));
+        result = await service.show('test', { name: 'md' });
+        expect(http.get).toBeCalledWith('/api/engine/v2/metadata/test?name=md');
         expect(result).toBeInstanceOf(PlaceMetadata);
+        expect(result.id).toBe('test');
+        jest.useRealTimers();
     });
 
     it('allow adding new metadata', async () => {

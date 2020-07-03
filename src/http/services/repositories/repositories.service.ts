@@ -31,6 +31,7 @@ export class EngineRepositoriesService extends EngineResourceService<EngineRepos
                 let result: any;
                 this.http.get(url).subscribe(
                     (d: HashMap) => result = d,
+                    /* istanbul ignore next */
                     (e: HttpError) => {
                         reject(e);
                         delete this._promises[key];
