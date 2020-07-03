@@ -157,10 +157,10 @@ export abstract class EngineResourceService<T extends Resource> extends EngineBa
      * @param form_data Data to post to the server
      * @param query_params Map of query paramaters to add to the request URL
      */
-    public add(form_data: HashMap, query_params: HashMap = {}): Promise<T> {
+    public add(form_data: HashMap, query_params: HashMap = {}, path: string = this.api_route): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             const query = toQueryString(query_params);
-            const url = `${this.api_route}${query ? '?' + query : ''}`;
+            const url = `${path}${query ? '?' + query : ''}`;
             let result: T;
             this.http.post(url, form_data).subscribe(
                 (d: HashMap) => {

@@ -23,24 +23,7 @@ export class PlaceMetadataService extends EngineResourceService<PlaceMetadata> {
      * @param id ID of the metadata parent
      */
     public add(form_data: HashMap, query_params: HashMap, id: string = 'default'): Promise<PlaceMetadata> {
-        return new Promise<PlaceMetadata>((resolve, reject) => {
-            const query = toQueryString(query_params);
-            const url = `${this.api_route}/${id}${query ? '?' + query : ''}`;
-            let result: PlaceMetadata;
-            this.http.post(url, form_data).subscribe(
-                (d: HashMap) => {
-                    result = this.process(d);
-                },
-                (e: HttpError) => {
-                    this._promises.new_item = null as any;
-                    reject(e);
-                },
-                () => {
-                    this._promises.new_item = null as any;
-                    resolve(result);
-                }
-            );
-        });
+        return super.add(form_data, query_params, `${this.api_route}/${id}`);
     }
 
     /**

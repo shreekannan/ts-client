@@ -26,10 +26,17 @@ describe('PlaceMetadataService', () => {
         expect(service).toBeInstanceOf(PlaceMetadataService);
     });
 
-    it('allow querying zones show', async () => {
+    it('allow querying metadata show', async () => {
         http.get.mockReturnValueOnce(of({ parent_id: 'test' }));
         const result = await service.show('test');
         expect(http.get).toBeCalledWith('/api/engine/v2/metadata/test');
+        expect(result).toBeInstanceOf(PlaceMetadata);
+    });
+
+    it('allow adding new metadata', async () => {
+        http.post.mockReturnValueOnce(of({ parent_id: 'test' }));
+        const result = await service.add({}, {}, 'new_item');
+        expect(http.post).toBeCalledWith('/api/engine/v2/metadata/new_item', {});
         expect(result).toBeInstanceOf(PlaceMetadata);
     });
 
