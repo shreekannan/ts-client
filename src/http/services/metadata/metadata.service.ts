@@ -3,7 +3,9 @@ import { PlaceMetadata } from './metadata.class';
 import { PlaceZoneMetadataOptions } from './metadata.interfaces';
 import { PlaceZoneMetadata } from './zone-metadata.class';
 
+import { toQueryString } from '../../../utilities/api.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
+import { HttpError } from '../../http.interfaces';
 import { EngineHttpClient } from '../../http.service';
 
 export class PlaceMetadataService extends EngineResourceService<PlaceMetadata> {
@@ -12,6 +14,33 @@ export class PlaceMetadataService extends EngineResourceService<PlaceMetadata> {
         super(http);
         this._name = 'Metadata';
         this._api_route = 'metadata';
+    }
+
+    /**
+     * Make post request for a new item to the service
+     * @param form_data Data to post to the server
+     * @param query_params Map of query paramaters to add to the request URL
+     * @param id ID of the metadata parent
+     */
+    public add(form_data: HashMap, query_params: HashMap, id: string = 'default'): Promise<PlaceMetadata> {
+        return new Promise<PlaceMetadata>((resolve, reject) => {
+            const query = toQueryString(query_params);
+            const url = `${this.api_route}/${id}${query ? '?' + query : ''}`;
+            let result: PlaceMetadata;
+            this.http.post(url, form_data).subscribe(
+                (d: HashMap) => {
+                    result = this.process(d);
+                },
+                (e: HttpError) => {
+                    this._promises.new_item = null as any;
+                    reject(e);
+                },
+                () => {
+                    this._promises.new_item = null as any;
+                    resolve(result);
+                }
+            );
+        });
     }
 
     /**
