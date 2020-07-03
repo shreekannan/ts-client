@@ -31,6 +31,8 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
         EngineSettings | null,
         EngineSettings | null
     ] = [null, null, null, null];
+    /** Display name of the system */
+    public readonly display_name: string;
     /** Description of the system */
     public readonly description: string;
     /** Email address associated with the system */
@@ -58,6 +60,7 @@ export class EngineSystem extends EngineResource<EngineSystemsService> {
 
     constructor(raw_data: HashMap = {}) {
         super(raw_data);
+        this.display_name = raw_data.display_name || '';
         this.description = raw_data.description || '';
         this.email = raw_data.email || '';
         this.capacity = raw_data.capacity || 0;
