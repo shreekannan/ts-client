@@ -11,7 +11,7 @@ export class PlaceZoneMetadata {
     public readonly keys: string[];
 
     constructor(data: HashMap = {}) {
-        this.zone = new EngineZone(data);
+        this.zone = new EngineZone(data.zone);
         this.keys = data.keys || [];
         this.metadata = {};
         const metadata = data.metadata || {};
