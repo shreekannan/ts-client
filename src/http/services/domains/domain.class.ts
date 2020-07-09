@@ -2,7 +2,15 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineResource } from '../resources/resource.class';
 import { EngineDomainsService } from './domains.service';
 
-export const DOMAIN_MUTABLE_FIELDS = ['name', 'domain', 'login_url', 'logout_url', 'description', 'config', 'internals'] as const;
+export const DOMAIN_MUTABLE_FIELDS = [
+    'name',
+    'domain',
+    'login_url',
+    'logout_url',
+    'description',
+    'config',
+    'internals'
+] as const;
 type DomainMutableTuple = typeof DOMAIN_MUTABLE_FIELDS;
 export type DomainMutableFields = DomainMutableTuple[number];
 
@@ -16,9 +24,9 @@ export class EngineDomain extends EngineResource<EngineDomainsService> {
     /** Description of the domain domain */
     public readonly description: string;
     /** Local configuration for the domain */
-    public readonly config: string;
+    public readonly config: HashMap;
     /** Internal settings for the domain */
-    public readonly internals: string;
+    public readonly internals: HashMap;
     /** Class type of required service */
     protected __type: string = 'EngineDomain';
 
@@ -28,8 +36,8 @@ export class EngineDomain extends EngineResource<EngineDomainsService> {
         this.domain = raw_data.domain || '';
         this.login_url = raw_data.login_url || '';
         this.logout_url = raw_data.logout_url || '';
-        this.config = raw_data.config || '{}';
-        this.internals = raw_data.internals || '{}';
+        this.config = raw_data.config || {};
+        this.internals = raw_data.internals || {};
     }
 
     public storePendingChange(
@@ -37,16 +45,5 @@ export class EngineDomain extends EngineResource<EngineDomainsService> {
         value: EngineDomain[DomainMutableFields]
     ): this {
         return super.storePendingChange(key as any, value);
-    }
-
-    public toJSON(this: EngineDomain, with_changes: boolean = true): HashMap {
-        const obj = super.toJSON(with_changes);
-        if (this.config) {
-            obj.config = JSON.parse(this.config);
-        }
-        if (this.internals) {
-            obj.internals = JSON.parse(this.internals);
-        }
-        return obj;
     }
 }
