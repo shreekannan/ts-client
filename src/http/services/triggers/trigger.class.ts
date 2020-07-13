@@ -37,6 +37,8 @@ export class EngineTrigger extends EngineResource<EngineTriggersService> {
     public readonly enabled: boolean;
     /** Whether the trigger can call webhooks */
     public readonly enable_webhook: boolean;
+    /** Whether the trigger instance can execute methods */
+    public readonly exec_enabled: boolean;
     /** Auth key for trigger's webhook */
     public readonly webhook_secret: string;
     /** HTTP verbs supported by the webhook */
@@ -95,6 +97,7 @@ export class EngineTrigger extends EngineResource<EngineTriggersService> {
         this.system_name =
             raw_data.system_name || (raw_data.control_system ? raw_data.control_system.name : '');
         this.enable_webhook = raw_data.enable_webhook || false;
+        this.exec_enabled = raw_data.exec_enabled || false;
         this.supported_methods = raw_data.supported_methods || ['POST'];
         this.activated_count = raw_data.activated_count || raw_data.trigger_count || 0;
     }
