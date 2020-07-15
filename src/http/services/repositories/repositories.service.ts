@@ -65,6 +65,14 @@ export class EngineRepositoriesService extends EngineResourceService<EngineRepos
     }
 
     /**
+     * Get a list of all the branches for a repository
+     * @param id ID of the repository
+     */
+    public async listBranches(id: string): Promise<string[]> {
+        return await this.task(id, 'branches', undefined, 'get');
+    }
+
+    /**
      * Get the details for a given driver
      * @param id ID of the repository
      * @param query Addition query parameters to pass to the request

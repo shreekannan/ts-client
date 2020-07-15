@@ -85,6 +85,14 @@ describe('EngineRepositoriesService', () => {
         expect(result[0]).toBe(commit);
     });
 
+    it('should allow querying the branch list for a repository', async () => {
+        http.get.mockReturnValueOnce(of(['master', 'develop']));
+        const result = await service.listBranches('test');
+        expect(http.get).toBeCalledWith('/api/engine/v2/repositories/test/branches');
+        expect(result).toBeInstanceOf(Array);
+        expect(result[0]).toBe('master');
+    });
+
     it('should allow querying a driver\'s details for a repository commit', async () => {
         const driver = {
             descriptive_name: 'Screen Technics Control',
