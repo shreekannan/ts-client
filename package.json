@@ -84,7 +84,6 @@
   },
   "peerDependencies": {
     "core-js": "^3.1.1",
-    "dayjs": "^1.8.14",
     "rxjs": "^6.5.2",
     "ts-md5": "^1.2.4"
   },
@@ -100,7 +99,7 @@
     "coveralls": "^3.0.2",
     "cross-env": "^5.2.0",
     "cz-conventional-changelog": "^2.1.0",
-    "dayjs": "^1.8.14",
+    "date-fns": "^2.14.0",
     "faker": "^4.1.0",
     "husky": "^1.0.1",
     "jest": "^25.1.0",

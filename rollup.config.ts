@@ -17,7 +17,6 @@ export default {
   ],
   // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
   external: [
-    'dayjs',
     'rxjs',
     'ts-md5'
   ],
