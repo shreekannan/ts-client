@@ -47,6 +47,10 @@ export class EngineOAuthSource extends EngineResource<EngineOAuthSourcesService>
     public readonly scope: string;
     /** URL to grab user's profile details with a valid token */
     public readonly raw_info_url: string;
+    /** Additional params to be sent as part of the authorisation request */
+    public readonly authorize_params: HashMap<string>;
+    /** Security checks to be made on the returned data String => Array(String) */
+    public readonly ensure_matching: HashMap<string[]>;
     /** Class type of required service */
     protected __type: string = 'EngineOAuthSource';
 
@@ -56,6 +60,8 @@ export class EngineOAuthSource extends EngineResource<EngineOAuthSourcesService>
         this.client_id = raw_data.client_id || '';
         this.client_secret = raw_data.client_secret || '';
         this.info_mappings = raw_data.info_mappings || {};
+        this.authorize_params = raw_data.authorize_params || {};
+        this.ensure_matching = raw_data.ensure_matching || {};
         this.site = raw_data.site || '';
         this.authorize_url = raw_data.authorize_url || 'oauth/authorize';
         this.token_method = raw_data.token_method || 'post';
