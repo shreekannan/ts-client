@@ -163,13 +163,17 @@ export class EngineHttpClient {
             });
             this._response_headers[resp.request.url || ''] = header_map;
         }
-        switch (type) {
-            case 'json':
-                return typeof text === 'string' ? JSON.parse(text || '{}') : text;
-            case 'text':
-                return typeof text === 'string' ? text : (typeof text === 'object' ? JSON.stringify(text) : `${text}`);
-            case 'void':
-                return;
+        try {
+            switch (type) {
+                case 'json':
+                    return typeof text === 'string' ? JSON.parse(text || '{}') : text;
+                case 'text':
+                    return typeof text === 'string' ? text : (typeof text === 'object' ? JSON.stringify(text) : `${text}`);
+                case 'void':
+                    return;
+            }
+        } catch (e) {
+            return text;
         }
     }
 
