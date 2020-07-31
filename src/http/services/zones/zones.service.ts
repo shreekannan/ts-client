@@ -2,6 +2,7 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { EngineHttpClient } from '../../http.service';
 import { EngineResourceService } from '../resources/resources.service';
 import { ServiceManager } from '../service-manager.class';
+import { EngineTrigger } from '../triggers/trigger.class';
 import { EngineZone } from './zone.class';
 import { EngineZoneQueryOptions, EngineZoneShowOptions } from './zone.interfaces';
 
@@ -47,6 +48,16 @@ export class EngineZonesService extends EngineResourceService<EngineZone> {
         args: any[] = []
     ): Promise<HashMap> {
         return this.task(id, `${module}_${index}/${method}`, args);
+    }
+
+    /**
+     * Get list of triggers for system
+     * @param id System ID
+     */
+    public listTriggers(id: string): Promise<EngineTrigger[]> {
+        return this.task(id, 'triggers', undefined, 'get', (list: any[]) =>
+            list.map(item => new EngineTrigger(item))
+        );
     }
 
     /**

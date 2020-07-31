@@ -88,7 +88,7 @@ export class EngineTrigger extends EngineResource<EngineTriggersService> {
         this.description = raw_data.description || '';
         this._actions = raw_data.actions || { functions: [], mailers: [] };
         this._conditions = raw_data.conditions || { comparisons: [], time_dependents: [] };
-        this.debounce_period = raw_data.debounce_period || -1;
+        this.debounce_period = raw_data.debounce_period || 0;
         this.important = raw_data.important || false;
         this.enabled = raw_data.enabled || false;
         this.webhook_secret = raw_data.webhook_secret || '';
