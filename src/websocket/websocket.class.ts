@@ -218,7 +218,8 @@ export class EngineWebsocket {
                     module: `${meta.mod}_${meta.index}`,
                     class_name: message.klass || '<empty>',
                     message: message.msg || '<empty>',
-                    level: message.level || EngineLogLevel.Debug
+                    level: message.level || EngineLogLevel.Debug,
+                    time: Math.floor((new Date().getTime() / 1000))
                 });
             } else if (message.type === 'error') {
                 this.handleError(message);

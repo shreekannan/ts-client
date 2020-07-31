@@ -122,4 +122,6 @@ export interface EngineDebugEvent {
     level: EngineLogLevel;
     /** Contents of the debug event */
     message: string;
+    /** Unix epoch of message arrival in seconds */
+    time: number;
 }
