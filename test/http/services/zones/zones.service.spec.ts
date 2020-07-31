@@ -45,4 +45,11 @@ describe('EngineZonesService', () => {
         expect(http.post).toBeCalledWith('/api/engine/v2/zones/test/jim_1/exec', []);
     });
 
+    it('allow listing triggers', async () => {
+        http.get.mockReturnValueOnce(of([{ id: '1' }]));
+        const value = await service.listTriggers('test');
+        expect(http.get).toBeCalledWith(`/api/engine/v2/zones/test/triggers`);
+        expect(value.length).toBe(1);
+    });
+
 });
