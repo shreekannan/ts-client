@@ -1,596 +1,583 @@
+import { addSeconds, isBefore, startOfMinute } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
 import { Md5 } from 'ts-md5/dist/md5';
 
+import { destroyWaitingAsync } from '../utilities/async.utilities';
 import { generateNonce, getFragments, log, removeFragment } from '../utilities/general.utilities';
 import { HashMap } from '../utilities/types.utilities';
 import {
-    EngineAuthOptions,
-    EngineAuthority,
-    EngineTokenResponse,
-    MOCK_AUTHORITY
+    MOCK_AUTHORITY,
+    PlaceAuthOptions,
+    PlaceAuthority,
+    PlaceTokenResponse
 } from './auth.interfaces';
 
-import * as _dayjs from 'dayjs';
-// tslint:disable-next-line:no-duplicate-imports
-import { Dayjs, default as _rollupDayjs } from 'dayjs';
+let _options: PlaceAuthOptions;
+/** Browser key store to use for authentication credentials. Defaults to localStorage */
+let _storage: Storage = localStorage;
+/** Authentication authority of for the current domain */
+let _authority: PlaceAuthority | undefined;
+/** Map of promises */
+const _promises: HashMap<Promise<any> | undefined> = {};
+/** OAuth 2 client ID for the application */
+let _client_id: string = '';
+/** OAuth 2 state property */
+let _state: string = '';
+/** OAuth 2 token generation code */
+let _code: string = '';
+/** Whether engine is online */
+const _online = new BehaviorSubject(false);
+/** Observer for the online state of engine */
+const _online_observer = _online.asObservable();
+
+/** API Endpoint for the retrieved version of engine */
+export function apiEndpoint(): string {
+    const secure = _options?.secure || location.protocol.indexOf('https') >= 0;
+    const api_host = `${secure ? 'https:' : 'http:'}//${_options?.host || location.host}`;
+    return `${api_host}${httpRoute()}`;
+}
+
+/** Path of the API endpoint */
+export function httpRoute() {
+    /* istanbul ignore else */
+    if (_authority) {
+        /* istanbul ignore else */
+        if (!/[2-9]\.[0-9]+\.[0-9]+/g.test(_authority.version || '')) {
+            return `/control/api`;
+        }
+    }
+    return `/api/engine/v2`;
+}
+
+/** OAuth 2 client ID for the application */
+export function clientId(): string {
+    return _client_id;
+}
+
+/** Redirect URI for the OAuth flow */
+export function redirectUri(): string {
+    return _options?.redirect_uri;
+}
+
+/** Bearer token for authenticating requests to engine */
+export function token(): string {
+    if (_options?.mock) {
+        return 'mock-token';
+    }
+    const expires_at = `${_storage.getItem(`${_client_id}_expires_at`)}`;
+    if (isBefore(new Date(+expires_at), new Date())) {
+        log('Auth', 'Token expired. Requesting new token...');
+        invalidateToken();
+    }
+    return _storage.getItem(`${_client_id}_access_token`) || '';
+}
+
+/** Refresh token for renewing the access token */
+export function refreshToken(): string {
+    return _storage.getItem(`${_client_id}_refresh_token`) || '';
+}
+
+/** Host domain of the PlaceOS server */
+export function host(): string {
+    return _options?.host || location.host;
+}
+
+/** Whether the application has an authentication token */
+export function hasToken(): boolean {
+    return !!token();
+}
+
+/** Place Authority details */
+export function authority(): PlaceAuthority | undefined {
+    return _authority;
+}
+
+/** Whether engine is online */
+export function isOnline(): boolean {
+    return _online.getValue();
+}
+
+/** Whether engine is online */
+export function isMock(): boolean {
+    return !!_options?.mock;
+}
+
+/** Whether engine connection is secure */
+export function isSecure(): boolean {
+    return !!_options?.secure;
+}
+
+/** Observable for the online state of engine */
+export function onlineState(): Observable<boolean> {
+    return _online_observer;
+}
+
+/** Whether this application is trusted */
+export function trusted(): boolean {
+    const fragments = getFragments();
+    let is_trusted = fragments.trust === 'true';
+    /* istanbul ignore else */
+    if (localStorage) {
+        const key = `${clientId}_trusted`;
+        is_trusted =
+            is_trusted ||
+            localStorage.getItem(key) === 'true' ||
+            localStorage.getItem('trusted') === 'true';
+        localStorage.setItem(key, `${is_trusted}`);
+    }
+    return is_trusted;
+}
+
+/** Whether this application is on a fixed location device */
+export function fixedDevice(): boolean {
+    const fragments = getFragments();
+    let fixed_device = fragments.fixed_device === 'true';
+    /* istanbul ignore else */
+    if (localStorage) {
+        const key = `${clientId}_fixed_device`;
+        fixed_device =
+            fixed_device ||
+            localStorage.getItem(key) === 'true' ||
+            localStorage.getItem('fixed_device') === 'true';
+        localStorage.setItem(key, `${fixed_device}`);
+    }
+    return fixed_device;
+}
+
+export function setup(options: PlaceAuthOptions) {
+    _options = options;
+    // Intialise storage
+    _storage = options.storage === 'session' ? sessionStorage : localStorage;
+    _client_id = Md5.hashStr(options.redirect_uri, false) as string;
+    return loadAuthority();
+}
+
+export function cleanup() {
+    _options = {} as any;
+    _authority = undefined;
+    _online.next(false);
+    _client_id = '';
+    _code = '';
+    _state = '';
+    // Clear local subscriptions
+    for (const key in _promises) {
+        if (_promises.hasOwnProperty(key)) {
+            delete _promises[key];
+        }
+    }
+    destroyWaitingAsync();
+}
+
 /**
- * @hidden
+ * Refresh authentication
  */
-const dayjs = _rollupDayjs || _dayjs;
+export function refreshAuthority(): Promise<void> {
+    _authority = undefined;
+    return loadAuthority();
+}
 
 /**
- * Method store to allow attaching spies for testing
- * @hidden
+ * Invalidate the current access token
  */
-export const engine = { ajax, log };
+export function invalidateToken(): void {
+    _storage.removeItem(`${_client_id}_access_token`);
+    _storage.removeItem(`${_client_id}_expires_at`);
+}
 
-export class EngineAuthService {
-    /** Browser key store to use for authentication credentials. Defaults to localStorage */
-    private _storage: Storage = localStorage;
-    /** Authentication authority of for the current domain */
-    private _authority: EngineAuthority | undefined;
-    /** Map of promises */
-    private _promises: HashMap<Promise<any> | undefined> = {};
-    /** OAuth 2 client ID for the application */
-    private _client_id: string = '';
-    /** OAuth 2 state property */
-    private _state: string = '';
-    /** OAuth 2 token generation code */
-    private _code: string = '';
-    /** Whether engine is online */
-    private _online = new BehaviorSubject(false);
-    /** Observer for the online state of engine */
-    private _online_observer = this._online.asObservable();
-
-    constructor(private options: EngineAuthOptions) {
-        /* istanbul ignore else */
-        if (options) {
-            this.setup(options);
-        }
-    }
-
-    public setup(options: EngineAuthOptions) {
-        this.options = options;
-        // Intialise storage
-        this._storage = this.options.storage === 'session' ? sessionStorage : localStorage;
-        this._client_id = Md5.hashStr(this.options.redirect_uri, false) as string;
-        this.loadAuthority();
-    }
-
-    /** API Endpoint for the retrieved version of engine */
-    public get api_endpoint() {
-        const secure = this.options.secure || location.protocol.indexOf('https') >= 0;
-        const host = `${secure ? 'https:' : 'http:'}//${this.options.host || location.host}`;
-        return `${host}${this.route}`;
-    }
-
-    /** Path of the API endpoint */
-    public get route() {
-        /* istanbul ignore else */
-        if (this.authority) {
-            /* istanbul ignore else */
-            if (!/[2-9]\.[0-9]+\.[0-9]+/g.test(this.authority.version || '')) {
-                return `/control/api`;
+/**
+ * Check the users authentication credentials and perform actions
+ * required for the user to authenticate
+ * @param state Additional state information for auth requests
+ */
+export function authorise(state?: string): Promise<string> {
+    /* istanbul ignore else */
+    if (!_promises.authorise) {
+        _promises.authorise = new Promise<string>((resolve, reject) => {
+            if (!_authority) {
+                return reject('Authority is not loaded');
             }
-        }
-        return `/api/engine/v2`;
-    }
-
-    /** OAuth 2 client ID for the application */
-    public get client_id(): string {
-        return this._client_id;
-    }
-
-    /** Redirect URI for the OAuth flow */
-    public get redirect_uri(): string {
-        return (this.options || {}).redirect_uri;
-    }
-
-    /** Bearer token for authenticating requests to engine */
-    public get token(): string {
-        if (this.options.mock) {
-            return 'mock-token';
-        }
-        const expires_at = `${this._storage.getItem(`${this._client_id}_expires_at`)}`;
-        if (dayjs(+expires_at).isBefore(dayjs(), 's')) {
-            engine.log('Auth', 'Token expired. Requesting new token...');
-            this.invalidateToken();
-        }
-        return this._storage.getItem(`${this._client_id}_access_token`) || '';
-    }
-
-    /** Refresh token for renewing the access token */
-    public get refresh_token(): string {
-        return this._storage.getItem(`${this._client_id}_refresh_token`) || '';
-    }
-
-    /** Host domain of the PlaceOS server */
-    public get host(): string {
-        return (this.options && this.options.host ? this.options.host : '') || location.host;
-    }
-
-    /** Whether the application has an authentication token */
-    public get has_token(): boolean {
-        return !!this.token;
-    }
-
-    /** Engine Authority details */
-    public get authority(): EngineAuthority | undefined {
-        return this._authority;
-    }
-
-    /** Whether engine is online */
-    public get is_online(): boolean {
-        return this._online.getValue();
-    }
-
-    /** Observable for the online state of engine */
-    public get online_state(): Observable<boolean> {
-        return this._online_observer;
-    }
-
-    /** Whether this application is trusted */
-    public get trusted(): boolean {
-        const fragments = getFragments();
-        let trusted = fragments.trust === 'true';
-        /* istanbul ignore else */
-        if (localStorage) {
-            const key = `${this.client_id}_trusted`;
-            trusted =
-                trusted ||
-                localStorage.getItem(key) === 'true' ||
-                localStorage.getItem('trusted') === 'true';
-            localStorage.setItem(key, `${trusted}`);
-        }
-        return trusted;
-    }
-
-    /** Whether this application is on a fixed location device */
-    public get fixed_device(): boolean {
-        const fragments = getFragments();
-        let fixed_device = fragments.fixed_device === 'true';
-        /* istanbul ignore else */
-        if (localStorage) {
-            const key = `${this.client_id}_fixed_device`;
-            fixed_device =
-                fixed_device ||
-                localStorage.getItem(key) === 'true' ||
-                localStorage.getItem('fixed_device') === 'true';
-            localStorage.setItem(key, `${fixed_device}`);
-        }
-        return fixed_device;
-    }
-
-    /**
-     * Refresh authentication
-     */
-    public refreshAuthority() {
-        this._authority = undefined;
-        this.loadAuthority();
-    }
-
-    /**
-     * Invalidate the current access token
-     */
-    public invalidateToken() {
-        this._storage.removeItem(`${this._client_id}_access_token`);
-        this._storage.removeItem(`${this._client_id}_expires_at`);
-    }
-
-    /**
-     * Check the users authentication credentials and perform actions required for the user to authenticate
-     * @param state Additional state information for auth requests
-     */
-    public authorise(state?: string): Promise<string> {
-        /* istanbul ignore else */
-        if (!this._promises.authorise) {
-            this._promises.authorise = new Promise<string>((resolve, reject) => {
-                if (!this.authority) {
-                    return reject('Authority is not loaded');
-                }
-                engine.log('Auth', 'Authorising user...');
-                const authority = this._authority || {
-                    session: false,
-                    login_url: '/login?continue={{url}}'
-                };
-                const check_token = () => {
-                    if (this.token) {
-                        engine.log('Auth', 'Valid token found.');
-                        delete this._promises.authorise;
-                        resolve(this.token);
-                    } else {
-                        const token_handlers = [
-                            (_: any) => {
-                                delete this._promises.authorise;
-                                resolve(this.token);
-                            },
-                            (_: any) => {
-                                delete this._promises.authorise;
-                                reject(_);
-                            }
-                        ];
-                        if (this.options && this.options.auth_type === 'password') {
-                            this.generateTokenWithCredentials((this.options || {}) as any).then(
-                                ...token_handlers
-                            );
-                        } else if (this._code || this.refresh_token) {
-                            this.generateToken().then(...token_handlers);
-                        } else {
-                            if (authority.session) {
-                                engine.log('Auth', 'Users has session. Authorising application...');
-                                // Generate tokens
-                                const login_url = this.createLoginURL(state);
-                                /* istanbul ignore else */
-                                if (localStorage) {
-                                    localStorage.setItem('oauth_redirect', location.href);
-                                }
-                                setTimeout(() => window.location.assign(login_url), 300);
-                                delete this._promises.authorise;
-                            } else {
-                                engine.log('Auth', 'No user session');
-                                /* istanbul ignore else */
-                                if (this.options.handle_login !== false) {
-                                    engine.log('Auth', 'Redirecting to login page...');
-                                    // Redirect to login form
-                                    const url = authority.login_url.replace(
-                                        '{{url}}',
-                                        encodeURIComponent(location.href)
-                                    );
-                                    setTimeout(() => window.location.assign(url), 300);
-                                    delete this._promises.authorise;
-                                }
-                            }
-                            reject();
-                        }
-                    }
-                };
-                this.checkToken().then(check_token, check_token);
-            });
-        }
-        return this._promises.authorise as Promise<string>;
-    }
-
-    /**
-     * Logout and clear user credentials for the application
-     */
-    public logout() {
-        const done = () => {
-            // Remove user credentials
-            for (let i = 0; i < this._storage.length; i++) {
-                const key = this._storage.key(i);
-                if (key && key.indexOf(this.client_id) >= 0) {
-                    this._storage.removeItem(key);
-                }
-            }
-            // Redirect user to logout URL
-            const url = this.authority ? this.authority.logout_url : '/logout';
-            setTimeout(() => window.location.assign(url), 300);
-            this._online.next(false);
-        };
-        this.revokeToken().then(done, done);
-    }
-
-    /**
-     * Load authority details from engine
-     */
-    private loadAuthority(tries: number = 0) {
-        if (!this._promises.load_authority) {
-            this._promises.load_authority = new Promise(resolve => {
-                this._online.next(false);
-                if (this.options.mock) {
-                    // Setup mock authority
-                    this._authority = MOCK_AUTHORITY;
-                    engine.log('Auth', `System in mock mode`);
-                    this._online.next(true);
-                    resolve();
-                    return;
-                }
-                engine.log('Auth', `Fixed: ${this.fixed_device} | Trusted: ${this.trusted}`);
-                engine.log('Auth', `Loading authority...`);
-                let authority: EngineAuthority;
-                const secure = this.options.secure || location.protocol.indexOf('https') >= 0;
-                engine.ajax
-                    .get(`${secure ? 'https:' : 'http:'}//${this.host}/auth/authority`)
-                    .subscribe(
-                        resp =>
-                            (authority =
-                                resp.response && typeof resp.response === 'object'
-                                    ? resp.response
-                                    : null),
-                        err => {
-                            engine.log('Auth', `Failed to load authority(${err})`);
-                            this._online.next(false);
-                            delete this._promises.load_authority;
-                            // Retry if authority fails to load
-                            setTimeout(
-                                () => this.loadAuthority(tries).then(_ => resolve()),
-                                300 * Math.min(20, ++tries)
-                            );
-                        },
-                        () => {
-                            if (authority) {
-                                this._authority = authority;
-                                const response = () => {
-                                    this._online.next(true);
-                                    setTimeout(() => delete this._promises.load_authority, 500);
-                                    resolve();
-                                };
-                                this.authorise('').then(response, response);
-                            } else {
-                                // Retry if authority fails to load
-                                setTimeout(
-                                    () => this.loadAuthority(tries).then(_ => resolve()),
-                                    300 * Math.min(20, ++tries)
-                                );
-                            }
-                        }
-                    );
-            });
-        }
-        return this._promises.load_authority;
-    }
-
-    /**
-     * Check authentication token
-     */
-    private checkToken(): Promise<boolean> {
-        /* istanbul ignore else */
-        if (!this._promises.check_token) {
-            this._promises.check_token = new Promise((resolve, reject) => {
-                if (this.authority) {
-                    if (this.token) {
-                        engine.log('Auth', 'Valid token found.');
-                        resolve(this.token);
-                    } else {
-                        engine.log('Auth', 'No token. Checking URL for auth credentials...');
-                        this.checkForAuthParameters().then(
-                            _ => resolve(_),
-                            _ => reject(_)
-                        );
-                    }
-                    this._promises.check_token = undefined;
+            log('Auth', 'Authorising user...');
+            const api_authority = _authority || {
+                session: false,
+                login_url: '/login?continue={{url}}'
+            };
+            const check_token = () => {
+                if (token()) {
+                    log('Auth', 'Valid token found.');
+                    delete _promises.authorise;
+                    resolve(token());
                 } else {
-                    engine.log('Auth', 'Waiting for authority before checking token...');
-                    setTimeout(() => {
-                        this._promises.check_token = undefined;
-                        this.checkToken().then(
-                            _ => resolve(_),
-                            _ => reject(_)
+                    const token_handlers = [
+                        (_: any) => {
+                            delete _promises.authorise;
+                            resolve(token());
+                        },
+                        (_: any) => {
+                            delete _promises.authorise;
+                            reject(_);
+                        }
+                    ];
+                    if (_options && _options.auth_type === 'password') {
+                        generateTokenWithCredentials((_options || {}) as any).then(
+                            ...token_handlers
                         );
-                    }, 300);
-                }
-            });
-        }
-        return this._promises.check_token as Promise<boolean>;
-    }
-
-    /**
-     * Check URL for auth parameters
-     */
-    private checkForAuthParameters(): Promise<boolean> {
-        /* istanbul ignore else */
-        if (!this._promises.check_params) {
-            this._promises.check_params = new Promise((resolve, reject) => {
-                let fragments = getFragments();
-                if ((!fragments || Object.keys(fragments).length <= 0) && sessionStorage) {
-                    fragments = JSON.parse(sessionStorage.getItem('ENGINE.auth.params') || '{}');
-                }
-                if (
-                    fragments &&
-                    (fragments.code || fragments.access_token || fragments.refresh_token)
-                ) {
-                    // Store authorisation code
-                    if (fragments.code) {
-                        this._code = fragments.code;
-                        removeFragment('code');
-                    }
-                    // Store refresh token
-                    if (fragments.refresh_token) {
-                        this._storage.setItem(
-                            `${this._client_id}_refresh_token`,
-                            fragments.refresh_token
-                        );
-                        removeFragment('refresh_token');
-                    }
-                    const saved_nonce = this._storage.getItem(`${this._client_id}_nonce`) || '';
-                    const state_parts = (fragments.state || '').split(';');
-                    removeFragment('state');
-                    removeFragment('token_type');
-                    const nonce = state_parts[0];
-                    /* istanbul ignore else */
-                    if (saved_nonce === nonce) {
-                        // Store access token
-                        if (fragments.access_token) {
-                            this._storage.setItem(
-                                `${this._client_id}_access_token`,
-                                fragments.access_token
-                            );
-                            removeFragment('access_token');
-                        }
-                        // Store token expiry time
-                        if (fragments.expires_in) {
-                            const expires_at = dayjs()
-                                .add(parseInt(fragments.expires_in, 10), 's')
-                                .startOf('s');
-                            this._storage.setItem(
-                                `${this._client_id}_expires_at`,
-                                `${expires_at.valueOf()}`
-                            );
-                            removeFragment('expires_in');
-                        }
-                        // Store state
-                        if (state_parts[1]) {
-                            this._state = state_parts[1];
-                        }
-                        this._storage.removeItem('ENGINE.auth.redirect');
-                        this._storage.setItem('ENGINE.auth.finished', 'true');
-                        resolve(!!fragments.access_token);
+                    } else if (_code || refreshToken()) {
+                        generateToken().then(...token_handlers);
                     } else {
+                        if (api_authority.session) {
+                            log('Auth', 'Users has session. Authorising application...');
+                            // Generate tokens
+                            const login_url = createLoginURL(state);
+                            /* istanbul ignore else */
+                            if (localStorage) {
+                                localStorage.setItem('oauth_redirect', location.href);
+                            }
+                            setTimeout(() => window.location.assign(login_url), 300);
+                            delete _promises.authorise;
+                        } else {
+                            log('Auth', 'No user session');
+                            /* istanbul ignore else */
+                            if (_options?.handle_login !== false) {
+                                log('Auth', 'Redirecting to login page...');
+                                // Redirect to login form
+                                const url = api_authority.login_url?.replace(
+                                    '{{url}}',
+                                    encodeURIComponent(location.href)
+                                );
+                                setTimeout(() => window.location.assign(url), 300);
+                                delete _promises.authorise;
+                            }
+                        }
                         reject();
                     }
+                }
+            };
+            checkToken().then(check_token, check_token);
+        });
+    }
+    return _promises.authorise as Promise<string>;
+}
+
+/**
+ * Logout and clear user credentials for the application
+ */
+export function logout(): void {
+    const done = () => {
+        // Remove user credentials
+        for (let i = 0; i < _storage.length; i++) {
+            const key = _storage.key(i);
+            if (key && key.indexOf(_client_id) >= 0) {
+                _storage.removeItem(key);
+            }
+        }
+        // Redirect user to logout URL
+        const url = _authority ? _authority.logout_url : '/logout';
+        setTimeout(() => window.location.assign(url), 300);
+        _online.next(false);
+    };
+    revokeToken().then(done, done);
+}
+
+/**
+ * Load authority details from engine
+ */
+function loadAuthority(tries: number = 0): Promise<void> {
+    if (!_promises.load_authority) {
+        _promises.load_authority = new Promise<void>(resolve => {
+            _online.next(false);
+            if (_options?.mock) {
+                // Setup mock authority
+                _authority = MOCK_AUTHORITY;
+                log('Auth', `System in mock mode`);
+                _online.next(true);
+                resolve();
+                return;
+            }
+            log('Auth', `Fixed: ${fixedDevice()} | Trusted: ${trusted()}`);
+            log('Auth', `Loading authority...`);
+            const secure = _options?.secure || location.protocol.indexOf('https') >= 0;
+            fetch(`${secure ? 'https:' : 'http:'}//${host()}/auth/authority`)
+                .then(resp => {
+                    return resp.json();
+                })
+                .then(api_authority => {
+                    if (api_authority) {
+                        _authority = api_authority;
+                        const response = () => {
+                            _online.next(true);
+                            setTimeout(() => delete _promises.load_authority, 500);
+                            resolve();
+                        };
+                        authorise('').then(response, response);
+                    } else {
+                        // Retry if authority fails to load
+                        setTimeout(
+                            () => loadAuthority(tries).then(_ => resolve()),
+                            300 * Math.min(20, ++tries)
+                        );
+                    }
+                })
+                .catch(err => {
+                    log('Auth', `Failed to load authority(${err})`);
+                    _online.next(false);
+                    delete _promises.load_authority;
+                    // Retry if authority fails to load
+                    setTimeout(
+                        () => loadAuthority(tries).then(_ => resolve()),
+                        300 * Math.min(20, ++tries)
+                    );
+                });
+        });
+    }
+    return _promises.load_authority;
+}
+
+/**
+ * Check authentication token
+ */
+function checkToken(): Promise<boolean> {
+    /* istanbul ignore else */
+    if (!_promises.check_token) {
+        _promises.check_token = new Promise((resolve, reject) => {
+            if (_authority) {
+                if (token()) {
+                    log('Auth', 'Valid token found.');
+                    resolve(token());
+                } else {
+                    log('Auth', 'No token. Checking URL for auth credentials...');
+                    checkForAuthParameters().then(
+                        _ => resolve(_),
+                        _ => reject(_)
+                    );
+                }
+                _promises.check_token = undefined;
+            } else {
+                log('Auth', 'Waiting for authority before checking token...');
+                setTimeout(() => {
+                    _promises.check_token = undefined;
+                    checkToken().then(
+                        _ => resolve(_),
+                        _ => reject(_)
+                    );
+                }, 300);
+            }
+        });
+    }
+    return _promises.check_token as Promise<boolean>;
+}
+
+/**
+ * Check URL for auth parameters
+ */
+function checkForAuthParameters(): Promise<boolean> {
+    /* istanbul ignore else */
+    if (!_promises.check_params) {
+        _promises.check_params = new Promise((resolve, reject) => {
+            let fragments = getFragments();
+            if ((!fragments || Object.keys(fragments).length <= 0) && sessionStorage) {
+                fragments = JSON.parse(sessionStorage.getItem('ENGINE.auth.params') || '{}');
+            }
+            if (
+                fragments &&
+                (fragments.code || fragments.access_token || fragments.refresh_token)
+            ) {
+                // Store authorisation code
+                if (fragments.code) {
+                    _code = fragments.code;
+                    removeFragment('code');
+                }
+                // Store refresh token
+                if (fragments.refresh_token) {
+                    _storage.setItem(`${_client_id}_refresh_token`, fragments.refresh_token);
+                    removeFragment('refresh_token');
+                }
+                const saved_nonce = _storage.getItem(`${_client_id}_nonce`) || '';
+                const state_parts = (fragments.state || '').split(';');
+                removeFragment('state');
+                removeFragment('token_type');
+                const nonce = state_parts[0];
+                /* istanbul ignore else */
+                if (saved_nonce === nonce) {
+                    // Store access token
+                    if (fragments.access_token) {
+                        _storage.setItem(`${_client_id}_access_token`, fragments.access_token);
+                        removeFragment('access_token');
+                    }
+                    // Store token expiry time
+                    if (fragments.expires_in) {
+                        const expires_at = addSeconds(
+                            startOfMinute(new Date()),
+                            parseInt(fragments.expires_in, 10)
+                        );
+                        _storage.setItem(`${_client_id}_expires_at`, `${expires_at.valueOf()}`);
+                        removeFragment('expires_in');
+                    }
+                    // Store state
+                    if (state_parts[1]) {
+                        _state = state_parts[1];
+                    }
+                    _storage.removeItem('ENGINE.auth.redirect');
+                    _storage.setItem('ENGINE.auth.finished', 'true');
+                    resolve(!!fragments.access_token);
                 } else {
                     reject();
                 }
-                delete this._promises.check_params;
-            });
-        }
-        return this._promises.check_params as Promise<boolean>;
+            } else {
+                reject();
+            }
+            delete _promises.check_params;
+        });
     }
+    return _promises.check_params as Promise<boolean>;
+}
 
-    /**
-     * Generate login URL for the user to authenticate
-     * @param state State information to send to the server
-     */
-    private createLoginURL(state?: string): string {
-        const nonce = this.createAndSaveNonce();
-        state = state ? `${nonce};${state}` : nonce;
-        const has_query = this.options ? (this.options.auth_uri || '').indexOf('?') >= 0 : false;
-        const login_url = (this.options ? this.options.auth_uri : null) || '/auth/oauth/authorize';
-        const response_type = this.trusted ? 'code' : 'token';
-        const url =
-            `${login_url}${has_query ? '&' : '?'}` +
-            `response_type=${encodeURIComponent(response_type)}` +
-            `&client_id=${encodeURIComponent(this._client_id)}` +
-            `&state=${encodeURIComponent(state)}` +
-            `&redirect_uri=${encodeURIComponent(this.options.redirect_uri)}` +
-            `&scope=${encodeURIComponent(this.options.scope)}`;
+/**
+ * Generate login URL for the user to authenticate
+ * @param state State information to send to the server
+ */
+function createLoginURL(state?: string): string {
+    const nonce = createAndSaveNonce();
+    state = state ? `${nonce};${state}` : nonce;
+    const has_query = _options ? (_options.auth_uri || '').indexOf('?') >= 0 : false;
+    const login_url = (_options ? _options.auth_uri : null) || '/auth/oauth/authorize';
+    const response_type = trusted() ? 'code' : 'token';
+    const url =
+        `${login_url}${has_query ? '&' : '?'}` +
+        `response_type=${encodeURIComponent(response_type)}` +
+        `&client_id=${encodeURIComponent(_client_id)}` +
+        `&state=${encodeURIComponent(state)}` +
+        `&redirect_uri=${encodeURIComponent(_options.redirect_uri)}` +
+        `&scope=${encodeURIComponent(_options.scope)}`;
 
-        return url;
+    return url;
+}
+
+/**
+ * Generate token generation URL
+ */
+function createRefreshURL(): string {
+    const refresh_uri = _options.token_uri || '/auth/token';
+    let url = refresh_uri + `?client_id=${encodeURIComponent(_client_id)}`;
+    url += `&redirect_uri=${encodeURIComponent(_options.redirect_uri)}`;
+    if (refreshToken()) {
+        url += `&refresh_token=${encodeURIComponent(refreshToken())}`;
+        url += `&grant_type=refresh_token`;
+    } else {
+        url += `&code=${encodeURIComponent(_code)}`;
+        url += `&grant_type=authorization_code`;
     }
+    return url;
+}
 
-    /**
-     * Generate token generation URL
-     */
-    private createRefreshURL(): string {
-        const refresh_uri = this.options.token_uri || '/auth/token';
-        let url = refresh_uri + `?client_id=${encodeURIComponent(this._client_id)}`;
-        url += `&redirect_uri=${encodeURIComponent(this.options.redirect_uri)}`;
-        if (this.refresh_token) {
-            url += `&refresh_token=${encodeURIComponent(this.refresh_token)}`;
-            url += `&grant_type=refresh_token`;
-        } else {
-            url += `&code=${encodeURIComponent(this._code)}`;
-            url += `&grant_type=authorization_code`;
-        }
-        return url;
+/**
+ * Geneate a token URL for basic auth with the given credentials
+ * @param options Credentials to add to the token
+ */
+function createCredentialsURL(options: PlaceAuthOptions) {
+    const refresh_uri = options.token_uri || '/auth/token';
+    let url = refresh_uri + `?client_id=${encodeURIComponent(_client_id)}`;
+    url += `&client_secret=${encodeURIComponent(options.client_secret || '')}`;
+    url += `&grant_type=password`;
+    url += `&redirect_uri=${encodeURIComponent(options.redirect_uri)}`;
+    url += `&authority=${encodeURIComponent(_authority ? _authority.id : '')}`;
+    url += `&username=${encodeURIComponent(options.username || '')}`;
+    url += `&password=${encodeURIComponent(options.password || '')}`;
+    url += `&scope=${encodeURIComponent(options.scope || '')}`;
+    return url;
+}
+
+/**
+ * Revoke the current access token
+ */
+function revokeToken(): Promise<void> {
+    /* istanbul ignore else */
+    if (!_promises.revoke_token) {
+        _promises.revoke_token = new Promise<void>((resolve, reject) => {
+            const token_uri = _options.token_uri || '/auth/token';
+            if (!hasToken()) {
+                resolve();
+                delete _promises.revoke_token;
+            } else {
+                fetch(`${token_uri}?token=${token()}`, { method: 'POST' })
+                    .then(r => r.text())
+                    .then(() => {
+                        resolve();
+                        delete _promises.revoke_token;
+                    })
+                    .catch(err => {
+                        reject(err);
+                        delete _promises.revoke_token;
+                    });
+            }
+        });
     }
+    return _promises.revoke_token;
+}
 
-    /**
-     * Geneate a token URL for basic auth with the given credentials
-     * @param options Credentials to add to the token
-     */
-    private createCredentialsURL(options: EngineAuthOptions) {
-        const refresh_uri = this.options.token_uri || '/auth/token';
-        let url = refresh_uri + `?client_id=${encodeURIComponent(this._client_id)}`;
-        url += `&client_secret=${encodeURIComponent(options.client_secret || '')}`;
-        url += `&grant_type=password`;
-        url += `&redirect_uri=${encodeURIComponent(this.options.redirect_uri)}`;
-        url += `&authority=${encodeURIComponent(this._authority ? this._authority.id : '')}`;
-        url += `&username=${encodeURIComponent(options.username || '')}`;
-        url += `&password=${encodeURIComponent(options.password || '')}`;
-        url += `&scope=${encodeURIComponent(options.scope || '')}`;
-        return url;
-    }
+/**
+ * Generate new tokens from a auth code or refresh token
+ */
+function generateToken() {
+    return generateTokenWithUrl(createRefreshURL());
+}
 
-    /**
-     * Revoke the current access token
-     */
-    private revokeToken(): Promise<void> {
-        /* istanbul ignore else */
-        if (!this._promises.revoke_token) {
-            this._promises.revoke_token = new Promise<void>((resolve, reject) => {
-                const token_uri = this.options.token_uri || '/auth/token';
-                if (!this.has_token) {
-                    resolve();
-                    delete this._promises.revoke_token;
-                } else {
-                    engine.ajax.post(`${token_uri}?token=${this.token}`, '').subscribe(
-                        null,
-                        err => {
-                            reject(err);
-                            delete this._promises.revoke_token;
-                        },
-                        () => {
-                            resolve();
-                            delete this._promises.revoke_token;
-                        }
-                    );
-                }
-            });
-        }
-        return this._promises.revoke_token;
-    }
+/**
+ * Generate new tokens from a username and password
+ */
+function generateTokenWithCredentials(options: PlaceAuthOptions) {
+    return generateTokenWithUrl(createCredentialsURL(options));
+}
 
-    /**
-     * Generate new tokens from a auth code or refresh token
-     */
-    private generateToken() {
-        return this.generateTokenWithUrl(this.createRefreshURL());
-    }
-
-    /**
-     * Generate new tokens from a username and password
-     */
-    private generateTokenWithCredentials(options: EngineAuthOptions) {
-        return this.generateTokenWithUrl(this.createCredentialsURL(options));
-    }
-
-    /**
-     * Make a request to the tokens endpoint with the given URL
-     */
-    private generateTokenWithUrl(url: string): Promise<void> {
-        /* istanbul ignore else */
-        if (!this._promises.generate_tokens) {
-            this._promises.generate_tokens = new Promise<void>((resolve, reject) => {
-                engine.log('Auth', 'Generating new token...');
-                let tokens: EngineTokenResponse;
-                engine.ajax.post(url, '').subscribe(
-                    resp => {
-                        tokens = resp.response;
-                    },
-                    err => {
-                        engine.log('Auth', 'Error generating new tokens.', err);
+/**
+ * Make a request to the tokens endpoint with the given URL
+ */
+function generateTokenWithUrl(url: string): Promise<void> {
+    /* istanbul ignore else */
+    if (!_promises.generate_tokens) {
+        _promises.generate_tokens = new Promise<void>((resolve, reject) => {
+            log('Auth', 'Generating new token...');
+            fetch(url, { method: 'POST' })
+                .then(r => r.json())
+                .then((tokens: PlaceTokenResponse) => {
+                    if (tokens) {
+                        _storeTokenDetails(tokens);
+                        resolve();
+                    } else {
                         reject();
-                        delete this._promises.generate_tokens;
-                    },
-                    () => {
-                        if (tokens) {
-                            this._storeTokenDetails(tokens);
-                            resolve();
-                        } else {
-                            reject();
-                        }
-                        delete this._promises.generate_tokens;
                     }
-                );
-            });
-        }
-        return this._promises.generate_tokens as Promise<void>;
+                    delete _promises.generate_tokens;
+                })
+                .catch(err => {
+                    log('Auth', 'Error generating new tokens.', err);
+                    reject();
+                    delete _promises.generate_tokens;
+                });
+        });
     }
+    return _promises.generate_tokens as Promise<void>;
+}
 
-    private _storeTokenDetails(details: EngineTokenResponse) {
-        // Store access token
-        if (details.access_token) {
-            this._storage.setItem(`${this._client_id}_access_token`, details.access_token);
-        }
-        // Store refresh token
-        if (details.refresh_token) {
-            this._storage.setItem(`${this._client_id}_refresh_token`, details.refresh_token);
-        }
-        // Store token expiry time
-        if (details.expires_in) {
-            const expires_at = dayjs().add(parseInt(details.expires_in, 10), 's');
-            this._storage.setItem(`${this._client_id}_expires_at`, `${expires_at.valueOf()}`);
-        }
+function _storeTokenDetails(details: PlaceTokenResponse) {
+    // Store access token
+    if (details.access_token) {
+        _storage.setItem(`${_client_id}_access_token`, details.access_token);
     }
+    // Store refresh token
+    if (details.refresh_token) {
+        _storage.setItem(`${_client_id}_refresh_token`, details.refresh_token);
+    }
+    // Store token expiry time
+    if (details.expires_in) {
+        const expires_at = addSeconds(new Date(), parseInt(details.expires_in, 10));
+        _storage.setItem(`${_client_id}_expires_at`, `${expires_at.valueOf()}`);
+    }
+}
 
-    /**
-     * Create nonce and save it to the set key store
-     */
-    private createAndSaveNonce(): string {
-        const nonce = generateNonce();
-        this._storage.setItem(`${this._client_id}_nonce`, nonce);
-        return nonce;
-    }
+/**
+ * Create nonce and save it to the set key store
+ */
+function createAndSaveNonce(): string {
+    const nonce = generateNonce();
+    _storage.setItem(`${_client_id}_nonce`, nonce);
+    return nonce;
 }

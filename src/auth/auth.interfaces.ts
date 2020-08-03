@@ -13,8 +13,8 @@ export const MOCK_AUTHORITY = {
     version: `2.0.0`
 };
 
-export interface EngineAuthority {
-    /** Engine ID for the Authority */
+export interface PlaceAuthority {
+    /** Place ID for the Authority */
     readonly id: string;
     /** Authority name */
     readonly name: string;
@@ -34,13 +34,13 @@ export interface EngineAuthority {
     readonly config: HashMap;
     /** Version of the PlaceOS API */
     readonly version?: string;
-    /** URL to the metrics interface for Engine */
+    /** URL to the metrics interface for Place */
     readonly metrics?: string;
     /** DSN for Sentry integration */
     readonly sentry_dsn?: string;
 }
 
-export interface EngineAuthOptions {
+export interface PlaceAuthOptions {
     auth_type?: 'oauth' | 'password';
     /** Host name and port of the engine server */
     host?: string;
@@ -70,7 +70,7 @@ export interface EngineAuthOptions {
     client_secret?: string;
 }
 
-export interface EngineTokenResponse {
+export interface PlaceTokenResponse {
     /** New access token */
     access_token: string;
     /** New refresh token */
