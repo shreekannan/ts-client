@@ -528,7 +528,7 @@ function handleMockSend(
             const resp = {
                 id: request.id,
                 type: 'success',
-                value: request.cmd === 'exec' ? module.call(request.name, request.args) : null;
+                value: request.cmd === 'exec' ? module.call(request.name, request.args) : null
             } as PlaceResponse;
             websocket.next(resp);
         }, 10);
