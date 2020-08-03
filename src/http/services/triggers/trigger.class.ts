@@ -1,28 +1,9 @@
 import { HashMap } from '../../../utilities/types.utilities';
 import { HttpVerb } from '../../http.interfaces';
-import { EngineResource } from '../resources/resource.class';
+import { PlaceResource } from '../resources/resource.class';
 import { TriggerActions, TriggerConditions } from './trigger.interfaces';
-import { EngineTriggersService } from './triggers.service';
 
-export const TRIGGER_MUTABLE_FIELDS = [
-    'name',
-    'description',
-    'enabled',
-    'enable_webhook',
-    'supported_methods',
-    'actions',
-    'conditions',
-    'debounce_period',
-    'important',
-    'system_id'
-] as const;
-type TriggerMutableTuple = typeof TRIGGER_MUTABLE_FIELDS;
-export type TriggerMutableFields = TriggerMutableTuple[number];
-
-/** List of property keys that can only be set when creating a new object */
-const NON_EDITABLE_FIELDS = ['system_id'];
-
-export class EngineTrigger extends EngineResource<EngineTriggersService> {
+export class PlaceTrigger extends PlaceResource {
     /** Name of the system assocaited with the trigger */
     public readonly system_name: string;
     /** Number of times the trigger has been activated/triggered */
@@ -47,8 +28,6 @@ export class EngineTrigger extends EngineResource<EngineTriggersService> {
     public readonly control_system_id: string;
     /** ID of the zone associated with the trigger */
     public readonly zone_id: string;
-    /** Class type of required service */
-    protected __type: string = 'EngineTrigger';
 
     /** ID of the system associated with the trigger */
     public get system_id(): string {
@@ -100,15 +79,5 @@ export class EngineTrigger extends EngineResource<EngineTriggersService> {
         this.exec_enabled = raw_data.exec_enabled || false;
         this.supported_methods = raw_data.supported_methods || ['POST'];
         this.activated_count = raw_data.activated_count || raw_data.trigger_count || 0;
-    }
-
-    public storePendingChange(
-        key: TriggerMutableFields,
-        value: EngineTrigger[TriggerMutableFields]
-    ): this {
-        if (this.id && NON_EDITABLE_FIELDS.indexOf(key) >= 0) {
-            throw new Error(`Property "${key}" is not editable.`);
-        }
-        return super.storePendingChange(key as any, value);
     }
 }

@@ -1,7 +1,7 @@
-import { EngineCluster } from '../../../../src/http/services/clusters/cluster.class';
+import { PlaceCluster } from '../../../../src/http/services/clusters/cluster.class';
 
-describe('EngineCluster', () => {
-    let application: EngineCluster;
+describe('PlaceCluster', () => {
+    let application: PlaceCluster;
     let service: any;
 
     beforeEach(() => {
@@ -10,8 +10,8 @@ describe('EngineCluster', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        // EngineCluster.service = service;
-        application = new EngineCluster({
+        // PlaceCluster.service = service;
+        application = new PlaceCluster({
             id: '01E2PRBSNE4GXM9WGVM7M3KEZX',
             compiled_drivers: ['drivers_aca_private_helper_fe33588'],
             available_repositories: ['drivers', 'aca-drivers'],
@@ -31,7 +31,7 @@ describe('EngineCluster', () => {
 
     it('should create instance', () => {
         expect(application).toBeTruthy();
-        expect(application).toBeInstanceOf(EngineCluster);
+        expect(application).toBeInstanceOf(PlaceCluster);
     });
 
     it('should expose ID', () => {

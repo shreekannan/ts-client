@@ -1,45 +1,44 @@
-import { of } from 'rxjs';
-import { EngineDriver } from '../../../../src/http/services/drivers/driver.class';
-import { EngineDriversService } from '../../../../src/http/services/drivers/drivers.service';
+import { PlaceDriver } from '../../../../src/http/services/drivers/driver.class';
 
-describe('EngineDriversService', () => {
-    let service: EngineDriversService;
-    let http: any;
+import * as SERVICE from '../../../../src/http/services/drivers/drivers.service';
+import * as Resources from '../../../../src/http/services/resources/resources.service';
 
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new EngineDriversService(http);
+describe('Drivers API', () => {
+
+    it('should allow querying drivers', async () => {
+        const spy = jest.spyOn(Resources, 'query');
+        spy.mockImplementation(async (_, process: any, __) => [process({})]);
+        const list = await SERVICE.queryDrivers();
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceDriver);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(EngineDriversService);
+    it('should allow showing driver details', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.showDriver('1');
+        expect(item).toBeInstanceOf(PlaceDriver);
     });
 
-    it('allow querying drivers index', async () => {
-        http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
-        const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/drivers');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBeInstanceOf(EngineDriver);
+    it('should allow creating new drivers', async () => {
+        const spy = jest.spyOn(Resources, 'create');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.addDriver({});
+        expect(item).toBeInstanceOf(PlaceDriver);
     });
 
-    it('allow recompiling a driver', async () => {
-        http.post.mockReturnValueOnce(of(null));
-        await service.recompile('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/drivers/test/recompile', {});
+    it('should allow updating driver details', async () => {
+        const spy = jest.spyOn(Resources, 'update');
+        spy.mockImplementation(async (_, _0, _1, _2, process: any, _3) => process({}) as any);
+        const item = await SERVICE.updateDriver('1', {});
+        expect(item).toBeInstanceOf(PlaceDriver);
     });
 
-    it('allow checking if a driver is compiled', async () => {
-        http.get.mockReturnValueOnce(of(null));
-        await service.isCompiled('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/drivers/test/compiled');
+    it('should allow removing drivers', async () => {
+        const spy = jest.spyOn(Resources, 'remove');
+        spy.mockImplementation(async () => undefined);
+        const item = await SERVICE.removeDriver('1', {});
+        expect(item).toBeFalsy();
     });
 });

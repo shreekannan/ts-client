@@ -1,7 +1,9 @@
 import { HashMap } from '../../../utilities/types.utilities';
 
+/* tslint:disable */
+
 /** Allowable query parameters for basic index endpoints */
-export interface EngineResourceQueryOptions {
+export interface PlaceResourceQueryOptions {
     /**
      * Search filter supporting the following syntax
      * https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html
@@ -25,11 +27,11 @@ export interface ResourceService<T = any> {
     delete: (id: string) => Promise<void>;
 }
 
-export type EngineDataEventType = 'value_change' | 'item_saved' | 'reset' | 'other';
+export type PlaceDataEventType = 'value_change' | 'item_saved' | 'reset' | 'other';
 
-export interface EngineDataClassEvent {
+export interface PlaceDataClassEvent {
     /** Type of event that has occurred on the object */
-    type: EngineDataEventType;
+    type: PlaceDataEventType;
     /** Associated metadata with the event */
     metadata: HashMap;
 }

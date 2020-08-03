@@ -1,48 +1,44 @@
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineHttpClient } from '../../http.service';
-import { EngineResourceService } from '../resources/resources.service';
-import { ServiceManager } from '../service-manager.class';
-import { EngineDriver } from './driver.class';
-import { EngineDriverQueryOptions } from './drivers.interfaces';
+import { create, query, remove, show, task, update } from '../resources/resources.service';
+import { PlaceDriver } from './driver.class';
+import { PlaceDriverQueryOptions } from './drivers.interfaces';
 
-export class EngineDriversService extends EngineResourceService<EngineDriver> {
-    /* istanbul ignore next */
-    constructor(protected http: EngineHttpClient) {
-        super(http);
-        ServiceManager.setService(EngineDriver, this);
-        this._name = 'Driver';
-        this._api_route = 'drivers';
-    }
+const PATH = 'drivers';
+const NAME = 'Drivers';
 
-    /**
-     * Query the index of the API route associated with this service
-     * @param query_params Map of query paramaters to add to the request URL
-     */
-    public query(query_params?: EngineDriverQueryOptions) {
-        return super.query(query_params);
-    }
+function process(item: HashMap) {
+    return new PlaceDriver(item);
+}
 
-    /**
-     * Recompiles and reloads the latest version of the given driver
-     * @param id Driver ID
-     */
-    public recompile(id: string): Promise<void> {
-        return this.task(id, 'recompile');
-    }
+export function queryDrivers(query_params?: PlaceDriverQueryOptions) {
+    return query(query_params, process, PATH);
+}
 
-    /**
-     * Checks if the driver has been compiled on the server. Resolves if compiled, rejects otherwise
-     * @param id Driver ID
-     */
-    public isCompiled(id: string): Promise<void> {
-        return this.task(id, 'compiled', undefined, 'get');
-    }
+export function showDriver(id: string, query_params: HashMap = {}) {
+    return show(id, query_params, process, PATH);
+}
 
-    /**
-     * Convert API data into local interface
-     * @param item Raw API data
-     */
-    protected process(item: HashMap) {
-        return new EngineDriver(item);
-    }
+export function updateDriver(
+    id: string,
+    form_data: HashMap | PlaceDriver,
+    query_params: HashMap = {},
+    method: 'put' | 'patch' = 'patch'
+) {
+    return update(id, form_data, query_params, method, process, PATH);
+}
+
+export function addDriver(form_data: HashMap, query_params: HashMap = {}) {
+    return create(form_data, query_params, process, PATH);
+}
+
+export function removeDriver(id: string, query_params: HashMap = {}) {
+    return remove(id, query_params, PATH);
+}
+
+export function recompileDriver(id: string) {
+    return task(id, 'recompile', undefined, undefined, undefined, PATH);
+}
+
+export function isDriverCompiled(id: string) {
+    return task(id, 'recompile', undefined, 'get', undefined, PATH);
 }

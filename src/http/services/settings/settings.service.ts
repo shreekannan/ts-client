@@ -1,82 +1,53 @@
-import { toQueryString } from '../../../utilities/api.utilities';
-import { parseLinkHeader } from '../../../utilities/general.utilities';
+
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineHttpClient } from '../../http.service';
-import { EngineResourceService } from '../resources/resources.service';
-import { ServiceManager } from '../service-manager.class';
-import { EngineSettings } from './settings.class';
-import { EngineSettingsQueryOptions } from './settings.interfaces';
+import { create, query, remove, show, task, update } from '../resources/resources.service';
+import { PlaceSettings } from './settings.class';
+import { PlaceSettingsQueryOptions } from './settings.interfaces';
 
-export class EngineSettingsService extends EngineResourceService<EngineSettings> {
-    /* istanbul ignore next */
-    constructor(protected http: EngineHttpClient) {
-        super(http);
-        ServiceManager.setService(EngineSettings, this);
-        this._name = 'Settings';
-        this._api_route = 'settings';
-    }
+const PATH = 'settingss';
+const NAME = 'Settingss';
 
-    /**
-     * Query the index of the API route associated with this service
-     * @param query_params Map of query paramaters to add to the request URL
-     */
-    public query(query_params?: EngineSettingsQueryOptions) {
-        return super.query(query_params);
-    }
+function process(item: HashMap) {
+    return new PlaceSettings(item);
+}
 
-    public history(id: string, query_params: EngineSettingsQueryOptions = {}) {
-        let cache = 1000;
-        /* istanbul ignore else */
-        if (query_params && query_params.cache) {
-            cache = query_params.cache;
-            delete query_params.cache;
-        }
-        const query = toQueryString(query_params);
-        const key = `history|${query}`;
-        /* istanbul ignore else */
-        if (!this._promises[key]) {
-            this._promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.api_route}/${id}/history${query ? '?' + query : ''}`;
-                let result: EngineSettings[] | HashMap[] = [];
-                this.http.get(url).subscribe(
-                    (resp: HashMap) => {
-                        result =
-                            resp && resp instanceof Array
-                                ? resp.map(i => this.process(i))
-                                : resp && !(resp instanceof Array) && resp.results
-                                    ? (resp.results as HashMap[]).map(i => this.process(i))
-                                    : [];
-                    },
-                    (e: any) => {
-                        reject(e);
-                        this.timeout(key, () => delete this._promises[key], 1);
-                    },
-                    () => {
-                        const headers = this.http.responseHeaders(url);
-                        if (headers['x-total-count']) {
-                            const total = +headers['x-total-count'] || 0;
-                            query.length < 2 || query.length < 12 && query.indexOf('offset=') >= 0
-                                ? this._total = total
-                                : this._last_total = total;
-                        }
-                        if (headers.Link) {
-                            const link_map = parseLinkHeader(headers.Link);
-                            this._next = link_map.next;
-                        }
-                        resolve(result);
-                        this.timeout(key, () => delete this._promises[key], cache);
-                    }
-                );
-            });
-        }
-        return this._promises[key];
-    }
+export function querySettings(query_params?: PlaceSettingsQueryOptions) {
+    return query(query_params, process, PATH);
+}
 
-    /**
-     * Convert API data into local interface
-     * @param item Raw API data
-     */
-    protected process(item: HashMap) {
-        return new EngineSettings(item);
-    }
+export function showSettings(id: string, query_params: HashMap = {}) {
+    return show(id, query_params, process, PATH);
+}
+
+export function updateSettings(
+    id: string,
+    form_data: HashMap | PlaceSettings,
+    query_params: HashMap = {},
+    method: 'put' | 'patch' = 'patch'
+) {
+    return update(id, form_data, query_params, method, process, PATH);
+}
+
+export function addSettings(form_data: HashMap, query_params: HashMap = {}) {
+    return create(form_data, query_params, process, PATH);
+}
+
+export function removeSettings(id: string, query_params: HashMap = {}) {
+    return remove(id, query_params, PATH);
+}
+
+export function settingsHistory(id: string, query_params: HashMap = {}) {
+    return task(
+        id,
+        'history',
+        query_params,
+        'get',
+        (resp: HashMap) =>
+            resp && resp instanceof Array
+                ? resp.map(i => process(i))
+                : resp && !(resp instanceof Array) && resp.results
+                ? (resp.results as HashMap[]).map(i => process(i))
+                : [],
+        PATH
+    );
 }

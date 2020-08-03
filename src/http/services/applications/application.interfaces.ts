@@ -1,5 +1,6 @@
+/* tslint:disable */
 /** Mapping of available query paramters for the application index endpoint */
-export interface EngineApplicationQueryOptions {
+export interface PlaceApplicationQueryOptions {
     /**
      * Search filter supporting the following syntax
      * https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-simple-query-string-query.html

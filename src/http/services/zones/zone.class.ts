@@ -1,35 +1,17 @@
 
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineResource } from '../resources/resource.class';
-import { EngineSettings } from '../settings/settings.class';
+import { PlaceResource } from '../resources/resource.class';
+import { PlaceSettings } from '../settings/settings.class';
 import { EncryptionLevel } from '../settings/settings.interfaces';
-import { EngineTrigger } from '../triggers/trigger.class';
-import { EngineZonesService } from './zones.service';
+import { PlaceTrigger } from '../triggers/trigger.class';
 
-export const ZONE_MUTABLE_FIELDS = [
-    'name',
-    'description',
-    'parent_id',
-    'triggers',
-    'tags',
-    'location',
-    'display_name',
-    'code',
-    'type',
-    'count',
-    'capacity',
-    'map_id'
-] as const;
-type ZoneMutableTuple = typeof ZONE_MUTABLE_FIELDS;
-export type ZoneMutableFields = ZoneMutableTuple[number];
-
-export class EngineZone extends EngineResource<EngineZonesService> {
+export class PlaceZone extends PlaceResource {
     /** Tuple of user settings of differring encryption levels for the zone */
     public readonly settings: [
-        EngineSettings | null,
-        EngineSettings | null,
-        EngineSettings | null,
-        EngineSettings | null
+        PlaceSettings | null,
+        PlaceSettings | null,
+        PlaceSettings | null,
+        PlaceSettings | null
     ] = [null, null, null, null];
     /** Description of the zone's purpose */
     public readonly description: string;
@@ -53,8 +35,11 @@ export class EngineZone extends EngineResource<EngineZonesService> {
     public readonly capacity: number;
     /** ID or URL of or in a map associated with the zone */
     public readonly map_id: string;
-    /** List of modules associated with the system. Only available from the show method with the `complete` query parameter */
-    public trigger_list: readonly EngineTrigger[] = [];
+    /**
+     * List of modules associated with the system.
+     * Only available from the show method with the `complete` query parameter
+     */
+    public readonly trigger_list: readonly PlaceTrigger[] = [];
 
     constructor(raw_data: HashMap = {}) {
         super(raw_data);
@@ -75,7 +60,7 @@ export class EngineZone extends EngineResource<EngineZonesService> {
         }
         for (const level in EncryptionLevel) {
             if (!isNaN(Number(level)) && !this.settings[level]) {
-                this.settings[level] = new EngineSettings({
+                this.settings[level] = new PlaceSettings({
                     parent_id: this.id,
                     encryption_level: +level
                 });
@@ -83,12 +68,8 @@ export class EngineZone extends EngineResource<EngineZonesService> {
         }
         if (raw_data.trigger_data && raw_data.trigger_data instanceof Array) {
             this.trigger_list = raw_data.trigger_data.map(
-                trigger => new EngineTrigger(trigger)
+                trigger => new PlaceTrigger(trigger)
             );
         }
-    }
-
-    public storePendingChange(key: ZoneMutableFields, value: EngineZone[ZoneMutableFields]): this {
-        return super.storePendingChange(key as any, value);
     }
 }

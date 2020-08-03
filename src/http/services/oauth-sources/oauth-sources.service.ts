@@ -1,32 +1,36 @@
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineHttpClient } from '../../http.service';
-import { EngineAuthSourceQueryOptions } from '../auth-sources/auth-source.interfaces';
-import { EngineResourceService } from '../resources/resources.service';
-import { ServiceManager } from '../service-manager.class';
-import { EngineOAuthSource } from './oauth-source.class';
+import { PlaceAuthSourceQueryOptions } from '../auth-sources/auth-source.interfaces';
+import { create, query, remove, show, update } from '../resources/resources.service';
+import { PlaceOAuthSource } from './oauth-source.class';
 
-export class EngineOAuthSourcesService extends EngineResourceService<EngineOAuthSource> {
-    /* istanbul ignore next */
-    constructor(protected http: EngineHttpClient) {
-        super(http);
-        ServiceManager.setService(EngineOAuthSource, this);
-        this._name = 'OAuth Authentication Source';
-        this._api_route = 'oauth_auths';
-    }
+const PATH = 'oauth_sources';
+const NAME = 'OAuth Authentication Sources';
 
-    /**
-     * Query the index of the API route associated with this service
-     * @param query_params Map of query paramaters to add to the request URL
-     */
-    public query(query_params?: EngineAuthSourceQueryOptions) {
-        return super.query(query_params);
-    }
+function process(item: HashMap) {
+    return new PlaceOAuthSource(item);
+}
 
-    /**
-     * Convert API data into local interface
-     * @param item Raw API data
-     */
-    protected process(item: HashMap) {
-        return new EngineOAuthSource(item);
-    }
+export function queryOAuthSources(query_params?: PlaceAuthSourceQueryOptions) {
+    return query(query_params, process, PATH);
+}
+
+export function showOAuthSource(id: string, query_params: HashMap = {}) {
+    return show(id, query_params, process, PATH);
+}
+
+export function updateOAuthSource(
+    id: string,
+    form_data: HashMap | PlaceOAuthSource,
+    query_params: HashMap = {},
+    method: 'put' | 'patch' = 'patch'
+) {
+    return update(id, form_data, query_params, method, process, PATH);
+}
+
+export function addOAuthSource(form_data: HashMap, query_params: HashMap = {}) {
+    return create(form_data, query_params, process, PATH);
+}
+
+export function removeOAuthSource(id: string, query_params: HashMap = {}) {
+    return remove(id, query_params, PATH);
 }

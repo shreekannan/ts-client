@@ -1,41 +1,44 @@
-import { of } from 'rxjs';
+import { PlaceDomain } from '../../../../src/http/services/domains/domain.class';
 
-import { EngineDomain } from '../../../../src/http/services/domains/domain.class';
-import { EngineDomainsService } from '../../../../src/http/services/domains/domains.service';
+import * as SERVICE from '../../../../src/http/services/domains/domains.service';
+import * as Resources from '../../../../src/http/services/resources/resources.service';
 
-describe('EngineDomainsService', () => {
-    let service: EngineDomainsService;
-    let http: any;
+describe('Domains API', () => {
 
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new EngineDomainsService(http);
+    it('should allow querying domain', async () => {
+        const spy = jest.spyOn(Resources, 'query');
+        spy.mockImplementation(async (_, process: any, __) => [process({})]);
+        const list = await SERVICE.queryDomains();
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceDomain);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(EngineDomainsService);
+    it('should allow showing domain details', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.showDomain('1');
+        expect(item).toBeInstanceOf(PlaceDomain);
     });
 
-    it('allow querying systems index', async () => {
-        http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
-        const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/domains');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBeInstanceOf(EngineDomain);
+    it('should allow creating new domains', async () => {
+        const spy = jest.spyOn(Resources, 'create');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.addDomain({});
+        expect(item).toBeInstanceOf(PlaceDomain);
     });
 
-    it('allow querying systems show', async () => {
-        http.get.mockReturnValueOnce(of({ id: 'test' }));
-        const result = await service.show('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/domains/test');
-        expect(result).toBeInstanceOf(EngineDomain);
+    it('should allow updating domain details', async () => {
+        const spy = jest.spyOn(Resources, 'update');
+        spy.mockImplementation(async (_, _0, _1, _2, process: any, _3) => process({}) as any);
+        const item = await SERVICE.updateDomain('1', {});
+        expect(item).toBeInstanceOf(PlaceDomain);
+    });
+
+    it('should allow removing domains', async () => {
+        const spy = jest.spyOn(Resources, 'remove');
+        spy.mockImplementation(async () => undefined);
+        const item = await SERVICE.removeDomain('1', {});
+        expect(item).toBeFalsy();
     });
 });

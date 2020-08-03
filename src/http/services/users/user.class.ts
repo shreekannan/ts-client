@@ -1,36 +1,10 @@
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineResource } from '../resources/resource.class';
-import { EngineUsersService } from './users.service';
-
-export const USER_MUTABLE_FIELDS = [
-    'name',
-    'email',
-    'authority_id',
-    'email',
-    'phone',
-    'country',
-    'image',
-    'metadata',
-    'login_name',
-    'staff_id',
-    'first_name',
-    'last_name',
-    'support',
-    'sys_admin',
-    'ui_theme',
-    'password',
-    'confirm_password'
-] as const;
-type UserMutableTuple = typeof USER_MUTABLE_FIELDS;
-export type UserMutableFields = UserMutableTuple[number];
-
-/** List of property keys that can only be set when creating a new object */
-const NON_EDITABLE_FIELDS = ['authority_id'];
+import { PlaceResource } from '../resources/resource.class';
 
 /**
- * Representation of the user model in Engine
+ * Representation of the user model in Place
  */
-export class EngineUser extends EngineResource<EngineUsersService> {
+export class PlaceUser extends PlaceResource {
     /** Hash of the email address of the user */
     public readonly email_digest: string;
     /** ID of the authority associated with the user */
@@ -59,8 +33,6 @@ export class EngineUser extends EngineResource<EngineUsersService> {
     public readonly sys_admin: boolean;
     /** Name of the active theme on the displayed UI */
     public readonly ui_theme: string;
-    /** Class type of required service */
-    protected __type: string = 'EngineZone';
     /** Password */
     private password = '';
     /** Password */
@@ -82,15 +54,5 @@ export class EngineUser extends EngineResource<EngineUsersService> {
         this.support = !!raw_data.support;
         this.sys_admin = !!raw_data.sys_admin;
         this.ui_theme = raw_data.ui_theme || '';
-    }
-
-    public storePendingChange(
-        key: UserMutableFields,
-        value: EngineUser[UserMutableFields]
-    ): this {
-        if (this.id && NON_EDITABLE_FIELDS.indexOf(key) >= 0) {
-            throw new Error(`Property "${key}" is not editable.`);
-        }
-        return super.storePendingChange(key as any, value);
     }
 }

@@ -1,5 +1,4 @@
 import { AuthType, PlaceMQTTBroker } from '../../../../src/http/services/broker/broker.class';
-import { ServiceManager } from '../../../../src/http/services/service-manager.class';
 
 describe('PlaceMQTTBroker', () => {
     let broker: PlaceMQTTBroker;
@@ -11,7 +10,6 @@ describe('PlaceMQTTBroker', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        ServiceManager.setService(PlaceMQTTBroker, service);
         broker = new PlaceMQTTBroker({
             id: 'dep-test',
             name: 'here.today',

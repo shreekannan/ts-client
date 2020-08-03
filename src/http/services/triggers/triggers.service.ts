@@ -1,52 +1,52 @@
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineHttpClient } from '../../http.service';
-import { EngineResourceQueryOptions } from '../resources/resources.interface';
-import { EngineResourceService } from '../resources/resources.service';
-import { ServiceManager } from '../service-manager.class';
-import { EngineSystem } from '../systems/system.class';
-import { EngineTrigger } from './trigger.class';
+import { PlaceResourceQueryOptions } from '../resources/resources.interface';
+import { create, query, remove, show, task, update } from '../resources/resources.service';
+import { PlaceSystem } from '../systems/system.class';
+import { PlaceTrigger } from './trigger.class';
 
-export class EngineTriggersService extends EngineResourceService<EngineTrigger> {
-    /* istanbul ignore next */
-    constructor(protected http: EngineHttpClient) {
-        super(http);
-        ServiceManager.setService(EngineTrigger, this);
-        this._name = 'Trigger';
-        this._api_route = 'triggers';
-    }
+const PATH = 'triggers';
+const NAME = 'Triggers';
 
-    /**
-     * Query the index of the API route associated with this service
-     * @param query_params Map of query paramaters to add to the request URL
-     */
-    public query(query_params?: EngineResourceQueryOptions) {
-        return super.query(query_params);
-    }
+function process(item: HashMap) {
+    return new PlaceTrigger(item);
+}
 
-    /**
-     * Query the API route for a sepecific item
-     * @param id ID of the item
-     * @param query_params Map of query paramaters to add to the request URL
-     */
-    public show(id: string, query_params?: {}) {
-        return super.show(id, query_params);
-    }
+export function queryTriggers(query_params?: PlaceResourceQueryOptions) {
+    return query(query_params, process, PATH);
+}
 
-    /**
-     * List systems that contain instances of a trigger
-     * @param id ID of the trigger to grab system instances for
-     */
-    public listSystems(id: string): Promise<EngineSystem[]> {
-        return this.task(id, `instances`, undefined, 'get', (data: HashMap[]) =>
-            data.map(sys => new EngineSystem(sys))
-        );
-    }
+export function showTrigger(id: string, query_params: HashMap = {}) {
+    return show(id, query_params, process, PATH);
+}
 
-    /**
-     * Convert API data into local interface
-     * @param item Raw API data
-     */
-    protected process(item: HashMap) {
-        return new EngineTrigger(item);
-    }
+export function updateTrigger(
+    id: string,
+    form_data: HashMap | PlaceTrigger,
+    query_params: HashMap = {},
+    method: 'put' | 'patch' = 'patch'
+) {
+    return update(id, form_data, query_params, method, process, PATH);
+}
+
+export function addTrigger(form_data: HashMap, query_params: HashMap = {}) {
+    return create(form_data, query_params, process, PATH);
+}
+
+export function removeTrigger(id: string, query_params: HashMap = {}) {
+    return remove(id, query_params, PATH);
+}
+
+/**
+ * List systems that contain instances of a trigger
+ * @param id ID of the trigger to grab system instances for
+ */
+export function listTriggerSystems(id: string): Promise<PlaceSystem[]> {
+    return task(
+        id,
+        `instances`,
+        undefined,
+        'get',
+        (data: HashMap[]) => data.map(sys => new PlaceSystem(sys)),
+        PATH
+    );
 }

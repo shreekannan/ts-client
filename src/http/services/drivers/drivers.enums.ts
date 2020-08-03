@@ -1,5 +1,5 @@
-/** Allowed roles for Engine Modules */
-export enum EngineDriverRole {
+/** Allowed roles for Place Modules */
+export enum PlaceDriverRole {
     SSH = 0,
     Device = 1,
     Service = 2,

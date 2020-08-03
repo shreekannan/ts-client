@@ -1,27 +1,10 @@
-import { EngineResource } from '../resources/resource.class';
-import { EngineLDAPSourcesService } from './ldap-sources.service';
-
 import { HashMap } from '../../../utilities/types.utilities';
-
-export const LDAP_SOURCE_MUTABLE_FIELDS = [
-    'name',
-    'authority_id',
-    'host',
-    'port',
-    'auth_method',
-    'uid',
-    'base',
-    'bind_dn',
-    'password',
-    'filter'
-] as const;
-type LdapSourceMutableTuple = typeof LDAP_SOURCE_MUTABLE_FIELDS;
-export type LdapSourceMutableFields = LdapSourceMutableTuple[number];
+import { PlaceResource } from '../resources/resource.class';
 
 /** List of property keys that can only be set when creating a new object */
 const NON_EDITABLE_FIELDS: string[] = ['authority_id'];
 
-export class EngineLDAPSource extends EngineResource<EngineLDAPSourcesService> {
+export class PlaceLDAPSource extends PlaceResource {
     /** ID of the authority associted with the auth method */
     public readonly authority_id: string;
     /** HTTP URL of the SSO provider */
@@ -43,8 +26,6 @@ export class EngineLDAPSource extends EngineResource<EngineLDAPSourcesService> {
      * e.g. (&(uid=%{username})(memberOf=cn=myapp-users,ou=groups,dc=example,dc=com))
      */
     public readonly filter: string;
-    /** Class type of required service */
-    protected __type: string = 'EngineLDAPSource';
 
     constructor(raw_data: HashMap = {}) {
         super(raw_data);
@@ -57,15 +38,5 @@ export class EngineLDAPSource extends EngineResource<EngineLDAPSourcesService> {
         this.bind_dn = raw_data.bind_dn || '';
         this.password = raw_data.password || '';
         this.filter = raw_data.filter || '';
-    }
-
-    public storePendingChange(
-        key: LdapSourceMutableFields,
-        value: EngineLDAPSource[LdapSourceMutableFields]
-    ): this {
-        if (this.id && NON_EDITABLE_FIELDS.indexOf(key) >= 0) {
-            throw new Error(`Property "${key}" is not editable.`);
-        }
-        return super.storePendingChange(key as any, value);
     }
 }

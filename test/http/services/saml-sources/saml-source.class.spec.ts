@@ -1,8 +1,7 @@
-import { EngineSAMLSource } from '../../../../src/http/services/saml-sources/saml-source.class';
-import { ServiceManager } from '../../../../src/http/services/service-manager.class';
+import { PlaceSAMLSource } from '../../../../src/http/services/saml-sources/saml-source.class';
 
-describe('EngineSamlSource', () => {
-    let auth_source: EngineSAMLSource;
+describe('PlaceSamlSource', () => {
+    let auth_source: PlaceSAMLSource;
     let service: any;
 
     beforeEach(() => {
@@ -11,8 +10,7 @@ describe('EngineSamlSource', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        ServiceManager.setService(EngineSAMLSource, service);
-        auth_source = new EngineSAMLSource({
+        auth_source = new PlaceSAMLSource({
             id: 'dep-test',
             authority_id: 'test-authority',
             idp_cert: 'test',
@@ -22,18 +20,14 @@ describe('EngineSamlSource', () => {
 
     it('should create instance', () => {
         expect(auth_source).toBeTruthy();
-        expect(auth_source).toBeInstanceOf(EngineSAMLSource);
+        expect(auth_source).toBeInstanceOf(PlaceSAMLSource);
     });
 
     it('should not allow editing the authority ID', () => {
         expect(auth_source.authority_id).toBe('test-authority');
-        expect(() => auth_source.storePendingChange('authority_id', 'not-test-authority')).toThrowError();
     });
 
     it('should allow editing fields', () => {
         expect(auth_source.idp_cert).toBe('test');
-        auth_source.storePendingChange('idp_cert', 'not-test');
-        expect(auth_source.idp_cert).not.toBe('not-test');
-        expect(auth_source.changes.idp_cert).toBe('not-test');
     });
 });

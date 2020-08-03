@@ -1,41 +1,44 @@
-import { of } from 'rxjs';
+import { PlaceLDAPSource } from '../../../../src/http/services/ldap-sources/ldap-source.class';
 
-import { EngineLDAPSource } from '../../../../src/http/services/ldap-sources/ldap-source.class';
-import { EngineLDAPSourcesService } from '../../../../src/http/services/ldap-sources/ldap-sources.service';
+import * as SERVICE from '../../../../src/http/services/ldap-sources/ldap-sources.service';
+import * as Resources from '../../../../src/http/services/resources/resources.service';
 
-describe('EngineDomainsService', () => {
-    let service: EngineLDAPSourcesService;
-    let http: any;
+describe('LDAPSources API', () => {
 
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new EngineLDAPSourcesService(http);
+    it('should allow querying ldapsources', async () => {
+        const spy = jest.spyOn(Resources, 'query');
+        spy.mockImplementation(async (_, process: any, __) => [process({})]);
+        const list = await SERVICE.queryLDAPSources();
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceLDAPSource);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(EngineLDAPSourcesService);
+    it('should allow showing ldapsource details', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.showLDAPSource('1');
+        expect(item).toBeInstanceOf(PlaceLDAPSource);
     });
 
-    it('allow querying systems index', async () => {
-        http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
-        const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/ldap_auths');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBeInstanceOf(EngineLDAPSource);
+    it('should allow creating new LDAP sources', async () => {
+        const spy = jest.spyOn(Resources, 'create');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.addLDAPSource({});
+        expect(item).toBeInstanceOf(PlaceLDAPSource);
     });
 
-    it('allow querying systems show', async () => {
-        http.get.mockReturnValueOnce(of({ id: 'test' }));
-        const result = await service.show('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/ldap_auths/test');
-        expect(result).toBeInstanceOf(EngineLDAPSource);
+    it('should allow updating LDAP source details', async () => {
+        const spy = jest.spyOn(Resources, 'update');
+        spy.mockImplementation(async (_, _0, _1, _2, process: any, _3) => process({}) as any);
+        const item = await SERVICE.updateLDAPSource('1', {});
+        expect(item).toBeInstanceOf(PlaceLDAPSource);
+    });
+
+    it('should allow removing ldapsources', async () => {
+        const spy = jest.spyOn(Resources, 'remove');
+        spy.mockImplementation(async () => undefined);
+        const item = await SERVICE.removeLDAPSource('1', {});
+        expect(item).toBeFalsy();
     });
 });

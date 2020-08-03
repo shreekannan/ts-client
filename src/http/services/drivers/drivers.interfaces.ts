@@ -1,11 +1,11 @@
 /** Mapping of available query paramters for the dependencies index */
-export interface EngineDriverQueryOptions {
+export interface PlaceDriverQueryOptions {
     /** Filter result by type of driver. One of either `ssh`, `device`, `service` or `logic` */
     role?: 'ssh' | 'device' | 'service' | 'logic' | 'websocket';
 }
 
 /** List of details that can be assigned to a new Driver */
-export interface EngineDriverDetails {
+export interface PlaceDriverDetails {
     /** Default name for the driver */
     readonly descriptive_name: string;
     /** Default class name for the driver */

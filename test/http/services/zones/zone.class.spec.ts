@@ -1,10 +1,8 @@
 
-import { ServiceManager } from '../../../../src/http/services/service-manager.class';
-import { EngineZone } from '../../../../src/http/services/zones/zone.class';
-import { PlaceOS } from '../../../../src/placeos';
+import { PlaceZone } from '../../../../src/http/services/zones/zone.class';
 
-describe('EngineZone', () => {
-    let zone: EngineZone;
+describe('PlaceZone', () => {
+    let zone: PlaceZone;
     let service: any;
 
     beforeEach(() => {
@@ -15,10 +13,7 @@ describe('EngineZone', () => {
             listMetadata: jest.fn(),
             listChildMetadata: jest.fn()
         };
-        ServiceManager.setService(EngineZone, service);
-        jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
-        jest.spyOn(PlaceOS, 'triggers', 'get').mockReturnValue(null as any);
-        zone = new EngineZone({
+        zone = new PlaceZone({
             id: 'dep-test',
             description: 'In a galaxy far far away...',
             settings: { settings_string: '{ today: false, future: \'Yeah!\' }' },
@@ -26,12 +21,11 @@ describe('EngineZone', () => {
             created_at: 999,
             trigger_data: [{ id: 'trig-01', name: 'A trigger' }]
         });
-        (PlaceOS as any)._initialised.next(true);
     });
 
     it('should create instance', () => {
         expect(zone).toBeTruthy();
-        expect(zone).toBeInstanceOf(EngineZone);
+        expect(zone).toBeInstanceOf(PlaceZone);
     });
 
     it('should have trigger data', (done) => {
@@ -44,12 +38,6 @@ describe('EngineZone', () => {
 
     it('should expose description', () => {
         expect(zone.description).toBe('In a galaxy far far away...');
-    });
-
-    it('should allow setting description', () => {
-        zone.storePendingChange('description', 'another-desc');
-        expect(zone.description).not.toBe('another-desc');
-        expect(zone.changes.description).toBe('another-desc');
     });
 
     it('should expose settings', () => {

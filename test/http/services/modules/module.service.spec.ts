@@ -1,85 +1,44 @@
-import { of } from 'rxjs';
-import { EngineModule } from '../../../../src/http/services/modules/module.class';
-import { EngineModulesService } from '../../../../src/http/services/modules/modules.service';
+import { PlaceModule } from '../../../../src/http/services/modules/module.class';
 
-describe('EngineModuleService', () => {
-    let service: EngineModulesService;
-    let http: any;
+import * as SERVICE from '../../../../src/http/services/modules/modules.service';
+import * as Resources from '../../../../src/http/services/resources/resources.service';
 
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new EngineModulesService(http);
+describe('Modules API', () => {
+
+    it('should allow querying modules', async () => {
+        const spy = jest.spyOn(Resources, 'query');
+        spy.mockImplementation(async (_, process: any, __) => [process({})]);
+        const list = await SERVICE.queryModules();
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceModule);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(EngineModulesService);
+    it('should allow showing module details', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.showModule('1');
+        expect(item).toBeInstanceOf(PlaceModule);
     });
 
-    it('allow querying modules index', async () => {
-        http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
-        const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/modules');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBeInstanceOf(EngineModule);
+    it('should allow creating new modules', async () => {
+        const spy = jest.spyOn(Resources, 'create');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.addModule({});
+        expect(item).toBeInstanceOf(PlaceModule);
     });
 
-    it('allow starting a module', async () => {
-        http.post.mockReturnValueOnce(of(null));
-        await service.start('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/modules/test/start', {});
+    it('should allow updating module details', async () => {
+        const spy = jest.spyOn(Resources, 'update');
+        spy.mockImplementation(async (_, _0, _1, _2, process: any, _3) => process({}) as any);
+        const item = await SERVICE.updateModule('1', {});
+        expect(item).toBeInstanceOf(PlaceModule);
     });
 
-    it('allow stopping a module', async () => {
-        http.post.mockReturnValueOnce(of(null));
-        await service.stop('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/modules/test/stop', {});
-    });
-
-    it('allow pinging a module', async () => {
-        const response = { host: 'test.com', pingable: true };
-        http.post.mockReturnValueOnce(of(response));
-        const ping = await service.ping('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/modules/test/ping', {});
-        expect(ping).toBe(response);
-    });
-
-    it('allow querying module state', async () => {
-        http.get
-            .mockReturnValueOnce(of({ test: 'yeah' }))
-            .mockReturnValueOnce(of({ test: 'yeah2' }));
-        let value = await service.stateLookup('test', 'look');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/modules/test/state/look`);
-        expect(value).toEqual({ test: 'yeah' });
-        value = await service.state('test');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/modules/test/state`);
-        expect(value).toEqual({ test: 'yeah2' });
-    });
-
-    it('allow querying the internal state of a module', async () => {
-        const response = { host: 'test.com', pingable: true };
-        http.get.mockReturnValueOnce(of(response));
-        const ping = await service.state('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/modules/test/state');
-        expect(ping).toBe(response);
-    });
-
-    it('allow getting settings', async () => {
-        http.get.mockReturnValueOnce(of([]));
-        const value = await service.settings('test');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/modules/test/settings`);
-    });
-
-    it('allow loading modules', async () => {
-        http.post.mockReturnValueOnce(of([]));
-        const value = await service.load('test');
-        expect(http.post).toBeCalledWith(`/api/engine/v2/modules/test/load`, {});
+    it('should allow removing modules', async () => {
+        const spy = jest.spyOn(Resources, 'remove');
+        spy.mockImplementation(async () => undefined);
+        const item = await SERVICE.removeModule('1', {});
+        expect(item).toBeFalsy();
     });
 });

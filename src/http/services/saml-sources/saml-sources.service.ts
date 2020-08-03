@@ -1,32 +1,36 @@
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineHttpClient } from '../../http.service';
-import { EngineAuthSourceQueryOptions } from '../auth-sources/auth-source.interfaces';
-import { EngineResourceService } from '../resources/resources.service';
-import { ServiceManager } from '../service-manager.class';
-import { EngineSAMLSource } from './saml-source.class';
+import { PlaceAuthSourceQueryOptions } from '../auth-sources/auth-source.interfaces';
+import { create, query, remove, show, update } from '../resources/resources.service';
+import { PlaceSAMLSource } from './saml-source.class';
 
-export class EngineSAMLSourcesService extends EngineResourceService<EngineSAMLSource> {
-    /* istanbul ignore next */
-    constructor(protected http: EngineHttpClient) {
-        super(http);
-        ServiceManager.setService(EngineSAMLSource, this);
-        this._name = 'SAML Authentication Source';
-        this._api_route = 'saml_auths';
-    }
+const PATH = 'saml_auths';
+const NAME = 'SAML Authentication Sources';
 
-    /**
-     * Query the index of the API route associated with this service
-     * @param query_params Map of query paramaters to add to the request URL
-     */
-    public query(query_params?: EngineAuthSourceQueryOptions) {
-        return super.query(query_params);
-    }
+function process(item: HashMap) {
+    return new PlaceSAMLSource(item);
+}
 
-    /**
-     * Convert API data into local interface
-     * @param item Raw API data
-     */
-    protected process(item: HashMap) {
-        return new EngineSAMLSource(item);
-    }
+export function querySAMLSources(query_params?: PlaceAuthSourceQueryOptions) {
+    return query(query_params, process, PATH);
+}
+
+export function showSAMLSource(id: string, query_params: HashMap = {}) {
+    return show(id, query_params, process, PATH);
+}
+
+export function updateSAMLSource(
+    id: string,
+    form_data: HashMap | PlaceSAMLSource,
+    query_params: HashMap = {},
+    method: 'put' | 'patch' = 'patch'
+) {
+    return update(id, form_data, query_params, method, process, PATH);
+}
+
+export function addSAMLSource(form_data: HashMap, query_params: HashMap = {}) {
+    return create(form_data, query_params, process, PATH);
+}
+
+export function removeSAMLSource(id: string, query_params: HashMap = {}) {
+    return remove(id, query_params, PATH);
 }

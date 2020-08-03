@@ -1,8 +1,7 @@
-import { EngineOAuthSource } from '../../../../src/http/services/oauth-sources/oauth-source.class';
-import { ServiceManager } from '../../../../src/http/services/service-manager.class';
+import { PlaceOAuthSource } from '../../../../src/http/services/oauth-sources/oauth-source.class';
 
-describe('EngineOAuthSource', () => {
-    let auth_source: EngineOAuthSource;
+describe('PlaceOAuthSource', () => {
+    let auth_source: PlaceOAuthSource;
     let service: any;
 
     beforeEach(() => {
@@ -11,8 +10,7 @@ describe('EngineOAuthSource', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        ServiceManager.setService(EngineOAuthSource, service);
-        auth_source = new EngineOAuthSource({
+        auth_source = new PlaceOAuthSource({
             id: 'dep-test',
             authority_id: 'test-authority',
             client_id: 'test',
@@ -22,18 +20,14 @@ describe('EngineOAuthSource', () => {
 
     it('should create instance', () => {
         expect(auth_source).toBeTruthy();
-        expect(auth_source).toBeInstanceOf(EngineOAuthSource);
+        expect(auth_source).toBeInstanceOf(PlaceOAuthSource);
     });
 
     it('should not allow editing the authority ID', () => {
         expect(auth_source.authority_id).toBe('test-authority');
-        expect(() => auth_source.storePendingChange('authority_id', 'not-test-authority')).toThrowError();
     });
 
     it('should allow editing fields', () => {
         expect(auth_source.client_id).toBe('test');
-        auth_source.storePendingChange('client_id', 'not-test');
-        expect(auth_source.client_id).not.toBe('not-test');
-        expect(auth_source.changes.client_id).toBe('not-test');
     });
 });

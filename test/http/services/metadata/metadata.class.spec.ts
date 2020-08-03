@@ -1,6 +1,5 @@
 
 import { PlaceMetadata } from '../../../../src/http/services/metadata/metadata.class';
-import { PlaceOS } from '../../../../src/placeos';
 
 describe('PlaceMetadata', () => {
     let metadata: PlaceMetadata;
@@ -14,15 +13,12 @@ describe('PlaceMetadata', () => {
             listMetadata: jest.fn(),
             listChildMetadata: jest.fn()
         };
-        jest.spyOn(PlaceOS, 'settings', 'get').mockReturnValue(null as any);
-        jest.spyOn(PlaceOS, 'triggers', 'get').mockReturnValue(null as any);
         metadata = new PlaceMetadata({
             parent_id: 'dep-test',
             name: 'catering',
             description: 'In a galaxy far far away...',
             details: []
         });
-        (PlaceOS as any)._initialised.next(true);
     });
 
     it('should create instance', () => {

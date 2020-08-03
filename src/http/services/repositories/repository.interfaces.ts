@@ -1,13 +1,13 @@
 
 /** Type of repository */
-export enum EngineRepositoryType {
+export enum PlaceRepositoryType {
     /** Repository is a collection of Driver logic */
     Driver = 'Driver',
     /** Repository is a collection of interfaces */
     Interface = 'Interface'
 }
 
-export interface EngineRepositoryCommitQuery {
+export interface PlaceRepositoryCommitQuery {
     /** URL encoded name of the driver being requested */
     driver?: string;
 }
@@ -23,20 +23,20 @@ export interface GitCommitDetails {
     subject: string;
 }
 
-export interface EngineRepositoryDetailsQuery {
+export interface PlaceRepositoryDetailsQuery {
     /** URL encoded name of the driver being requested */
     driver: string;
     /** Hash of the commit being requested for the driver */
     commit: string;
 }
 
-export interface EngineRepositoryPullQuery {
+export interface PlaceRepositoryPullQuery {
     /** Hash of the commit being requested */
     commit: string;
 }
 
 /** Metadata for a repository commit */
-export interface EngineRepositoryCommit {
+export interface PlaceRepositoryCommit {
     /** Hash associated with the commit */
     commit: string;
     /** UTC epoch in seconds of the time the commit was made */

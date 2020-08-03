@@ -1,30 +1,8 @@
 
-import { EngineResource } from '../resources/resource.class';
-import { EngineOAuthSourcesService } from './oauth-sources.service';
-
 import { HashMap } from '../../../utilities/types.utilities';
+import { PlaceResource } from '../resources/resource.class';
 
-export const OAUTH_SOURCE_MUTABLE_FIELDS = [
-    'name',
-    'authority_id',
-    'client_id',
-    'client_secret',
-    'info_mappings',
-    'site',
-    'authorize_url',
-    'token_method',
-    'token_url',
-    'auth_scheme',
-    'scope',
-    'raw_info_url'
-] as const;
-type OAuthSourceMutableTuple = typeof OAUTH_SOURCE_MUTABLE_FIELDS;
-export type OAuthSourceMutableFields = OAuthSourceMutableTuple[number];
-
-/** List of property keys that can only be set when creating a new object */
-const NON_EDITABLE_FIELDS: string[] = ['authority_id'];
-
-export class EngineOAuthSource extends EngineResource<EngineOAuthSourcesService> {
+export class PlaceOAuthSource extends PlaceResource {
     /** ID of the authority associted with the auth method */
     public readonly authority_id: string;
     /** Application ID from the SSO provider providing the OAuth services */
@@ -47,12 +25,6 @@ export class EngineOAuthSource extends EngineResource<EngineOAuthSourcesService>
     public readonly scope: string;
     /** URL to grab user's profile details with a valid token */
     public readonly raw_info_url: string;
-    /** Additional params to be sent as part of the authorisation request */
-    public readonly authorize_params: HashMap<string>;
-    /** Security checks to be made on the returned data String => Array(String) */
-    public readonly ensure_matching: HashMap<string[]>;
-    /** Class type of required service */
-    protected __type: string = 'EngineOAuthSource';
 
     constructor(raw_data: HashMap) {
         super(raw_data);
@@ -69,15 +41,5 @@ export class EngineOAuthSource extends EngineResource<EngineOAuthSourcesService>
         this.auth_scheme = raw_data.auth_scheme || 'request_body';
         this.scope = raw_data.scope || '';
         this.raw_info_url = raw_data.raw_info_url || '';
-    }
-
-    public storePendingChange(
-        key: OAuthSourceMutableFields,
-        value: EngineOAuthSource[OAuthSourceMutableFields]
-    ): this {
-        if (this.id && NON_EDITABLE_FIELDS.indexOf(key) >= 0) {
-            throw new Error(`Property "${key}" is not editable.`);
-        }
-        return super.storePendingChange(key as any, value);
     }
 }

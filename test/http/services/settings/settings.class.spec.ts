@@ -1,12 +1,9 @@
-import { EngineSettings } from '../../../../src/http/services/settings/settings.class';
+import { PlaceSettings } from '../../../../src/http/services/settings/settings.class';
+import { EncryptionLevel } from '../../../../src/http/services/settings/settings.interfaces';
 import { generateMockSettings } from '../../../../src/http/services/settings/settings.utilities';
 
-import * as dayjs from 'dayjs';
-import { ServiceManager } from '../../../../src/http/services/service-manager.class';
-import { EncryptionLevel } from '../../../../src/http/services/settings/settings.interfaces';
-
-describe('EngineSettings', () => {
-    let settings: EngineSettings;
+describe('PlaceSettings', () => {
+    let settings: PlaceSettings;
     let service: any;
     let item: any;
 
@@ -18,13 +15,12 @@ describe('EngineSettings', () => {
         };
         item = generateMockSettings();
         item = generateMockSettings({ name: 'Test' });
-        ServiceManager.setService(EngineSettings, service);
-        settings = new EngineSettings(item);
+        settings = new PlaceSettings(item);
     });
 
     it('should create instance', () => {
         expect(settings).toBeTruthy();
-        expect(settings).toBeInstanceOf(EngineSettings);
+        expect(settings).toBeInstanceOf(PlaceSettings);
     });
 
     it('should expose parent ID', () => {
@@ -42,16 +38,6 @@ describe('EngineSettings', () => {
     it('should expose settings value', () => {
         expect(settings.settings_string).toBe(item.settings_string);
         expect(settings.value).toBe(item.settings_string);
-    });
-
-    it('should allow changing the settings value', () => {
-        settings.storePendingChange('settings_string', 'another-setting');
-        expect(settings.settings_string).not.toBe('another-setting');
-        expect(settings.changes.settings_string).toBe('another-setting');
-    });
-
-    it('should error when trying to change non-editable fields', () => {
-        expect(() => settings.storePendingChange('encryption_level', EncryptionLevel.Admin)).toThrowError();
     });
 
     it('should expose top level keys', () => {

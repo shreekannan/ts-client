@@ -1,55 +1,44 @@
-import { of } from 'rxjs';
+import { PlaceZone } from '../../../../src/http/services/zones/zone.class';
 
-import { EngineZone } from '../../../../src/http/services/zones/zone.class';
-import { EngineZonesService } from '../../../../src/http/services/zones/zones.service';
+import * as Resources from '../../../../src/http/services/resources/resources.service';
+import * as SERVICE from '../../../../src/http/services/zones/zones.service';
 
-describe('EngineZonesService', () => {
-    let service: EngineZonesService;
-    let http: any;
+describe('Zones API', () => {
 
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new EngineZonesService(http);
+    it('should allow querying zones', async () => {
+        const spy = jest.spyOn(Resources, 'query');
+        spy.mockImplementation(async (_, process: any, __) => [process({})]);
+        const list = await SERVICE.queryZones();
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceZone);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(EngineZonesService);
+    it('should allow showing zone details', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.showZone('1');
+        expect(item).toBeInstanceOf(PlaceZone);
     });
 
-    it('allow querying zones index', async () => {
-        http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
-        const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/zones');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBeInstanceOf(EngineZone);
+    it('should allow creating new zones', async () => {
+        const spy = jest.spyOn(Resources, 'create');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.addZone({});
+        expect(item).toBeInstanceOf(PlaceZone);
     });
 
-    it('allow querying zones show', async () => {
-        http.get.mockReturnValueOnce(of({ id: 'test' }));
-        const result = await service.show('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/zones/test');
-        expect(result).toBeInstanceOf(EngineZone);
+    it('should allow updating zone details', async () => {
+        const spy = jest.spyOn(Resources, 'update');
+        spy.mockImplementation(async (_, _0, _1, _2, process: any, _3) => process({}) as any);
+        const item = await SERVICE.updateZone('1', {});
+        expect(item).toBeInstanceOf(PlaceZone);
     });
 
-    it('allow excuting module methods', async () => {
-        http.post.mockReturnValueOnce(of());
-        await service.execute('test', 'exec', 'jim');
-        expect(http.post).toBeCalledWith('/api/engine/v2/zones/test/jim_1/exec', []);
+    it('should allow removing zones', async () => {
+        const spy = jest.spyOn(Resources, 'remove');
+        spy.mockImplementation(async () => undefined);
+        const item = await SERVICE.removeZone('1', {});
+        expect(item).toBeFalsy();
     });
-
-    it('allow listing triggers', async () => {
-        http.get.mockReturnValueOnce(of([{ id: '1' }]));
-        const value = await service.listTriggers('test');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/zones/test/triggers`);
-        expect(value.length).toBe(1);
-    });
-
 });

@@ -1,22 +1,5 @@
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineResource } from '../resources/resource.class';
-import { PlaceMQTTBrokerService } from './brokers.service';
-
-export const BROKER_MUTABLE_FIELDS = [
-    'name',
-    'auth_type',
-    'description',
-    'host',
-    'port',
-    'tls',
-    'username',
-    'password',
-    'certificate',
-    'secret',
-    'filters'
-] as const;
-type BrokerMutableTuple = typeof BROKER_MUTABLE_FIELDS;
-export type BrokerMutableFields = BrokerMutableTuple[number];
+import { PlaceResource } from '../resources/resource.class';
 
 export enum AuthType {
     Certificate,
@@ -24,7 +7,7 @@ export enum AuthType {
     UserPassword
 }
 
-export class PlaceMQTTBroker extends EngineResource<PlaceMQTTBrokerService> {
+export class PlaceMQTTBroker extends PlaceResource {
     public readonly auth_type: AuthType;
     /** Details of the Broker */
     public readonly description: string;
@@ -38,9 +21,9 @@ export class PlaceMQTTBroker extends EngineResource<PlaceMQTTBrokerService> {
     public readonly username: string;
     /** Password to use for connecting to Broker */
     public readonly password: string;
-    /**  */
+    /** Certificate details */
     public readonly certificate: string;
-    /**  */
+    /** User secret */
     public readonly secret: string;
     /**  */
     public readonly filters: string[];
@@ -57,12 +40,5 @@ export class PlaceMQTTBroker extends EngineResource<PlaceMQTTBrokerService> {
         this.certificate = data.certificate || '';
         this.secret = data.secret || '';
         this.filters = data.filters || [];
-    }
-
-    public storePendingChange(
-        key: BrokerMutableFields,
-        value: PlaceMQTTBroker[BrokerMutableFields]
-    ): this {
-        return super.storePendingChange(key as any, value);
     }
 }

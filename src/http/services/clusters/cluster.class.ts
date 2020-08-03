@@ -1,10 +1,8 @@
 
-import { EngineClustersService } from './clusters.service';
-
 import { bytesToDisplay } from '../../../utilities/general.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
 
-export class EngineCluster {
+export class PlaceCluster {
     /** Unique identifier of the application */
     public readonly id: string;
     /** List of running drivers */
@@ -33,6 +31,12 @@ export class EngineCluster {
     public readonly memory_usage: number;
     /** Total amount of memory used by the cluster root process in KB */
     public readonly core_memory: number;
+    /** Percentage of memory used by the cluster */
+    public readonly memory_percentage: number;
+    /** Display string for the memory usage */
+    public readonly used_memory: string;
+    /** Display string for the memory total */
+    public readonly total_memory: string;
 
     constructor(raw_data: HashMap = {}) {
         this.id = raw_data.id || '';
@@ -49,21 +53,9 @@ export class EngineCluster {
         this.memory_total = raw_data.memory_total || 0;
         this.memory_usage = raw_data.memory_usage || 0;
         this.core_memory = raw_data.core_memory || 0;
+        this.memory_percentage = +(this.memory_usage / this.memory_total * 100).toFixed(4);
+        this.used_memory = bytesToDisplay(this.memory_usage * 1024);
+        this.total_memory = bytesToDisplay(this.memory_total * 1024);
 
-    }
-
-    /** Percentage of memory used by the cluster */
-    public get memory_percentage(): number {
-        return +(this.memory_usage / this.memory_total * 100).toFixed(4);
-    }
-
-    /** Display string for the memory usage */
-    public get used_memory(): string {
-        return bytesToDisplay(this.memory_usage * 1024);
-    }
-
-    /** Display string for the memory total */
-    public get total_memory(): string {
-        return bytesToDisplay(this.memory_total * 1024);
     }
 }

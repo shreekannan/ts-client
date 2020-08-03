@@ -1,19 +1,10 @@
-import { of } from 'rxjs';
-import { EngineProcess } from '../../../../src/http/services/clusters/process.class';
+import { PlaceProcess } from '../../../../src/http/services/clusters/process.class';
 
-describe('EngineProcess', () => {
-    let process: EngineProcess;
-    let service: any;
+describe('Cluster Process', () => {
+    let process: PlaceProcess;
 
     beforeEach(() => {
-        service = {
-            reload: jest.fn(),
-            remove: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn()
-        };
-        EngineProcess.service = service;
-        process = new EngineProcess('test-cluster', {
+        process = new PlaceProcess('test-cluster', {
             driver: '/app/bin/drivers/drivers_aca_private_helper_fe33588',
             modules: ['mod-ETbLjPMTRfb'],
             running: true,
@@ -29,7 +20,7 @@ describe('EngineProcess', () => {
 
     it('should create instance', () => {
         expect(process).toBeTruthy();
-        expect(process).toBeInstanceOf(EngineProcess);
+        expect(process).toBeInstanceOf(PlaceProcess);
     });
 
     it('should expose ID', () => {
@@ -42,20 +33,5 @@ describe('EngineProcess', () => {
 
     it('should allow generating display string for memory total', () => {
         expect(process.total_memory).toBe('7.78 GB');
-    });
-
-    it('should allow killing processes', () => {
-        jest.useFakeTimers();
-        service.delete.mockReturnValue(Promise.resolve());
-        expect(process.is_killing).toBeFalsy();
-        process.kill();
-        expect(service.delete).toBeCalledWith('test-cluster', {
-            driver: '/app/bin/drivers/drivers_aca_private_helper_fe33588'
-        });
-        service.delete.mockReturnValue(new Promise((rs, rj) => setTimeout(() => rj(), 10)));
-        process.kill().then(() => expect(process.is_killing).toBeFalsy());
-        expect(process.is_killing).toBeTruthy();
-        jest.runOnlyPendingTimers();
-        jest.useRealTimers();
     });
 });

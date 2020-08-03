@@ -1,4 +1,4 @@
-import { EngineResourceQueryOptions } from '../resources/resources.interface';
+import { PlaceResourceQueryOptions } from '../resources/resources.interface';
 
 /** Access level for the settings string */
 export enum EncryptionLevel {
@@ -13,7 +13,7 @@ export enum EncryptionLevel {
 }
 
 /** Allowable query parameters for settings index endpoint */
-export interface EngineSettingsQueryOptions extends EngineResourceQueryOptions {
+export interface PlaceSettingsQueryOptions extends PlaceResourceQueryOptions {
     /** ID of the parent zone, system, module or driver to grab settings for */
     parent_id?: string;
 }

@@ -1,61 +1,42 @@
-import { of } from 'rxjs';
-
 import { PlaceMetadata } from '../../../../src/http/services/metadata/metadata.class';
-import { PlaceMetadataService } from '../../../../src/http/services/metadata/metadata.service';
-import { PlaceZoneMetadata } from '../../../../src/http/services/metadata/zone-metadata.class';
-import { EngineZone } from '../../../../src/http/services/zones/zone.class';
 
-describe('PlaceMetadataService', () => {
-    let service: PlaceMetadataService;
-    let http: any;
+import * as SERVICE from '../../../../src/http/services/metadata/metadata.service';
+import * as Resources from '../../../../src/http/services/resources/resources.service';
 
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new PlaceMetadataService(http);
+describe('Applications API', () => {
+
+    it('should allow listing metadata', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process([{}]) as any);
+        const item = await SERVICE.showMetadata('1');
+        expect(item[0]).toBeInstanceOf(PlaceMetadata);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(PlaceMetadataService);
+    it('should allow getting metadata', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.showMetadata('1', { name: 'test' });
+        expect(item).toBeInstanceOf(PlaceMetadata);
     });
 
-    it('allow querying metadata show', async () => {
-        jest.useFakeTimers();
-        http.get
-            .mockReturnValueOnce(of({ md: { parent_id: 'test' } }));
-        let result: any = await service.show('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/metadata/test');
-        expect(result.md).toBeInstanceOf(PlaceMetadata);
-        jest.runOnlyPendingTimers();
-        http.get.mockReturnValueOnce(of({ parent_id: 'test' }));
-        result = await service.show('test', { name: 'md' });
-        expect(http.get).toBeCalledWith('/api/engine/v2/metadata/test?name=md');
-        expect(result).toBeInstanceOf(PlaceMetadata);
-        expect(result.id).toBe('test');
-        jest.useRealTimers();
+    it('should allow creating new metadata', async () => {
+        const spy = jest.spyOn(Resources, 'create');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.addMetadata({});
+        expect(item).toBeInstanceOf(PlaceMetadata);
     });
 
-    it('allow adding new metadata', async () => {
-        http.post.mockReturnValueOnce(of({ parent_id: 'test' }));
-        const result = await service.add({}, {}, 'new_item');
-        expect(http.post).toBeCalledWith('/api/engine/v2/metadata/new_item', {});
-        expect(result).toBeInstanceOf(PlaceMetadata);
+    it('should allow updating metadata details', async () => {
+        const spy = jest.spyOn(Resources, 'update');
+        spy.mockImplementation(async (_, _0, _1, _2, process: any, _3) => process({}) as any);
+        const item = await SERVICE.updateMetadata('1', {});
+        expect(item).toBeInstanceOf(PlaceMetadata);
     });
 
-    it('allow querying zone child metadata', async () => {
-        http.get.mockReturnValueOnce(of([{ zone: { id: 'test' }, metadata: { testing: 'blah' } }]));
-        const result = await service.listChildMetadata('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/metadata/test/children');
-        expect(result.length).toBe(1);
-        expect(result[0]).toBeInstanceOf(PlaceZoneMetadata);
-        expect(result[0].zone).toBeInstanceOf(EngineZone);
-        expect(result[0].keys).toEqual(['testing']);
+    it('should allow removing metadata', async () => {
+        const spy = jest.spyOn(Resources, 'remove');
+        spy.mockImplementation(async () => undefined);
+        const item = await SERVICE.removeMetadata('1', {});
+        expect(item).toBeFalsy();
     });
 });

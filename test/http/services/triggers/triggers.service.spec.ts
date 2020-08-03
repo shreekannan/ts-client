@@ -1,49 +1,52 @@
-import { of } from 'rxjs';
+import { PlaceSystem } from '../../../../src/http/services/systems/system.class';
+import { PlaceTrigger } from '../../../../src/http/services/triggers/trigger.class';
 
-import { EngineSystem } from '../../../../src/http/services/systems/system.class';
-import { EngineTrigger } from '../../../../src/http/services/triggers/trigger.class';
-import { EngineTriggersService } from '../../../../src/http/services/triggers/triggers.service';
+import * as Resources from '../../../../src/http/services/resources/resources.service';
+import * as SERVICE from '../../../../src/http/services/triggers/triggers.service';
 
-describe('EngineTriggersService', () => {
-    let service: EngineTriggersService;
-    let http: any;
+describe('Triggers API', () => {
 
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new EngineTriggersService(http);
+    it('should allow querying triggers', async () => {
+        const spy = jest.spyOn(Resources, 'query');
+        spy.mockImplementation(async (_, process: any, __) => [process({})]);
+        const list = await SERVICE.queryTriggers();
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceTrigger);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(EngineTriggersService);
+    it('should allow showing trigger details', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.showTrigger('1');
+        expect(item).toBeInstanceOf(PlaceTrigger);
     });
 
-    it('allow querying triggers index', async () => {
-        http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
-        const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/triggers');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBeInstanceOf(EngineTrigger);
+    it('should allow creating new triggers', async () => {
+        const spy = jest.spyOn(Resources, 'create');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.addTrigger({});
+        expect(item).toBeInstanceOf(PlaceTrigger);
     });
 
-    it('allow querying triggers show', async () => {
-        http.get.mockReturnValueOnce(of({ id: 'test' }));
-        const result = await service.show('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/triggers/test');
-        expect(result).toBeInstanceOf(EngineTrigger);
+    it('should allow updating trigger details', async () => {
+        const spy = jest.spyOn(Resources, 'update');
+        spy.mockImplementation(async (_, _0, _1, _2, process: any, _3) => process({}) as any);
+        const item = await SERVICE.updateTrigger('1', {});
+        expect(item).toBeInstanceOf(PlaceTrigger);
     });
 
-    it('allow listing systems with trigger', async () => {
-        http.get.mockReturnValueOnce(of([{ id: 'test' }]));
-        const result = await service.listSystems('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/triggers/test/instances');
-        expect(result[0]).toBeInstanceOf(EngineSystem);
+    it('should allow removing triggers', async () => {
+        const spy = jest.spyOn(Resources, 'remove');
+        spy.mockImplementation(async () => undefined);
+        const item = await SERVICE.removeTrigger('1', {});
+        expect(item).toBeFalsy();
+    });
+
+    it('should allow listing trigger\'s systems', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(async (_, _0, _1, _2, process: any, _3) => process([{}]) as any);
+        const item = await SERVICE.listTriggerSystems('1');
+        expect(item[0]).toBeInstanceOf(PlaceSystem);
     });
 });

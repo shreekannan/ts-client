@@ -1,115 +1,88 @@
-import { of, throwError } from 'rxjs';
+import { PlaceRepository } from '../../../../src/http/services/repositories/repository.class';
 
-import { EngineRepositoriesService } from '../../../../src/http/services/repositories/repositories.service';
-import { EngineRepository } from '../../../../src/http/services/repositories/repository.class';
+import * as SERVICE from '../../../../src/http/services/repositories/repositories.service';
+import * as Resources from '../../../../src/http/services/resources/resources.service';
 
-import * as dayjs from 'dayjs';
-
-describe('EngineRepositoriesService', () => {
-    let service: EngineRepositoriesService;
-    let http: any;
-
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new EngineRepositoriesService(http);
+describe('Repositorys API', () => {
+    it('should allow querying repositorys', async () => {
+        const spy = jest.spyOn(Resources, 'query');
+        spy.mockImplementation(async (_, process: any, __) => [process({})]);
+        const list = await SERVICE.queryRepositories();
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceRepository);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(EngineRepositoriesService);
+    it('should allow showing repository details', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.showRepository('1');
+        expect(item).toBeInstanceOf(PlaceRepository);
     });
 
-    it('should allow querying repositories index', async () => {
-        http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
-        const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/repositories');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBeInstanceOf(EngineRepository);
+    it('should allow creating new repositorys', async () => {
+        const spy = jest.spyOn(Resources, 'create');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.addRepository({});
+        expect(item).toBeInstanceOf(PlaceRepository);
     });
 
-    it('should allow listing interfaces', async () => {
-        jest.useFakeTimers();
-        // expect.assertions(4);
-        // http.get
-        //     .mockImplementationOnce(() => throwError(true));
-        // await expect(service.listInterfaces()).rejects.toBeTruthy();
-        jest.runOnlyPendingTimers();
-        http.get.mockReturnValueOnce(of({ 'www-core': 'abcdef' }));
-        const result = await service.listInterfaces();
-        expect(http.get).toBeCalledWith('/api/engine/v2/repositories/interfaces');
-        expect(result).toBeInstanceOf(Object);
-        expect(result.hasOwnProperty('www-core')).toBeTruthy();
-        jest.runOnlyPendingTimers();
-        jest.useRealTimers();
+    it('should allow updating repository details', async () => {
+        const spy = jest.spyOn(Resources, 'update');
+        spy.mockImplementation(async (_, _0, _1, _2, process: any, _3) => process({}) as any);
+        const item = await SERVICE.updateRepository('1', {});
+        expect(item).toBeInstanceOf(PlaceRepository);
     });
 
-    it('should allow querying repositories show', async () => {
-        http.get.mockReturnValueOnce(of({ id: 'test' }));
-        const result = await service.show('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/repositories/test');
-        expect(result).toBeInstanceOf(EngineRepository);
+    it('should allow removing repositories', async () => {
+        const spy = jest.spyOn(Resources, 'remove');
+        spy.mockImplementation(async () => undefined);
+        const item = await SERVICE.removeRepository('1', {});
+        expect(item).toBeFalsy();
     });
 
-    it('should allow querying the driver list for a repository', async () => {
-        http.get.mockReturnValueOnce(of(['path/to/driver.cr']));
-        const result = await service.listDrivers('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/repositories/test/drivers');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBe('path/to/driver.cr');
+    it('should allow listing interface repositories', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async () => ({}));
+        const item = await SERVICE.listInterfaceRepositories();
+        expect(item).toEqual({});
     });
 
-    it('should allow pulling changes to repositories', async () => {
-        http.post.mockReturnValueOnce(of());
-        const result = await service.pullCommit('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/repositories/test/pull', {});
+    it('should allow listing repository drivers', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(async () => ['/driver']);
+        const item = await SERVICE.listRepositoryDrivers('1');
+        expect(item).toEqual(['/driver']);
     });
 
-    it('should allow querying the commit list for a repository', async () => {
-        const commit = {
-            commit: 'hash',
-            date: dayjs().unix(),
-            author: 'John',
-            subject: 'Best commit ever!!!'
-        };
-        http.get.mockReturnValueOnce(of([commit]));
-        const result = await service.listCommits('test', { driver: 'test' });
-        expect(http.get).toBeCalledWith('/api/engine/v2/repositories/test/commits?driver=test');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBe(commit);
+    it('should allow listing repository commits', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(async () => [{}]);
+        const item = await SERVICE.listRepositoryCommits('1');
+        expect(item).toEqual([{}]);
     });
 
-    it('should allow querying the branch list for a repository', async () => {
-        http.get.mockReturnValueOnce(of(['master', 'develop']));
-        const result = await service.listBranches('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/repositories/test/branches');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBe('master');
+    it('should allow listing repository branches', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(async () => ['master']);
+        const item = await SERVICE.listRepositoryBranches('1');
+        expect(item).toEqual(['master']);
     });
 
-    it('should allow querying a driver\'s details for a repository commit', async () => {
-        const driver = {
-            descriptive_name: 'Screen Technics Control',
-            generic_name: 'Screen',
-            tcp_port: 3001,
-            default_settings: '{"json": "formatted hash"}',
-            description: 'to be considered markdown format',
-            udp_port: 3001,
-            uri_base: 'https://twitter.com',
-            makebreak: true
-        };
-        http.get.mockReturnValueOnce(of(driver));
-        const result = await service.driverDetails('test', { driver: 'test', commit: 'hash' });
-        expect(http.get).toBeCalledWith(
-            '/api/engine/v2/repositories/test/details?driver=test&commit=hash'
-        );
-        expect(result).toBeInstanceOf(Object);
-        expect(result).toBe(driver);
+    it('should allow getting repository driver details', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(async () => ['/driver']);
+        const item = await SERVICE.listRepositoryDriverDetails('1', {
+            driver: '/driver',
+            commit: '1'
+        });
+        expect(item).toEqual(['/driver']);
+    });
+
+    it('should allow pulling latest changes to repository', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(async () => ({}));
+        const item = await SERVICE.pullRepositoryChanges('1');
+        expect(item).toEqual({});
     });
 });

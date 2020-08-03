@@ -1,7 +1,7 @@
-import { EngineResourceQueryOptions } from '../resources/resources.interface';
+import { PlaceResourceQueryOptions } from '../resources/resources.interface';
 
 /** Mapping of available query paramters for the modules index */
-export interface EngineModuleQueryOptions extends EngineResourceQueryOptions {
+export interface PlaceModuleQueryOptions extends PlaceResourceQueryOptions {
     /** Returns modules that are in the given system */
     control_system_id?: string;
     /** Returns modules with the given dependency */
@@ -12,12 +12,15 @@ export interface EngineModuleQueryOptions extends EngineResourceQueryOptions {
     running?: boolean;
     /** Returns modules that are not logic modules (i.e. they connect to a device or service) */
     no_logic?: boolean;
-    /** Returns modules that have not been updated since the value defined as seconds since UTC epoch */
+    /**
+     * Returns modules that have not been updated since the
+     * value defined as seconds since UTC epoch
+     */
     as_of?: number;
 }
 
-/** Engine response from `ping` module task endpoint `/api/engine/v2/<mod_id>/ping` */
-export interface EngineModulePingOptions {
+/** Place response from `ping` module task endpoint `/api/engine/v2/<mod_id>/ping` */
+export interface PlaceModulePingOptions {
     /** Host address of the module device */
     host: string;
     /** Whether the host address was pingable */

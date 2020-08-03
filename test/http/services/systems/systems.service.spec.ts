@@ -1,153 +1,151 @@
-import { of } from 'rxjs';
-import { EngineSystem } from '../../../../src/http/services/systems/system.class';
-import { EngineSystemsService } from '../../../../src/http/services/systems/systems.service';
-import { EngineTrigger } from '../../../../src/http/services/triggers/trigger.class';
-import { PlaceOS } from '../../../../src/placeos';
+import { PlaceSettings } from '../../../../src/http/services/settings/settings.class';
+import { PlaceSystem } from '../../../../src/http/services/systems/system.class';
+import { PlaceTrigger } from '../../../../src/http/services/triggers/trigger.class';
+import { PlaceZone } from '../../../../src/http/services/zones/zone.class';
 
-describe('EngineSystemsService', () => {
-    let service: EngineSystemsService;
-    let http: any;
+jest.mock('../../../../src/http/services/resources/resources.service');
 
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new EngineSystemsService(http);
-        (PlaceOS as any)._triggers = {};
-        (PlaceOS as any)._zones = {};
+import * as Resources from '../../../../src/http/services/resources/resources.service';
+import * as SERVICE from '../../../../src/http/services/systems/systems.service';
+
+describe('Systems API', () => {
+    it('should allow querying systems', async () => {
+        (Resources.query as any) = jest
+            .fn()
+            .mockImplementation(async (_, process: any, __) => [process({})]);
+        const list = await SERVICE.querySystems();
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceSystem);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(EngineSystemsService);
+    it('should allow showing system details', async () => {
+        (Resources.show as any) = jest
+            .fn()
+            .mockImplementation(async (_, _1, process: any, _2) => process({}));
+        const item = await SERVICE.showSystem('1');
+        expect(item).toBeInstanceOf(PlaceSystem);
     });
 
-    it('allow querying systems index', async () => {
-        http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
-        const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/systems');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBeInstanceOf(EngineSystem);
+    it('should allow creating new systems', async () => {
+        (Resources.create as any) = jest
+            .fn()
+            .mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.addSystem({});
+        expect(item).toBeInstanceOf(PlaceSystem);
     });
 
-    it('allow querying systems show', async () => {
-        http.get.mockReturnValueOnce(of({ id: 'test' }));
-        const result = await service.show('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/systems/test');
-        expect(result).toBeInstanceOf(EngineSystem);
+    it('should allow updating system details', async () => {
+        (Resources.update as any) = jest
+            .fn()
+            .mockImplementation(async (_, _0, _1, _2, process: any, _3) => process({}));
+        const item = await SERVICE.updateSystem('1', {});
+        expect(item).toBeInstanceOf(PlaceSystem);
     });
 
-    it('allow removing modules', async () => {
-        http.delete.mockReturnValueOnce(of(null));
-        await service.removeModule('test', 'module_1');
-        expect(http.delete).toBeCalledWith('/api/engine/v2/systems/test/module/module_1');
+    it('should allow removing systems', async () => {
+        (Resources.remove as any) = jest.fn().mockImplementation(async () => undefined);
+        const item = await SERVICE.removeSystem('1', {});
+        expect(item).toBeFalsy();
     });
 
-    it('allow starting a system', async () => {
-        http.post.mockReturnValueOnce(of(null));
-        await service.startSystem('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/start', {});
+    it('should allow adding a module to a system', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => undefined);
+        const item = await SERVICE.addSystemModule('1', 'mod-1');
+        expect(item).toBeFalsy();
     });
 
-    it('allow stopping a system', async () => {
-        http.post.mockReturnValueOnce(of(null));
-        await service.stopSystem('test');
-        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/stop', {});
+    it('should allow removing a module from a system', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => undefined);
+        const item = await SERVICE.removeSystemModule('1', 'mod-1');
+        expect(item).toBeFalsy();
     });
 
-    it('allow counting system modules', async () => {
-        http.get.mockReturnValueOnce(of({ count: 0 }));
-        const value = await service.count('test', 'Booking');
-        expect(http.get).toBeCalledWith('/api/engine/v2/systems/test/count?module=Booking');
-        expect(value).toEqual({ count: 0 });
+    it('should allow starting a system', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => undefined);
+        const item = await SERVICE.startSystem('1');
+        expect(item).toBeFalsy();
     });
 
-    it('allow executing methods on modules', async () => {
-        http.post.mockReturnValueOnce(of('test')).mockReturnValueOnce(of('test2'));
-        let resp = await service.execute('test', 'explode', 'module');
-        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/module_1/explode',  []);
-        expect(resp).toBe('test');
-        resp = await service.execute('test', 'explode', 'module', 2, ['let', 'me', 'go']);
-        expect(http.post).toBeCalledWith('/api/engine/v2/systems/test/module_2/explode', ['let', 'me', 'go']);
-        expect(resp).toBe('test2');
+    it('should allow stopping a system', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => undefined);
+        const item = await SERVICE.stopSystem('1');
+        expect(item).toBeFalsy();
     });
 
-    it('allow querying module state', async () => {
-        http.get
-            .mockReturnValueOnce(of({ test: 'yeah' }))
-            .mockReturnValueOnce(of({ test: 'yeah2' }));
-        let value = await service.stateLookup('test', 'module', 1, 'look');
-        expect(http.get).toBeCalledWith(
-            `/api/engine/v2/systems/test/module_1/look`
-        );
-        expect(value).toEqual({ test: 'yeah' });
-        value = await service.state('test', 'module');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/module_1`);
-        expect(value).toEqual({ test: 'yeah2' });
+    it('should allow excuting a method on a system', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => ({}));
+        const item = await SERVICE.executeFromSystem('1', 'test', 'mod');
+        expect(item).toEqual({});
     });
 
-    it('allow querying module methods', async () => {
-        http.get
-            .mockReturnValueOnce(of({ test: { arity: 1 } }))
-            .mockReturnValueOnce(of({ test: { arity: 2 } }));
-        let value = await service.functionList('test', 'module');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/functions/module_1`);
-        expect(value).toEqual({ test: { arity: 1 } });
-        value = await service.functionList('test', 'module', 2);
-        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/functions/module_2`);
-        expect(value).toEqual({ test: { arity: 2 } });
+    it('should allow gettings state of a system module', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => ({}));
+        const item = await SERVICE.systemModuleState('1', 'mod');
+        expect(item).toEqual({});
     });
 
-    it('allow querying module types', async () => {
-        http.get.mockReturnValueOnce(of({ test: 0 }));
-        const value = await service.types('test');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/count`);
-        expect(value).toEqual({ test: 0 });
+    it('should allow lookup state of a system module', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => ({}));
+        const item = await SERVICE.lookupSystemModuleState('1', 'mod', 1, 'connected');
+        expect(item).toEqual({});
     });
 
-    it('allow adding modules', async () => {
-        http.put.mockReturnValueOnce(of({}));
-        const value = await service.addModule('test', 'mod1');
-        expect(http.put).toBeCalledWith(`/api/engine/v2/systems/test/module/mod1`, {});
-        expect(value).toEqual({});
+    it('should allow listing methods for system module', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => ({}));
+        const item = await SERVICE.functionList('1', 'mod');
+        expect(item).toEqual({});
     });
 
-    it('allow listing triggers', async () => {
-        http.get.mockReturnValueOnce(of([{ id: '1' }]));
-        const value = await service.listTriggers('test');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/triggers`);
-        expect(value.length).toBe(1);
+    it('should allow getting module count', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => ({}));
+        const item = await SERVICE.moduleCount('1', 'mod');
+        expect(item).toEqual({});
     });
 
-    it('allow listing zones', async () => {
-        http.get.mockReturnValueOnce(of([{ id: '1' }]));
-        const value = await service.listZones('test');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/zones`);
-        expect(value.length).toBe(1);
+    it('should allow getting types of modules in a syste', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => ({}));
+        const item = await SERVICE.moduleTypes('1');
+        expect(item).toEqual({});
     });
 
-    it('allow adding triggers', async () => {
-        http.post.mockReturnValueOnce(of({}));
-        const value = await service.addTrigger('test', {});
-        expect(http.post).toBeCalledWith(`/api/engine/v2/systems/test/triggers`, {});
-        expect(value instanceof EngineTrigger).toBeTruthy();
+    it('should allow listing system\'s zones', async () => {
+        (Resources.task as any) = jest
+            .fn()
+            .mockImplementation(async (_, _1, _2, _3, cb) => cb([{}]));
+        const item = await SERVICE.listSystemZones('1');
+        expect(item).toBeTruthy();
+        expect(item[0]).toBeInstanceOf(PlaceZone);
     });
 
-    it('allow remove triggers', async () => {
-        http.delete.mockReturnValueOnce(of(null));
-        const value = await service.removeTrigger('test', 'a_trigger');
-        expect(http.delete).toBeCalledWith(`/api/engine/v2/systems/test/triggers/a_trigger`);
+    it('should allow listing system\'s triggers', async () => {
+        (Resources.task as any) = jest
+            .fn()
+            .mockImplementation(async (_, _1, _2, _3, cb) => cb([{}]));
+        const item = await SERVICE.listSystemTriggers('1');
+        expect(item).toBeTruthy();
+        expect(item[0]).toBeInstanceOf(PlaceTrigger);
     });
 
-    it('allow getting settings', async () => {
-        http.get.mockReturnValueOnce(of([]));
-        const value = await service.settings('test');
-        expect(http.get).toBeCalledWith(`/api/engine/v2/systems/test/settings`);
+    it('should allow adding a trigger to a system', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async (_, _1, _2, _3, cb) => cb({}));
+        const item = await SERVICE.addSystemTrigger('1', {});
+        expect(item).toBeTruthy();
+        expect(item).toBeInstanceOf(PlaceTrigger);
     });
 
+    it('should allow removing a trigger from a system', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation(async () => undefined);
+        const item = await SERVICE.removeSystemTrigger('1', 'trig-1');
+        expect(item).toBeFalsy();
+    });
+
+    it('should allow listing settings for a system', async () => {
+        (Resources.task as any) = jest
+            .fn()
+            .mockImplementation(async (_, _1, _2, _3, cb) => cb([{}]));
+        const item = await SERVICE.systemSettings('1');
+        expect(item).toBeTruthy();
+        expect(item[0]).toBeInstanceOf(PlaceSettings);
+    });
 });

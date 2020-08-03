@@ -1,41 +1,44 @@
-import { of } from 'rxjs';
+import { PlaceApplication } from '../../../../src/http/services/applications/application.class';
 
-import { EngineApplication } from '../../../../src/http/services/applications/application.class';
-import { EngineApplicationsService } from '../../../../src/http/services/applications/applications.service';
+import * as SERVICE from '../../../../src/http/services/applications/applications.service';
+import * as Resources from '../../../../src/http/services/resources/resources.service';
 
-describe('EngineApplicationsService', () => {
-    let service: EngineApplicationsService;
-    let http: any;
+describe('Applications API', () => {
 
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new EngineApplicationsService(http);
+    it('should allow querying applications', async () => {
+        const spy = jest.spyOn(Resources, 'query');
+        spy.mockImplementation(async (_, process: any, __) => [process({})]);
+        const list = await SERVICE.queryApplications();
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceApplication);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(EngineApplicationsService);
+    it('should allow showing application details', async () => {
+        const spy = jest.spyOn(Resources, 'show');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.showApplication('1');
+        expect(item).toBeInstanceOf(PlaceApplication);
     });
 
-    it('allow querying systems index', async () => {
-        http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
-        const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/oauth_apps');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBeInstanceOf(EngineApplication);
+    it('should allow creating new applications', async () => {
+        const spy = jest.spyOn(Resources, 'create');
+        spy.mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.addApplication({});
+        expect(item).toBeInstanceOf(PlaceApplication);
     });
 
-    it('allow querying systems show', async () => {
-        http.get.mockReturnValueOnce(of({ id: 'test' }));
-        const result = await service.show('test');
-        expect(http.get).toBeCalledWith('/api/engine/v2/oauth_apps/test');
-        expect(result).toBeInstanceOf(EngineApplication);
+    it('should allow updating application details', async () => {
+        const spy = jest.spyOn(Resources, 'update');
+        spy.mockImplementation(async (_, _0, _1, _2, process: any, _3) => process({}) as any);
+        const item = await SERVICE.updateApplication('1', {});
+        expect(item).toBeInstanceOf(PlaceApplication);
+    });
+
+    it('should allow removing applications', async () => {
+        const spy = jest.spyOn(Resources, 'remove');
+        spy.mockImplementation(async () => undefined);
+        const item = await SERVICE.removeApplication('1', {});
+        expect(item).toBeFalsy();
     });
 });

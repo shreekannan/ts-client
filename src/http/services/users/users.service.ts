@@ -1,39 +1,40 @@
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineHttpClient } from '../../http.service';
-import { EngineResourceService } from '../resources/resources.service';
-import { ServiceManager } from '../service-manager.class';
-import { EngineUser } from './user.class';
-import { EngineUserQueryOptions } from './user.interfaces';
+import { create, query, remove, show, update } from '../resources/resources.service';
+import { PlaceUser } from './user.class';
+import { PlaceUserQueryOptions } from './user.interfaces';
 
-export class EngineUsersService extends EngineResourceService<EngineUser> {
-    /* istanbul ignore next */
-    constructor(protected http: EngineHttpClient) {
-        super(http);
-        ServiceManager.setService(EngineUser, this);
-        this._name = 'User';
-        this._api_route = 'users';
-    }
+const PATH = 'users';
+const NAME = 'Users';
 
-    /**
-     * Query the index of the API route associated with this service
-     * @param query_params Map of query paramaters to add to the request URL
-     */
-    public query(query_params?: EngineUserQueryOptions) {
-        return super.query(query_params);
-    }
+function process(item: HashMap) {
+    return new PlaceUser(item);
+}
 
-    /**
-     * Query the API for the currently logged in user
-     */
-    public current() {
-        return super.show('current');
-    }
+export function queryUsers(query_params?: PlaceUserQueryOptions) {
+    return query(query_params, process, PATH);
+}
 
-    /**
-     * Convert API data into local interface
-     * @param item Raw API data
-     */
-    protected process(item: HashMap) {
-        return new EngineUser(item);
-    }
+export function showUser(id: string, query_params: HashMap = {}) {
+    return show(id, query_params, process, PATH);
+}
+
+export function currentUser(query_params: HashMap = {}) {
+    return show('current', query_params, process, PATH);
+}
+
+export function updateUser(
+    id: string,
+    form_data: HashMap | PlaceUser,
+    query_params: HashMap = {},
+    method: 'put' | 'patch' = 'patch'
+) {
+    return update(id, form_data, query_params, method, process, PATH);
+}
+
+export function addUser(form_data: HashMap, query_params: HashMap = {}) {
+    return create(form_data, query_params, process, PATH);
+}
+
+export function removeUser(id: string, query_params: HashMap = {}) {
+    return remove(id, query_params, PATH);
 }

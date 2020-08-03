@@ -1,52 +1,36 @@
-import { of } from 'rxjs';
+import { PlaceCluster } from '../../../../src/http/services/clusters/cluster.class';
 
-import { EngineCluster } from '../../../../src/http/services/clusters/cluster.class';
-import { EngineClustersService } from '../../../../src/http/services/clusters/clusters.service';
-import { EngineProcess } from '../../../../src/http/services/clusters/process.class';
+jest.mock('../../../../src/http/services/resources/resources.service');
 
-describe('EngineClustersService', () => {
-    let service: EngineClustersService;
-    let http: any;
+import * as SERVICE from '../../../../src/http/services/clusters/clusters.service';
+import { PlaceProcess } from '../../../../src/http/services/clusters/process.class';
+import * as Resources from '../../../../src/http/services/resources/resources.service';
 
-    beforeEach(() => {
-        http = {
-            responseHeaders: jest.fn(() => ({})),
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-            api_endpoint: '/api/engine/v2'
-        };
-        service = new EngineClustersService(http);
+describe('Cluster API', () => {
+    it('should allow querying clusters', async () => {
+        (Resources as any).query = jest
+            .fn()
+            .mockImplementation(async (_, process: any, __) => [process({})]);
+        const list = await SERVICE.queryClusters();
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceCluster);
     });
 
-    it('should create instance', () => {
-        expect(service).toBeTruthy();
-        expect(service).toBeInstanceOf(EngineClustersService);
+    it('should allow querying processes', async () => {
+        (Resources.show as any) = jest
+            .fn()
+            .mockImplementation(async (_, _1, process: any, _2) => process([{}]) as any);
+        const list = await SERVICE.queryProcesses('1');
+        expect(list).toBeTruthy();
+        expect(list.length).toBe(1);
+        expect(list[0]).toBeInstanceOf(PlaceProcess);
     });
 
-    it('allow querying clusters index', async () => {
-        http.get.mockReturnValueOnce(of({ results: [{ id: 'test' }], total: 10 }));
-        const result = await service.query();
-        expect(http.get).toBeCalledWith('/api/engine/v2/cluster');
-        expect(result).toBeInstanceOf(Array);
-        expect(result[0]).toBeInstanceOf(EngineCluster);
-    });
-
-    it('allow querying clusters show', async () => {
-        jest.useFakeTimers();
-        http.get.mockReturnValueOnce(of([{ driver: 'test' }]));
-        const result = await service.show('test');
-        jest.runOnlyPendingTimers();
-        expect(http.get).toBeCalledWith('/api/engine/v2/cluster/test');
-        expect(result[0]).toBeInstanceOf(EngineProcess);
-        jest.runOnlyPendingTimers();
-        jest.useRealTimers();
-    });
-
-    it('allow querying clusters killing processes', async () => {
-        http.delete.mockReturnValueOnce(of());
-        const result = await service.delete('test', { driver: 'a-driver' });
-        expect(http.delete).toBeCalledWith('/api/engine/v2/cluster/test?driver=a-driver');
+    it('should allow terminating processes', async () => {
+        (Resources.show as any) = jest
+            .fn()
+            .mockImplementation(async (_, _1, process: any, _2) => process({}) as any);
+        const item = await SERVICE.terminateProcess('1', { driver: '2' });
     });
 });

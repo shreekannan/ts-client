@@ -1,8 +1,7 @@
-import { EngineLDAPSource } from '../../../../src/http/services/ldap-sources/ldap-source.class';
-import { ServiceManager } from '../../../../src/http/services/service-manager.class';
+import { PlaceLDAPSource } from '../../../../src/http/services/ldap-sources/ldap-source.class';
 
-describe('EngineLdapSource', () => {
-    let auth_source: EngineLDAPSource;
+describe('PlaceLdapSource', () => {
+    let auth_source: PlaceLDAPSource;
     let service: any;
 
     beforeEach(() => {
@@ -11,8 +10,7 @@ describe('EngineLdapSource', () => {
             remove: jest.fn(),
             update: jest.fn()
         };
-        ServiceManager.setService(EngineLDAPSource, service);
-        auth_source = new EngineLDAPSource({
+        auth_source = new PlaceLDAPSource({
             id: 'dep-test',
             authority_id: 'test-authority',
             host: 'test',
@@ -22,18 +20,14 @@ describe('EngineLdapSource', () => {
 
     it('should create instance', () => {
         expect(auth_source).toBeTruthy();
-        expect(auth_source).toBeInstanceOf(EngineLDAPSource);
+        expect(auth_source).toBeInstanceOf(PlaceLDAPSource);
     });
 
     it('should not allow editing the authority ID', () => {
         expect(auth_source.authority_id).toBe('test-authority');
-        expect(() => auth_source.storePendingChange('authority_id', 'not-test-authority')).toThrowError();
     });
 
     it('should allow editing fields', () => {
         expect(auth_source.host).toBe('test');
-        auth_source.storePendingChange('host', 'not-test');
-        expect(auth_source.host).not.toBe('not-test');
-        expect(auth_source.changes.host).toBe('not-test');
     });
 });

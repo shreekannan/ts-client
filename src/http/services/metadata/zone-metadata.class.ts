@@ -1,17 +1,17 @@
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineZone } from '../zones/zone.class';
+import { PlaceZone } from '../zones/zone.class';
 import { PlaceMetadata } from './metadata.class';
 
 export class PlaceZoneMetadata {
     /** Zone associated with the metadata */
-    public readonly zone: EngineZone;
+    public readonly zone: PlaceZone;
     /** Metadata for zone */
     public readonly metadata: HashMap<PlaceMetadata>;
     /** List of the root keys in the metadata */
     public readonly keys: string[];
 
     constructor(data: HashMap = {}) {
-        this.zone = new EngineZone(data.zone);
+        this.zone = new PlaceZone(data.zone);
         this.keys = data.keys || [];
         this.metadata = {};
         const metadata = data.metadata || {};

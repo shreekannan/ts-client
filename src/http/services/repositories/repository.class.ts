@@ -1,22 +1,8 @@
 import { HashMap } from '../../../utilities/types.utilities';
-import { EngineResource } from '../resources/resource.class';
-import { EngineRepositoriesService } from './repositories.service';
-import { EngineRepositoryType } from './repository.interfaces';
+import { PlaceResource } from '../resources/resource.class';
+import { PlaceRepositoryType } from './repository.interfaces';
 
-import * as _dayjs from 'dayjs';
-// tslint:disable-next-line:no-duplicate-imports
-import { Dayjs, default as _rollupDayjs } from 'dayjs';
-/**
- * @hidden
- */
-const dayjs = _rollupDayjs || _dayjs;
-
-export const REPOSITORY_MUTABLE_FIELDS = ['name', 'folder_name', 'description', 'uri', 'commit_hash', 'repo_type'] as const;
-type RepositoryMutableTuple = typeof REPOSITORY_MUTABLE_FIELDS;
-export type RepositoryMutableFields = RepositoryMutableTuple[number];
-
-export class EngineRepository extends EngineResource<EngineRepositoriesService> {
-
+export class PlaceRepository extends PlaceResource {
     /** Name of the folder on the server to pull the repository */
     public readonly folder_name: string;
     /** Description of the contents of the repository */
@@ -28,12 +14,10 @@ export class EngineRepository extends EngineResource<EngineRepositoriesService> 
     /** Hash of the commit at the head of the repository */
     public readonly commit_hash: string;
     /** Repository type */
-    public readonly repo_type: EngineRepositoryType;
-    /** Class type of required service */
-    protected __type: string = 'EngineRepository';
+    public readonly repo_type: PlaceRepositoryType;
 
     /** Repository type */
-    public get type(): EngineRepositoryType {
+    public get type(): PlaceRepositoryType {
         return this.repo_type;
     }
 
@@ -44,13 +28,9 @@ export class EngineRepository extends EngineResource<EngineRepositoriesService> 
         this.uri = raw_data.uri || '';
         this.branch = raw_data.branch || 'master';
         this.commit_hash = raw_data.commit_hash || '';
-        this.repo_type = typeof raw_data.repo_type === 'string' ? raw_data.repo_type as any : EngineRepositoryType.Driver;
-    }
-
-    public storePendingChange(
-        key: RepositoryMutableFields,
-        value: EngineRepository[RepositoryMutableFields]
-    ): this {
-        return super.storePendingChange(key as any, value);
+        this.repo_type =
+            typeof raw_data.repo_type === 'string'
+                ? (raw_data.repo_type as any)
+                : PlaceRepositoryType.Driver;
     }
 }

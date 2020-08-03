@@ -1,100 +1,103 @@
-import { toQueryString } from '../../../utilities/api.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
-import { HttpError } from '../../http.interfaces';
-import { EngineHttpClient } from '../../http.service';
-import { EngineDriverDetails } from '../drivers/drivers.interfaces';
-import { EngineResourceService } from '../resources/resources.service';
-import { ServiceManager } from '../service-manager.class';
-import { EngineRepository } from './repository.class';
-import { EngineRepositoryCommitQuery, EngineRepositoryDetailsQuery, EngineRepositoryPullQuery, GitCommitDetails } from './repository.interfaces';
+import { PlaceDriverDetails } from '../drivers/drivers.interfaces';
+import { create, query, remove, show, task, update } from '../resources/resources.service';
+import { PlaceRepository } from './repository.class';
+import {
+    GitCommitDetails,
+    PlaceRepositoryCommitQuery,
+    PlaceRepositoryDetailsQuery,
+    PlaceRepositoryPullQuery
+} from './repository.interfaces';
 
-export class EngineRepositoriesService extends EngineResourceService<EngineRepository> {
-    /* istanbul ignore next */
-    constructor(protected http: EngineHttpClient) {
-        super(http);
-        ServiceManager.setService(EngineRepository, this);
-        this._name = 'Repository';
-        this._api_route = 'repositories';
-    }
+const PATH = 'repositorys';
+const NAME = 'Repositorys';
 
-    /**
-     * Get a list of all the interfaces
-     * @param query_params Addition query parameters to pass to the request
-     */
-    public async listInterfaces(query_params: HashMap = {}): Promise<HashMap<string>> {
-        const query = toQueryString(query_params);
-        const key = `interfaces|${query}`;
-        /* istanbul ignore else */
-        if (!this._promises[key]) {
-            this._promises[key] = new Promise((resolve, reject) => {
-                const url = `${this.api_route}/interfaces${query ? '?' + query : ''}`;
-                let result: any;
-                this.http.get(url).subscribe(
-                    (d: HashMap) => result = d,
-                    /* istanbul ignore next */
-                    (e: HttpError) => {
-                        reject(e);
-                        delete this._promises[key];
-                    },
-                    () => {
-                        resolve(result);
-                        this.timeout(key, () => delete this._promises[key], 1000);
-                    }
-                );
-            });
-        }
-        return this._promises[key];
-    }
+function process(item: HashMap) {
+    return new PlaceRepository(item);
+}
 
-    /**
-     * Get a list of all the drivers for a repository
-     * @param id ID of the repository
-     * @param query Addition query parameters to pass to the request
-     */
-    public async listDrivers(id: string, query?: HashMap): Promise<string[]> {
-        return await this.task(id, 'drivers', query || {}, 'get');
-    }
+export function queryRepositories(query_params?: HashMap) {
+    return query(query_params, process, PATH);
+}
 
-    /**
-     * Get a list of all the commits for a repository
-     * @param id ID of the repository
-     * @param query Addition query parameters to pass to the request
-     */
-    public async listCommits(id: string, query: EngineRepositoryCommitQuery = {}): Promise<GitCommitDetails[]> {
-        return await this.task(id, 'commits', query, 'get');
-    }
+export function showRepository(id: string, query_params: HashMap = {}) {
+    return show(id, query_params, process, PATH);
+}
 
-    /**
-     * Get a list of all the branches for a repository
-     * @param id ID of the repository
-     */
-    public async listBranches(id: string): Promise<string[]> {
-        return await this.task(id, 'branches', undefined, 'get');
-    }
+export function updateRepository(
+    id: string,
+    form_data: HashMap | PlaceRepository,
+    query_params: HashMap = {},
+    method: 'put' | 'patch' = 'patch'
+) {
+    return update(id, form_data, query_params, method, process, PATH);
+}
 
-    /**
-     * Get the details for a given driver
-     * @param id ID of the repository
-     * @param query Addition query parameters to pass to the request
-     */
-    public async driverDetails(id: string, query: EngineRepositoryDetailsQuery): Promise<EngineDriverDetails> {
-        return await this.task(id, 'details', query, 'get');
-    }
+export function addRepository(form_data: HashMap, query_params: HashMap = {}) {
+    return create(form_data, query_params, process, PATH);
+}
 
-    /**
-     * Pull remote changes to the repository
-     * @param id ID of the repository
-     * @param query Addition query parameters to pass to the request
-     */
-    public async pullCommit(id: string, query?: EngineRepositoryPullQuery): Promise<EngineDriverDetails> {
-        return await this.task(id, 'pull', query, 'post');
-    }
+export function removeRepository(id: string, query_params: HashMap = {}) {
+    return remove(id, query_params, PATH);
+}
 
-    /**
-     * Convert API data into local interface
-     * @param item Raw API data
-     */
-    protected process(item: HashMap) {
-        return new EngineRepository(item);
-    }
+/**
+ * Get a list of all the interfaces
+ * @param query_params Addition query parameters to pass to the request
+ */
+export function listInterfaceRepositories(query_params: HashMap = {}) {
+    return show('interfaces', query_params, (i: HashMap<string>) => i, PATH);
+}
+
+/**
+ * Get a list of all the drivers for a repository
+ * @param id ID of the repository
+ * @param query Addition query parameters to pass to the request
+ */
+export function listRepositoryDrivers(id: string, query_params?: HashMap): Promise<string[]> {
+    return task(id, 'drivers', query_params, 'get', undefined, PATH);
+}
+
+/**
+ * Get a list of all the commits for a repository
+ * @param id ID of the repository
+ * @param query Addition query parameters to pass to the request
+ */
+export function listRepositoryCommits(
+    id: string,
+    query_params?: PlaceRepositoryCommitQuery
+): Promise<GitCommitDetails[]> {
+    return task(id, 'commits', query_params, 'get', undefined, PATH);
+}
+
+/**
+ * Get a list of all the branches for a repository
+ * @param id ID of the repository
+ */
+export function listRepositoryBranches(id: string): Promise<string[]> {
+    return task(id, 'branches', undefined, 'get', undefined, PATH);
+}
+
+/**
+ * Get the details for a given driver
+ * @param id ID of the repository
+ * @param query Addition query parameters to pass to the request
+ */
+export function listRepositoryDriverDetails(
+    id: string,
+    query_params: PlaceRepositoryDetailsQuery
+): Promise<PlaceDriverDetails> {
+    return task(id, 'details', query_params, 'get', undefined, PATH);
+}
+
+/**
+ * Pull remote changes to tshe repository
+ * @param id ID of the repository
+ * @param query Addition query parameters to pass to the request
+ */
+export function pullRepositoryChanges(
+    id: string,
+    query_params?: PlaceRepositoryPullQuery
+): Promise<GitCommitDetails> {
+    return task(id, 'pull', query_params, 'post', undefined, PATH);
 }
