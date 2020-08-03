@@ -1,15 +1,15 @@
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { HashMap } from '../../utilities/types.utilities';
-import { MockEngineWebsocketSystem } from './mock-engine-system.class';
+import { MockPlaceWebsocketSystem } from './mock-engine-system.class';
 
-export class MockEngineWebsocketModule {
+export class MockPlaceWebsocketModule {
     [name: string]: any;
 
-    constructor(private _system: MockEngineWebsocketSystem, properties: HashMap) {
+    constructor(private _system: MockPlaceWebsocketSystem, properties: HashMap) {
         for (const key in properties) {
             /* istanbul ignore else */
-            if (properties.hasOwnProperty(key) && properties[key]) {
+            if (properties.hasOwnProperty(key) && properties[key] !== undefined) {
                 if (properties[key] instanceof Function) {
                     this.addMethod(key, properties[key]);
                 } else {
@@ -39,7 +39,7 @@ export class MockEngineWebsocketModule {
      * @param prop_name Name of the property
      * @param next Callback for changes to the property
      */
-    public listen<T = any>(prop_name: string, next: (_: any) => void): Subscription {
+    public listen<T = any>(prop_name: string): Observable<T> {
         if (
             !this[`_${prop_name}`] &&
             !(this[`_${prop_name}_obs`] instanceof Observable) &&
@@ -48,7 +48,7 @@ export class MockEngineWebsocketModule {
             this.addProperty<T>(prop_name, null);
         }
         const observer = this[`_${prop_name}_obs`] as Observable<T>;
-        return observer.subscribe(next);
+        return observer;
     }
 
     /**
@@ -73,7 +73,7 @@ export class MockEngineWebsocketModule {
             prop_name = prop_name.replace('$', '');
         }
         this[`_${prop_name}`] = new BehaviorSubject<T>(value);
-        this[`_${prop_name}_obs`] = this[`_${prop_name}`];
+        this[`_${prop_name}_obs`] = this[`_${prop_name}`].asObservable();
         Object.defineProperty(this, prop_name, {
             get: () => this[`_${prop_name}`].getValue(),
             set: v => this[`_${prop_name}`].next(v)

@@ -1,8 +1,8 @@
 
-import { MockEngineWebsocketModule } from '../../../src/websocket/mock/mock-engine-module.class';
+import { MockPlaceWebsocketModule } from '../../../src/websocket/mock/mock-engine-module.class';
 
-describe('MockEngineWebsocketModule', () => {
-    let module: MockEngineWebsocketModule;
+describe('MockPlaceWebsocketModule', () => {
+    let module: MockPlaceWebsocketModule;
     const system = {
         Bookings: [{
             test: 10,
@@ -11,7 +11,7 @@ describe('MockEngineWebsocketModule', () => {
             $method: () => 10,
             $methodWithOneArg: (arg1: number) => arg1 + 1,
             $methodWithTwoArgs: (arg1: number, arg2: number) => arg1 + arg2,
-            $updateOtherModule: function () {
+            $updateOtherModule() {
                 return (this as any)._system.Other[0].test--;
             }
         }],
@@ -21,7 +21,7 @@ describe('MockEngineWebsocketModule', () => {
     };
 
     beforeEach(() => {
-        module = new MockEngineWebsocketModule(system as any, system.Bookings[0])
+        module = new MockPlaceWebsocketModule(system as any, system.Bookings[0]);
     });
 
     it('should create an instance', () => {
@@ -40,7 +40,7 @@ describe('MockEngineWebsocketModule', () => {
 
     it('should allow listening to binding values', (done) => {
         let test_count = 0;
-        module.listen('test', (value: any) => {
+        module.listen('test').subscribe((value: any) => {
             if (test_count === 0) {
                 expect(value).toBe(10);
                 test_count++;
@@ -54,7 +54,7 @@ describe('MockEngineWebsocketModule', () => {
 
     it('should allow listening to non-predefined binding values', (done) => {
         let test_count = 0;
-        module.listen('other_test', (value: any) => {
+        module.listen('other_test').subscribe((value: any) => {
             if (test_count === 0) {
                 expect(value).toBe(null);
                 test_count++;
@@ -64,7 +64,7 @@ describe('MockEngineWebsocketModule', () => {
             }
         });
         setTimeout(() => module.other_test = 20);
-    })
+    });
 
     it('should allow for executing methods', () => {
         expect(module.call('method')).toBe(10);

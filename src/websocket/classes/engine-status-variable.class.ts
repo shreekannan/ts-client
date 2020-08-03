@@ -1,9 +1,10 @@
-import { Subscription } from 'rxjs';
-import { EngineBindingService } from '../binding.service';
-import { EngineRequestOptions } from '../websocket.interfaces';
-import { EngineModuleBinding } from './engine-module.class';
+import { Observable } from 'rxjs';
 
-export class EngineVariableBinding {
+import { bind, listen, status, unbind, value } from '../websocket.class';
+import { PlaceRequestOptions } from '../websocket.interfaces';
+import { PlaceModuleBinding } from './engine-module.class';
+
+export class PlaceVariableBinding<T = any> {
     /** Status variable name */
     public readonly name: string;
     /** Number of active bindings to this variable */
@@ -11,16 +12,11 @@ export class EngineVariableBinding {
     /** Number of bindings to restore on reconnection */
     private _stale_bindings: number = 0;
 
-    constructor(
-        private _service: EngineBindingService,
-        private _module: EngineModuleBinding,
-        _name: string
-    ) {
+    constructor(private _module: PlaceModuleBinding, _name: string) {
         this.name = _name;
         // Listen for state changes in the websocket connection
-        this._service.engine.status(value => {
-            if (value && this._stale_bindings) {
-
+        status().subscribe(connected => {
+            if (connected && this._stale_bindings) {
                 this.rebind();
             } else {
                 this._stale_bindings = this._binding_count || this._stale_bindings;
@@ -35,16 +31,16 @@ export class EngineVariableBinding {
     }
 
     /** Current value of the binding */
-    public get value(): any {
-        return this._service.engine.value(this.binding());
+    public get value(): T | undefined {
+        return value<T>(this.binding());
     }
 
     /**
      * Subscribe to changes of the variable's binding value
      * @param next Callback for changes to the bindings value
      */
-    public listen(next: (_: any) => void): Subscription {
-        return this._service.engine.listen(this.binding(), next);
+    public listen(): Observable<T> {
+        return listen(this.binding());
     }
 
     /**
@@ -53,7 +49,7 @@ export class EngineVariableBinding {
     public bind(): () => void {
         /* istanbul ignore else */
         if (this._binding_count <= 0) {
-            this._service.engine.bind(this.binding()).then(() => {
+            bind(this.binding()).then(() => {
                 this._binding_count++;
             });
         }
@@ -65,7 +61,7 @@ export class EngineVariableBinding {
      */
     public unbind() {
         if (this._binding_count === 1) {
-            this._service.engine.unbind(this.binding()).then(() => {
+            unbind(this.binding()).then(() => {
                 this._binding_count--;
             });
         } else {
@@ -80,7 +76,7 @@ export class EngineVariableBinding {
      * Rebind to the status variable
      */
     private rebind() {
-        this._service.engine.bind(this.binding()).then(() => {
+        bind(this.binding()).then(() => {
             this._binding_count = this._stale_bindings;
             this._stale_bindings = 0;
         });
@@ -89,7 +85,7 @@ export class EngineVariableBinding {
     /**
      * Generate binding details for the status variable
      */
-    private binding(): EngineRequestOptions {
+    private binding(): PlaceRequestOptions {
         return {
             sys: this._module.system.id,
             mod: this._module.name,

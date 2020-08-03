@@ -1,24 +1,20 @@
 import { HashMap } from '../../utilities/types.utilities';
-import { EngineBindingService } from '../binding.service';
-import { EngineVariableBinding } from './engine-status-variable.class';
-import { EngineSystemBinding } from './engine-system.class';
+import { execute } from '../websocket.class';
+import { PlaceVariableBinding } from './engine-status-variable.class';
+import { PlaceSystemBinding } from './engine-system.class';
 
-export class EngineModuleBinding {
+export class PlaceModuleBinding {
     /** Mapping of module bindings */
-    private _bindings: HashMap<EngineVariableBinding> = {};
+    private _bindings: HashMap<PlaceVariableBinding> = {};
 
-    constructor(
-        private _service: EngineBindingService,
-        private _system: EngineSystemBinding,
-        private _id: string
-    ) {}
+    constructor(private _system: PlaceSystemBinding, private _id: string) {}
 
     public get id(): string {
         return `${this.name}_${this.index}`;
     }
 
     /** Parent system of the module */
-    public get system(): EngineSystemBinding {
+    public get system(): PlaceSystemBinding {
         return this._system;
     }
 
@@ -42,7 +38,7 @@ export class EngineModuleBinding {
      */
     public binding(name: string) {
         if (!this._bindings[name]) {
-            this._bindings[name] = new EngineVariableBinding(this._service, this, name);
+            this._bindings[name] = new PlaceVariableBinding(this, name);
         }
         return this._bindings[name];
     }
@@ -52,8 +48,8 @@ export class EngineModuleBinding {
      * @param method Name of the method
      * @param args Array of arguments to pass to the method
      */
-    public exec(method: string, args?: any[]): Promise<any> {
-        return this._service.engine.exec({
+    public execute(method: string, args?: any[]): Promise<any> {
+        return execute({
             sys: this._system.id,
             mod: this.name,
             index: this.index,

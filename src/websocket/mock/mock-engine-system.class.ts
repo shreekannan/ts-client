@@ -1,7 +1,7 @@
 import { HashMap } from '../../utilities/types.utilities';
-import { MockEngineWebsocketModule } from './mock-engine-module.class';
+import { MockPlaceWebsocketModule } from './mock-engine-module.class';
 
-export class MockEngineWebsocketSystem {
+export class MockPlaceWebsocketSystem {
     [name: string]: any;
 
     constructor(properties: HashMap) {
@@ -27,6 +27,6 @@ export class MockEngineWebsocketSystem {
         if (!this[mod_name]) {
             this[mod_name] = [];
         }
-        this[mod_name].push(new MockEngineWebsocketModule(this, properties));
+        this[mod_name].push(new MockPlaceWebsocketModule(this, properties));
     }
 }

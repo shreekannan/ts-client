@@ -1,8 +1,8 @@
-import { MockEngineWebsocketSystem } from "../../../src/websocket/mock/mock-engine-system.class";
-import { MockEngineWebsocketModule } from "../../../src/websocket/mock/mock-engine-module.class";
+import { MockPlaceWebsocketModule } from '../../../src/websocket/mock/mock-engine-module.class';
+import { MockPlaceWebsocketSystem } from '../../../src/websocket/mock/mock-engine-system.class';
 
-describe('MockEngineWebsocketSystem', () => {
-    let system: MockEngineWebsocketSystem;
+describe('MockPlaceWebsocketSystem', () => {
+    let system: MockPlaceWebsocketSystem;
 
     beforeEach(() => {
         const system_metadata = {
@@ -14,11 +14,11 @@ describe('MockEngineWebsocketSystem', () => {
             }],
             Other: [{
                 test: 20
-            },{
+            }, {
                 test: 11
             }]
         };
-        system = new MockEngineWebsocketSystem(system_metadata);
+        system = new MockPlaceWebsocketSystem(system_metadata);
     });
 
     it('should create an instance', () => {
@@ -26,8 +26,8 @@ describe('MockEngineWebsocketSystem', () => {
     });
 
     it('should expose the modules', () => {
-        expect(system.Bookings[0]).toBeInstanceOf(MockEngineWebsocketModule);
-        expect(system.Other[0]).toBeInstanceOf(MockEngineWebsocketModule);
-        expect(system.Other[1]).toBeInstanceOf(MockEngineWebsocketModule);
+        expect(system.Bookings[0]).toBeInstanceOf(MockPlaceWebsocketModule);
+        expect(system.Other[0]).toBeInstanceOf(MockPlaceWebsocketModule);
+        expect(system.Other[1]).toBeInstanceOf(MockPlaceWebsocketModule);
     });
 });

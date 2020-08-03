@@ -1,14 +1,13 @@
 import { HashMap } from '../../utilities/types.utilities';
-import { EngineBindingService } from '../binding.service';
-import { EngineModuleBinding } from './engine-module.class';
+import { PlaceModuleBinding } from './engine-module.class';
 
-export class EngineSystemBinding {
+export class PlaceSystemBinding {
     /** Unique idetifier of the system */
     public readonly id: string;
     /** Mapping of engine modules within the system */
-    private _module_list: HashMap<EngineModuleBinding[]> = {};
+    private _module_list: HashMap<PlaceModuleBinding[]> = {};
 
-    constructor(private _service: EngineBindingService, _id: string) {
+    constructor(_id: string) {
         this.id = _id;
     }
 
@@ -39,8 +38,7 @@ export class EngineSystemBinding {
         // Initialise module if it does not exist
         while (this._module_list[module].length < index) {
             this._module_list[module].push(
-                new EngineModuleBinding(
-                    this._service,
+                new PlaceModuleBinding(
                     this,
                     `${module}_${this._module_list[module].length}`
                 )

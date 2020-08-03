@@ -1,13 +1,13 @@
 
-/** Commands allowed by Engine */
-export type EngineCommand = 'bind' | 'unbind' | 'debug' | 'ignore' | 'exec';
+/** Commands allowed by Place */
+export type PlaceCommand = 'bind' | 'unbind' | 'debug' | 'ignore' | 'exec';
 
-/** General Engine websocket request metadata */
-export interface EngineCommandRequest {
+/** General Place websocket request metadata */
+export interface PlaceCommandRequest {
     /** Unique request identifier */
     id: string | number;
     /** Type of the command to send to engine */
-    cmd: EngineCommand;
+    cmd: PlaceCommand;
     /** System ID to perform the command  */
     sys: string;
     /** Module on the given system to perform the command */
@@ -20,8 +20,8 @@ export interface EngineCommandRequest {
     args?: any[];
 }
 
-/** Additional management metadata for a Engine request */
-export interface EngineCommandRequestMetadata extends EngineCommandRequest {
+/** Additional management metadata for a Place request */
+export interface PlaceCommandRequestMetadata extends PlaceCommandRequest {
     /** Request and binding identifier */
     key: string;
     /** Request promise */
@@ -33,7 +33,7 @@ export interface EngineCommandRequestMetadata extends EngineCommandRequest {
 }
 
 /** Metadata describing the actor the request should be performed on */
-export interface EngineRequestOptions {
+export interface PlaceRequestOptions {
     /** System ID to perform the command  */
     sys: string;
     /** Module on the given system to perform the command */
@@ -44,13 +44,13 @@ export interface EngineRequestOptions {
     name: string;
 }
 
-/** Engine websocket exec request metadata */
-export interface EngineExecRequestOptions extends EngineRequestOptions {
+/** Place websocket exec request metadata */
+export interface PlaceExecRequestOptions extends PlaceRequestOptions {
     args?: any[];
 }
 
 /** Websocket initialisation options */
-export interface EngineWebsocketOptions {
+export interface PlaceWebsocketOptions {
     /** Domain and port of the engine server */
     host?: string;
     /** Whether this endpoint is a fixed device */
@@ -59,8 +59,8 @@ export interface EngineWebsocketOptions {
     secure?: boolean;
 }
 
-/** Engine webscoket API response */
-export interface EngineResponse {
+/** Place webscoket API response */
+export interface PlaceResponse {
     /** ID of the associated request */
     id: string | number;
     /** Response type */
@@ -70,19 +70,19 @@ export interface EngineResponse {
     /** New value of binding if `notify` or return value from an `exec */
     value?: any;
     /** Request metadata */
-    meta?: EngineRequestOptions;
+    meta?: PlaceRequestOptions;
     /** Debug module */
     mod?: string;
     /** Debug module */
     klass?: string;
     /** Log message level */
-    level?: EngineLogLevel;
+    level?: PlaceLogLevel;
     /** Debug message */
     msg?: string;
 }
 
-/** Possible error codes returned by Engine */
-export enum EngineErrorCodes {
+/** Possible error codes returned by Place */
+export enum PlaceErrorCodes {
     PARSE_ERROR = 0,
     BAD_REQUEST = 1,
     ACCESS_DENIED = 2,
@@ -102,7 +102,7 @@ export interface SimpleNetworkError {
 }
 
 /** Logging levels of debug messages */
-export enum EngineLogLevel {
+export enum PlaceLogLevel {
     Info = 'info',
     Debug = 'debug',
     Warning = 'warn',
@@ -110,8 +110,8 @@ export enum EngineLogLevel {
     Fatal = 'fatal'
 }
 
-/** Metadata associated with Engine Debug events */
-export interface EngineDebugEvent {
+/** Metadata associated with Place Debug events */
+export interface PlaceDebugEvent {
     /** ID of the module associated with the event */
     mod_id: string;
     /** Module associated with the event */
@@ -119,7 +119,7 @@ export interface EngineDebugEvent {
     /** Logically class name of the module driver */
     class_name: string;
     /** Logging level of the message */
-    level: EngineLogLevel;
+    level: PlaceLogLevel;
     /** Contents of the debug event */
     message: string;
     /** Unix epoch of message arrival in seconds */
