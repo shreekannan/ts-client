@@ -26,6 +26,8 @@ export interface HttpVoidOptions extends HttpOptions {
 }
 
 export enum HttpStatusCode {
+    OK = 200,
+    BAD_REQUEST = 400,
     UNAUTHORISED = 401
 }
 

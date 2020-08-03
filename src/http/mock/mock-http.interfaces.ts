@@ -5,12 +5,12 @@ import { HttpVerb } from '../http.interfaces';
 export interface MockHttpRequestHandlerOptions<T = any> {
     /** URL path handled by the object */
     path: string;
-    /** Data related to the  */
-    metadata: any;
     /** HTTP Verb the handler is associated with */
     method: HttpVerb;
+    /** Data related to the  */
+    metadata?: any;
     /** Callback for handling request to the associated URL */
-    callback: (handler: MockHttpRequest<T>) => T;
+    callback?: (handler: MockHttpRequest<T>) => T;
     /** Number of milliseconds the response should be returned */
     delay?: number;
     /** Number of milliseconds the delay value can vary */
@@ -19,6 +19,7 @@ export interface MockHttpRequestHandlerOptions<T = any> {
 
 /** Interface for data needed to handle Mock HTTP requests */
 export interface MockHttpRequestHandler<T = any> extends MockHttpRequestHandlerOptions<T> {
+    callback: (handler: MockHttpRequest<T>) => T;
     /** Parameter keys for set path */
     path_parts: string[];
     /** Parameter keys for set path */

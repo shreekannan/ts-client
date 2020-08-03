@@ -1,7 +1,5 @@
 /* istanbul ignore file */
 
-export * from './placeos';
-
 export * from './auth/auth.service';
 export * from './auth/auth.interfaces';
 
@@ -9,7 +7,6 @@ export * from './http/http.service';
 export * from './http/http.interfaces';
 export * from './http/mock/mock-http.service';
 export * from './http/mock/mock-http.interfaces';
-export * from './http/mock/mock-http-register.class';
 
 export * from './http/services/applications/applications.service';
 export * from './http/services/applications/application.interfaces';
@@ -81,7 +78,6 @@ export * from './http/services/resources/resources.service';
 
 export * from './websocket/websocket.class';
 export * from './websocket/websocket.interfaces';
-export * from './websocket/mock/mock-websocket.class';
 export * from './websocket/mock/mock-system-register.class';
 export * from './websocket/mock/mock-engine-system.class';
 export * from './websocket/mock/mock-engine-module.class';
