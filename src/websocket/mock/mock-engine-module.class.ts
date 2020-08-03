@@ -24,10 +24,7 @@ export class MockPlaceWebsocketModule {
      * @param command Name of the method to call on the module
      * @param args Array of arguments to pass to the method being called
      */
-    public call<T = any>(command: string, args?: any[]): T | null {
-        if (!args) {
-            args = [];
-        }
+    public call<T = any>(command: string, args: any[] = []): T | null {
         if (this[`$${command}`] instanceof Function) {
             return this[`$${command}`](...args) as T;
         }

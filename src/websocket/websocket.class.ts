@@ -71,18 +71,18 @@ export function cleanupRealtime() {
         }
     }
     for (const key in _observers) {
-        if (_binding[key]) {
+        if (_observers[key]) {
             delete _observers[key];
         }
     }
     _observers._place_os_status = _status.asObservable();
     for (const key in _listeners) {
-        if (_binding[key]) {
+        if (_listeners[key]) {
             delete _listeners[key];
         }
     }
     for (const key in _requests) {
-        if (_binding[key]) {
+        if (_requests[key]) {
             delete _requests[key];
         }
     }
@@ -222,8 +222,8 @@ function send<T = any>(request: PlaceCommandRequest, tries: number = 0): Promise
                 if (isMock()) {
                     handleMockSend(request, _websocket, _listeners);
                 }
-                req.resolve = d => resolve(d);
-                req.reject = e => reject(e);
+                req.resolve = resolve;
+                req.reject = reject;
                 const binding = `${request.sys}, ${request.mod}_${request.index}, ${request.name}`;
                 log('WS', `[${request.cmd.toUpperCase()}](${request.id}) ${binding}`, request.args);
                 _websocket.next(request);
@@ -528,7 +528,7 @@ function handleMockSend(
             const resp = {
                 id: request.id,
                 type: 'success',
-                value: request.cmd === 'exec' ? module.call(request.name, request.args) : null
+                value: request.cmd === 'exec' ? module.call(request.name, request.args) : null;
             } as PlaceResponse;
             websocket.next(resp);
         }, 10);

@@ -16,6 +16,7 @@ describe('Realtime API', () => {
     let another_fake_socket: Subject<any>;
     let ws_spy: jest.SpyInstance;
     let log_spy: jest.SpyInstance;
+    let conn_spy: jest.SpyInstance;
     let count = 0;
 
     beforeEach(() => {
@@ -26,16 +27,18 @@ describe('Realtime API', () => {
         (Auth as any).token = jest.fn().mockReturnValue('test');
         (Auth as any).apiEndpoint = jest.fn().mockReturnValue('/api/engine/v2');
         (Auth as any).isOnline = jest.fn().mockReturnValue(true);
+        (Auth as any).isMock = jest.fn().mockReturnValue(false);
         (Auth as any).refreshAuthority = jest.fn().mockImplementation(async () => null);
         (Auth as any).invalidateToken = jest.fn().mockImplementation(async () => null);
         ws_spy = jest.spyOn(rxjs, 'webSocket');
         ws_spy
             .mockImplementationOnce(() => fake_socket)
-            .mockImplementationOnce(() => another_fake_socket);
+            .mockImplementationOnce(() => another_fake_socket)
+            .mockImplementation(() => fake_socket);
         ws.ignore({ sys: 'sys-A0', mod: 'mod', index: 1, name: 'power' });
         count++;
-        const spy = jest.spyOn(ws, 'is_connected');
-        spy.mockReturnValue(true);
+        conn_spy = jest.spyOn(ws, 'is_connected');
+        conn_spy.mockReturnValue(true);
         jest.runOnlyPendingTimers();
     });
 
@@ -44,6 +47,7 @@ describe('Realtime API', () => {
         ws.cleanupRealtime();
         ws_spy.mockRestore();
         log_spy.mockRestore();
+        conn_spy.mockRestore();
         jest.useRealTimers();
     });
 
@@ -111,6 +115,7 @@ describe('Realtime API', () => {
             }
         });
         fake_socket.next({ type: 'notify', value: 'Yeah', meta: binding } as PlaceResponse);
+
     });
 
     it('should reconnect the websocket', done => {

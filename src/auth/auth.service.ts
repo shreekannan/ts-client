@@ -146,6 +146,7 @@ export function fixedDevice(): boolean {
     return fixed_device;
 }
 
+/** Initialise authentication for the http and realtime APIs */
 export function setup(options: PlaceAuthOptions) {
     _options = options;
     // Intialise storage
@@ -154,6 +155,9 @@ export function setup(options: PlaceAuthOptions) {
     return loadAuthority();
 }
 
+/**
+ * @ignore
+ */
 export function cleanupAuth() {
     _options = {} as any;
     _authority = undefined;

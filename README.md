@@ -99,7 +99,7 @@ updateSystem(system_id, system_data).then(updated_system => doSomething(updated_
 removeSystem(system_id).then(() => doSomething());
 
 // Users CRUD
-addUser(user_data).then(new_user => doSomething(new_user)); // This will error
+addUser(user_data).then(new_user => doSomething(new_user));
 showUser(user_id).then(user => doSomething(user));
 updateUser(user_id, user_data).then(updated_user => doSomething(updated_user));
 removeUser(user_id).then(() => doSomething());

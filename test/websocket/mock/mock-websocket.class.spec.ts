@@ -1,61 +1,50 @@
-import { Subject } from 'rxjs';
-
-import { PlaceSystemsMock } from '../../../src/websocket/mock/mock-system-register.class';
 import {
-    engine_mock_socket,
-    MockEngineWebsocket
-} from '../../../src/websocket/mock/mock-websocket.class';
+    deregisterSystem,
+    mockSystem,
+    registerSystem
+} from '../../../src/websocket/mock/mock-system-register.class';
+
+import { first } from 'rxjs/operators';
+import * as Auth from '../../../src/auth/auth.service';
+import * as ws from '../../../src/websocket/websocket.class';
 
 describe('MockEngineWebsocket', () => {
-    let websocket: MockEngineWebsocket;
-    let fake_socket: Subject<any>;
-    let auth: any;
-
     beforeEach(() => {
-        jest.useFakeTimers();
-        fake_socket = new Subject<any>();
-        // spy = spyOn(engine_mock_socket, 'websocket').and.returnValue(fake_socket);
-        PlaceSystemsMock.register('sys-A0', {
+        jest.spyOn(Auth, 'isMock').mockReturnValue(true);
+        jest.spyOn(Auth, 'isOnline').mockReturnValue(true);
+        registerSystem('sys-A0', {
             Test: [
                 {
                     test: 10,
                     $testCall() {
-                        return (this as any)._system.Test[0].test++;
+                        setTimeout(() => this.test += 1);
+                        return this.test;
                     }
                 }
             ]
         });
-        auth = { token: 'test', refreshAuthority: () => null };
-        spyOn(engine_mock_socket, 'log');
-        websocket = new MockEngineWebsocket(auth, {
-            host: 'aca.test',
-            fixed: true
-        });
     });
 
     afterEach(() => {
-        PlaceSystemsMock.deregister('sys-A0');
-        jest.useRealTimers();
-    });
-
-    it('should create an instance', () => {
-        expect(websocket).toBeTruthy();
+        deregisterSystem('sys-A0');
+        ws.cleanupRealtime();
     });
 
     it('should bind to mock system modules', done => {
         const binding = { sys: 'sys-A0', mod: 'Test', index: 1, name: 'test' };
-        const promise = websocket.bind(binding);
-        promise.then(() => {
-            expect(websocket.value(binding)).toBe(10);
-            done();
+        ws.listen(binding).subscribe(value => {
+            if (value) {
+                expect(ws.value(binding)).toBe(10);
+                done();
+            }
         });
-        jest.runOnlyPendingTimers();
+        ws.bind(binding);
     });
 
     it('post binding value updates', done => {
         const binding = { sys: 'sys-A0', mod: 'Test', index: 1, name: 'test' };
         let count = 0;
-        const sub = websocket.listen(binding, value => {
+        ws.listen(binding).subscribe(value => {
             if (count === 0) {
                 expect(value).toBeNull();
                 count++;
@@ -64,71 +53,47 @@ describe('MockEngineWebsocket', () => {
                 done();
             }
         });
-        websocket.bind(binding);
-        jest.runOnlyPendingTimers();
+        ws.bind(binding);
     });
 
     it('should unbind from mock system modules', done => {
         const binding = { sys: 'sys-A0', mod: 'Test', index: 1, name: 'test' };
-        let promise = websocket.bind(binding);
-        promise.then(() => {
-            expect(websocket.value(binding)).toBe(10);
-            promise = websocket.unbind(binding);
-            promise.then(() => {
-                PlaceSystemsMock.systems['sys-A0'].Test[0].test = 20;
-                jest.runOnlyPendingTimers();
-                expect(websocket.value).not.toBe(20);
-                done();
-            });
-            jest.runOnlyPendingTimers();
+        ws.listen(binding).subscribe(value => {
+            if (value) {
+                expect(ws.value(binding)).toBe(10);
+                ws.unbind(binding).then(() => {
+                    mockSystem('sys-A0').Test[0].test = 20;
+                    setTimeout(() => {
+                        expect(ws.value(binding)).not.toBe(20);
+                        done();
+                    }, 200);
+                });
+            }
         });
-        jest.runOnlyPendingTimers();
+        ws.bind(binding);
     });
 
     it('should exec mock system module methods', done => {
-        const binding = { sys: 'sys-A0', mod: 'Test', index: 1, name: 'testCall' };
-        websocket.bind({ ...binding, name: 'test' });
-        const promise = websocket.exec(binding);
-        promise.then(value => {
-            expect(value).toBe(10);
-            jest.runOnlyPendingTimers();
-            expect(websocket.value({ ...binding, name: 'test' })).toBe(11);
-            done();
+        const binding = { sys: 'sys-A0', mod: 'Test', index: 1, name: 'test' };
+        ws.listen(binding).pipe(first(_ => _)).subscribe((_) => {
+            ws.execute({ ...binding, name: 'testCall' }).then(value => {
+                expect(value).toBe(10);
+                setTimeout(() => {
+                    expect(ws.value(binding)).toBe(11);
+                    done();
+                }, 200);
+            });
         });
-        jest.runOnlyPendingTimers();
+        ws.bind(binding);
     });
 
     it('should error if binding module not found', done => {
         const binding = { sys: 'sys-A0', mod: 'Testing', index: 1, name: 'test' };
-        const promise = websocket.bind(binding);
-        promise.then(null, () => {
-            done();
-        });
-        jest.runOnlyPendingTimers();
+        ws.bind(binding).then(null, () => done());
     });
 
     it('should error if binding system not found', done => {
         const binding = { sys: 'sys-B0', mod: 'Test', index: 1, name: 'test' };
-        const promise = websocket.bind(binding);
-        promise.then(null, () => {
-            done();
-        });
-        jest.runOnlyPendingTimers();
-    });
-
-    it('should error if binding system not found', done => {
-        const binding = { sys: 'sys-B0', mod: 'Test', index: 1, name: 'test' };
-        const promise = websocket.bind(binding);
-        promise.then(null, () => {
-            done();
-        });
-        jest.runOnlyPendingTimers();
-    });
-
-    it('update token should do nothing', () => {
-        auth.token = '';
-        expect(websocket.is_connected).toBe(true);
-        jest.runOnlyPendingTimers();
-        expect(websocket.is_connected).toBe(true);
+        ws.bind(binding).then(null, () => done());
     });
 });
