@@ -5,7 +5,7 @@ import { MockPlaceWebsocketSystem } from './mock-engine-system.class';
 const _mock_systems: HashMap<MockPlaceWebsocketSystem> = {};
 
 /** Register a mock system for websocket bindings */
-export function registerSystem(id: string, details: HashMap): void {
+export function registerSystem(id: string, details: HashMap<HashMap[]>): void {
     _mock_systems[id] = new MockPlaceWebsocketSystem(details);
 }
 

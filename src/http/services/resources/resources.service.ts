@@ -31,7 +31,7 @@ let _last_total: number = 0;
 /** URL to get the next page */
 let _next: string = '';
 
-export function cleanup() {
+export function cleanupAPI() {
     for (const key in _promises) {
         if (_promises[key]) {
             delete _promises[key];

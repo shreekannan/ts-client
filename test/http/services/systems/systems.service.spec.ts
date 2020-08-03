@@ -75,7 +75,7 @@ describe('Systems API', () => {
 
     it('should allow excuting a method on a system', async () => {
         (Resources.task as any) = jest.fn().mockImplementation(async () => ({}));
-        const item = await SERVICE.executeFromSystem('1', 'test', 'mod');
+        const item = await SERVICE.executeOnSystem('1', 'test', 'mod');
         expect(item).toEqual({});
     });
 

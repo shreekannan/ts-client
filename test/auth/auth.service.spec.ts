@@ -18,7 +18,7 @@ describe('Auth', () => {
 
     afterEach(() => {
         localStorage.clear();
-        Auth.cleanup();
+        Auth.cleanupAuth();
     });
 
     it('should allow setting up auth', () => {

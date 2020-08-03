@@ -50,7 +50,7 @@ describe('Resource API', () => {
 
     afterEach(() => {
         jest.useRealTimers();
-        Resource.cleanup();
+        Resource.cleanupAPI();
         const methods: any[] = ['get', 'post', 'patch', 'put', 'del'];
         for (const method of methods) {
             ((Http as any)[method] as jest.Mock).mockReset();

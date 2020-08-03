@@ -132,17 +132,17 @@ export function removeFragment(name: string) {
  * Convert byte values into a display string
  * @param bytes Number of bytes
  */
-export function bytesToDisplay(bytes: number) {
-    if (bytes < 1024) {
-        return `${Math.floor(bytes)} B`;
-    } else if (bytes < 1024 * 1024) {
-        return `${(bytes / 1024).toFixed(2)} KB`;
-    } else if (bytes < 1024 * 1024 * 1024) {
-        return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
-    } else if (bytes < 1024 * 1024 * 1024 * 1024) {
-        return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
+export function humanReadableByteCount(bytes: number, si: boolean = false) {
+    const unit = si ? 1000.0 : 1024.0;
+
+    if (bytes < unit) {
+        return bytes + (si ? ' iB' : ' B');
     }
-    return `${(bytes / 1024 / 1024 / 1024 / 1024).toFixed(2)} TB`;
+
+    const exp = Math.floor(Math.log(bytes) / Math.log(unit));
+    const pre = (si ? 'kMGTPE' : 'KMGTPE').charAt(exp - 1) + (si ? 'iB' : 'B');
+
+    return (bytes / Math.pow(unit, exp)).toFixed(2) + ' ' + pre;
 }
 
 /**

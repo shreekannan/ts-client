@@ -1,5 +1,5 @@
 
-import { bytesToDisplay } from '../../../utilities/general.utilities';
+import { humanReadableByteCount } from '../../../utilities/general.utilities';
 import { HashMap } from '../../../utilities/types.utilities';
 
 export class PlaceCluster {
@@ -54,8 +54,8 @@ export class PlaceCluster {
         this.memory_usage = raw_data.memory_usage || 0;
         this.core_memory = raw_data.core_memory || 0;
         this.memory_percentage = +(this.memory_usage / this.memory_total * 100).toFixed(4);
-        this.used_memory = bytesToDisplay(this.memory_usage * 1024);
-        this.total_memory = bytesToDisplay(this.memory_total * 1024);
+        this.used_memory = humanReadableByteCount(this.memory_usage * 1024);
+        this.total_memory = humanReadableByteCount(this.memory_total * 1024);
 
     }
 }

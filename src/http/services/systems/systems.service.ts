@@ -85,7 +85,7 @@ export function stopSystem(id: string): Promise<void> {
  * @param index Module index. Defaults to `1`
  * @param args Array of arguments to pass to the executed method
  */
-export function executeFromSystem(
+export function executeOnSystem(
     id: string,
     method: string,
     module: string,

@@ -41,7 +41,7 @@ describe('Realtime API', () => {
 
     afterEach(() => {
         count = 0;
-        ws.cleanup();
+        ws.cleanupRealtime();
         ws_spy.mockRestore();
         log_spy.mockRestore();
         jest.useRealTimers();
@@ -215,7 +215,7 @@ describe('Realtime API', () => {
                 }
             ]
         });
-        ws.cleanup();
+        ws.cleanupRealtime();
         jest.spyOn(Auth, 'isMock').mockReturnValue(true);
         const binding = { sys: 'sys-A9', mod: 'Test', index: 1, name: 'test' };
         ws.bind(binding).then(() => {

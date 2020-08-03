@@ -62,7 +62,7 @@ _observers._place_os_debug_events = debug_events.asObservable();
 /**
  * @ignore
  */
-export function cleanup() {
+export function cleanupRealtime() {
     _websocket = undefined;
     REQUEST_COUNT = 0;
     for (const key in _binding) {

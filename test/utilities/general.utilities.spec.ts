@@ -1,8 +1,8 @@
 import {
-    bytesToDisplay,
     convertPairStringToMap,
     generateNonce,
     getFragments,
+    humanReadableByteCount,
     parseLinkHeader
 } from '../../src/utilities/general.utilities';
 
@@ -73,13 +73,13 @@ describe('General Utilities', () => {
         });
     });
 
-    describe('bytesToDisplay', () => {
+    describe('humanReadableByteCount', () => {
         it('should generate display value correctly', () => {
-            expect(bytesToDisplay(234)).toBe('234 B');
-            expect(bytesToDisplay(23456)).toBe('22.91 KB');
-            expect(bytesToDisplay(23456789)).toBe('22.37 MB');
-            expect(bytesToDisplay(23456789012)).toBe('21.85 GB');
-            expect(bytesToDisplay(23456789012345)).toBe('21.33 TB');
+            expect(humanReadableByteCount(234)).toBe('234 B');
+            expect(humanReadableByteCount(23456)).toBe('22.91 KB');
+            expect(humanReadableByteCount(23456789)).toBe('22.37 MB');
+            expect(humanReadableByteCount(23456789012)).toBe('21.85 GB');
+            expect(humanReadableByteCount(23456789012345)).toBe('21.33 TB');
         });
     });
 });
