@@ -81,34 +81,34 @@ Methods are provided for `brokers`, `drivers`, `metadata`, `modules`, `repositor
 
 ```typescript
 // Drivers CRUD
-addDriver(driver_data).then(new_driver => doSomething(new_driver));
-showDriver(driver_id).then(driver => doSomething(driver));
-updateDriver(driver_id, driver_data).then(updated_driver => doSomething(updated_driver));
-removeDriver(driver_id).then(() => doSomething());
+addDriver(driver_data).subscribe(new_driver => doSomething(new_driver));
+showDriver(driver_id).subscribe(driver => doSomething(driver));
+updateDriver(driver_id, driver_data).subscribe(updated_driver => doSomething(updated_driver));
+removeDriver(driver_id).subscribe(() => doSomething());
 
 // Modules CRUD
-addModule(module_data).then(new_module => doSomething(new_module));
-showModule(module_id).then(mod => doSomething(mod));
-updateModule(module_id, module_data).then(updated_module => doSomething(updated_module));
-removeModule(module_id).then(() => doSomething());
+addModule(module_data).subscribe(new_module => doSomething(new_module));
+showModule(module_id).subscribe(mod => doSomething(mod));
+updateModule(module_id, module_data).subscribe(updated_module => doSomething(updated_module));
+removeModule(module_id).subscribe(() => doSomething());
 
 // Systems CRUD
-addSystem(system_data).then(new_system => doSomething(new_system));
-showSystem(system_id).then(system => doSomething(system));
-updateSystem(system_id, system_data).then(updated_system => doSomething(updated_system));
-removeSystem(system_id).then(() => doSomething());
+addSystem(system_data).subscribe(new_system => doSomething(new_system));
+showSystem(system_id).subscribe(system => doSomething(system));
+updateSystem(system_id, system_data).subscribe(updated_system => doSomething(updated_system));
+removeSystem(system_id).subscribe(() => doSomething());
 
 // Users CRUD
-addUser(user_data).then(new_user => doSomething(new_user));
-showUser(user_id).then(user => doSomething(user));
-updateUser(user_id, user_data).then(updated_user => doSomething(updated_user));
-removeUser(user_id).then(() => doSomething());
+addUser(user_data).subscribe(new_user => doSomething(new_user));
+showUser(user_id).subscribe(user => doSomething(user));
+updateUser(user_id, user_data).subscribe(updated_user => doSomething(updated_user));
+removeUser(user_id).subscribe(() => doSomething());
 
 // Zones CRUD
-addZone(zone_data).then(new_zone => doSomething(new_zone));
-showZone(zone_id).then(zone => doSomething(zone));
-updateZone(zone_id, zone_data).then(updated_zone => doSomething(updated_zone));
-removeZone(zone_id).then(() => doSomething());
+addZone(zone_data).subscribe(new_zone => doSomething(new_zone));
+showZone(zone_id).subscribe(zone => doSomething(zone));
+updateZone(zone_id, zone_data).subscribe(updated_zone => doSomething(updated_zone));
+removeZone(zone_id).subscribe(() => doSomething());
 ```
 
 The modules also provide methods for the various item action endpoints
