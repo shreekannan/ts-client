@@ -1,4 +1,4 @@
-import { of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 
 jest.mock('../../../../src/http/http.service');
 
@@ -10,7 +10,7 @@ describe('Resource API', () => {
 
     async function testRequest<T>(
         method: 'get' | 'post' | 'patch' | 'put' | 'del',
-        fn: (...args: any[]) => Promise<T>,
+        fn: (...args: any[]) => Observable<T>,
         result: any,
         test1: any[],
         test2: any[]
@@ -20,19 +20,15 @@ describe('Resource API', () => {
             .mockReturnValueOnce(of(result))
             .mockReturnValueOnce(of(result))
             .mockImplementationOnce(() => throwError('An Error Value'));
-        const value = await fn(...test1);
+        const value = await fn(...test1).toPromise();
         jest.runOnlyPendingTimers();
-        if (method === 'del') {
-            expect(value).toBeFalsy();
-        } else {
-            expect(value).toEqual(item || []);
-        }
+        expect(value).toEqual(item || []);
         // Test request with parameters
-        await fn(...test2);
+        await fn(...test2).toPromise();
         jest.runOnlyPendingTimers();
         // Test error handling
         try {
-            await fn(...test1);
+            await fn(...test1).toPromise();
             throw new Error('Failed to error');
         } catch (e) {
             expect(e).toBe('An Error Value');

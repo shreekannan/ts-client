@@ -3,6 +3,7 @@ import { PlaceMetadata } from './metadata.class';
 import { PlaceMetadataOptions, PlaceZoneMetadataOptions } from './metadata.interfaces';
 import { PlaceZoneMetadata } from './zone-metadata.class';
 
+import { Observable } from 'rxjs';
 import { HashMap } from '../../../utilities/types.utilities';
 
 const PATH = 'metadata';
@@ -12,12 +13,12 @@ function process(item: HashMap) {
     return new PlaceMetadata(item);
 }
 
-export function showMetadata(id: string, query_params?: {}): Promise<PlaceMetadata[]>;
-export function showMetadata(id: string, query_params: { name: string }): Promise<PlaceMetadata>;
+export function showMetadata(id: string, query_params?: {}): Observable<PlaceMetadata[]>;
+export function showMetadata(id: string, query_params: { name: string }): Observable<PlaceMetadata>;
 export function showMetadata(
     id: string,
     query_params: HashMap = {}
-): Promise<PlaceMetadata[]> | Promise<PlaceMetadata> {
+): Observable<PlaceMetadata[]> | Observable<PlaceMetadata> {
     return show(
         id,
         query_params,

@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { HashMap } from '../../../utilities/types.utilities';
 import { PlaceDriverDetails } from '../drivers/drivers.interfaces';
 import { create, query, remove, show, task, update } from '../resources/resources.service';
@@ -54,7 +55,7 @@ export function listInterfaceRepositories(query_params: HashMap = {}) {
  * @param id ID of the repository
  * @param query Addition query parameters to pass to the request
  */
-export function listRepositoryDrivers(id: string, query_params?: HashMap): Promise<string[]> {
+export function listRepositoryDrivers(id: string, query_params?: HashMap): Observable<string[]> {
     return task(id, 'drivers', query_params, 'get', undefined, PATH);
 }
 
@@ -66,7 +67,7 @@ export function listRepositoryDrivers(id: string, query_params?: HashMap): Promi
 export function listRepositoryCommits(
     id: string,
     query_params?: PlaceRepositoryCommitQuery
-): Promise<GitCommitDetails[]> {
+): Observable<GitCommitDetails[]> {
     return task(id, 'commits', query_params, 'get', undefined, PATH);
 }
 
@@ -74,7 +75,7 @@ export function listRepositoryCommits(
  * Get a list of all the branches for a repository
  * @param id ID of the repository
  */
-export function listRepositoryBranches(id: string): Promise<string[]> {
+export function listRepositoryBranches(id: string): Observable<string[]> {
     return task(id, 'branches', undefined, 'get', undefined, PATH);
 }
 
@@ -86,7 +87,7 @@ export function listRepositoryBranches(id: string): Promise<string[]> {
 export function listRepositoryDriverDetails(
     id: string,
     query_params: PlaceRepositoryDetailsQuery
-): Promise<PlaceDriverDetails> {
+): Observable<PlaceDriverDetails> {
     return task(id, 'details', query_params, 'get', undefined, PATH);
 }
 
@@ -98,6 +99,6 @@ export function listRepositoryDriverDetails(
 export function pullRepositoryChanges(
     id: string,
     query_params?: PlaceRepositoryPullQuery
-): Promise<GitCommitDetails> {
+): Observable<GitCommitDetails> {
     return task(id, 'pull', query_params, 'post', undefined, PATH);
 }

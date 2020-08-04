@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { HashMap } from '../../../utilities/types.utilities';
 import { PlaceResourceQueryOptions } from '../resources/resources.interface';
 import { create, query, remove, show, task, update } from '../resources/resources.service';
@@ -40,7 +41,7 @@ export function removeTrigger(id: string, query_params: HashMap = {}) {
  * List systems that contain instances of a trigger
  * @param id ID of the trigger to grab system instances for
  */
-export function listTriggerSystems(id: string): Promise<PlaceSystem[]> {
+export function listTriggerSystems(id: string): Observable<PlaceSystem[]> {
     return task(
         id,
         `instances`,
