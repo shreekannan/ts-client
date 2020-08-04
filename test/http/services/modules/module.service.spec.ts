@@ -4,6 +4,7 @@ import { PlaceModule } from '../../../../src/http/services/modules/module.class'
 
 import * as SERVICE from '../../../../src/http/services/modules/modules.service';
 import * as Resources from '../../../../src/http/services/resources/resources.service';
+import { PlaceSettings } from '../../../../src/http/services/settings/settings.class';
 
 describe('Modules API', () => {
 
@@ -42,5 +43,55 @@ describe('Modules API', () => {
         spy.mockImplementation( () => of());
         const item = await SERVICE.removeModule('1', {}).toPromise();
         expect(item).toBeFalsy();
+    });
+
+    it('should allow starting a module', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(() => of());
+        const item = await SERVICE.startModule('1').toPromise();
+        expect(item).toBeFalsy();
+    });
+
+    it('should allow stopping a module', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(() => of());
+        const item = await SERVICE.stopModule('1').toPromise();
+        expect(item).toBeFalsy();
+    });
+
+    it('should allow pinging a module', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(() => of({ host: '', pingable: false }));
+        const item = await SERVICE.pingModule('1').toPromise();
+        expect(item).toBeTruthy();
+    });
+
+    it('should allow getting state of a module', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(() => of({}));
+        const item = await SERVICE.moduleState('1').toPromise();
+        expect(item).toBeTruthy();
+    });
+
+    it('should allow lookup of module state', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(() => of({}));
+        const item = await SERVICE.lookupModuleState('1', 'connected').toPromise();
+        expect(item).toBeTruthy();
+    });
+
+    it('should allow loading module', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation(() => of({}));
+        const item = await SERVICE.loadModule('1').toPromise();
+        expect(item).toBeTruthy();
+    });
+
+    it('should allow settings for a module', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation((_, _0, _1, _2, process: any, _3) => of(process([{}]) as any));
+        const item = await SERVICE.moduleSettings('1').toPromise();
+        expect(item).toBeTruthy();
+        expect(item[0]).toBeInstanceOf(PlaceSettings);
     });
 });

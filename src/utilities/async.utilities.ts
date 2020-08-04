@@ -1,5 +1,7 @@
 import { Subscription } from 'rxjs';
 
+/* istanbul ignore file */
+
 /** Store for named timers */
 const _timers: { [name: string]: number } = {};
 /** Store for named intervals */

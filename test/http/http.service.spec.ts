@@ -2,6 +2,7 @@ import { HttpError } from '../../src/http/http.interfaces';
 
 jest.mock('../../src/auth/auth.service');
 
+import { of } from 'rxjs';
 import * as Auth from '../../src/auth/auth.service';
 import * as Http from '../../src/http/http.service';
 
@@ -77,6 +78,7 @@ describe('Http', () => {
                 done();
             });
             expect(window.fetch).toHaveBeenCalled();
+            (Http as any).get('', undefined, (...args: any[]) => of());
         });
 
         it('should allow returning text data', done => {
@@ -143,6 +145,7 @@ describe('Http', () => {
                 done();
             });
             expect(window.fetch).toHaveBeenCalled();
+            (Http as any).post('', '', undefined, (...args: any[]) => of());
         });
 
         it('should allow returning text data', done => {
@@ -209,6 +212,7 @@ describe('Http', () => {
             });
             expect(window.fetch).toHaveBeenCalled();
             jest.runOnlyPendingTimers();
+            (Http as any).put('', '', undefined, (...args: any[]) => of());
         });
 
         it('should handle errors', done => {
@@ -258,6 +262,7 @@ describe('Http', () => {
             });
             expect(window.fetch).toHaveBeenCalled();
             jest.runOnlyPendingTimers();
+            (Http as any).patch('', '', undefined, (...args: any[]) => of());
         });
 
         it('should handle errors', done => {
@@ -306,6 +311,7 @@ describe('Http', () => {
                 done();
             });
             expect(window.fetch).toHaveBeenCalled();
+            (Http as any).del('', undefined, (...args: any[]) => of());
         });
 
         it('should allow returning json data', async () => {

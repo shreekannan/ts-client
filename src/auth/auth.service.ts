@@ -14,7 +14,7 @@ import {
     PlaceTokenResponse
 } from './auth.interfaces';
 
-let _options: PlaceAuthOptions;
+let _options: PlaceAuthOptions = {} as any;
 /** Browser key store to use for authentication credentials. Defaults to localStorage */
 let _storage: Storage = localStorage;
 /** Authentication authority of for the current domain */
@@ -34,8 +34,8 @@ const _online_observer = _online.asObservable();
 
 /** API Endpoint for the retrieved version of engine */
 export function apiEndpoint(): string {
-    const secure = _options?.secure || location.protocol.indexOf('https') >= 0;
-    const api_host = `${secure ? 'https:' : 'http:'}//${_options?.host || location.host}`;
+    const secure = _options.secure || location.protocol.indexOf('https') >= 0;
+    const api_host = `${secure ? 'https:' : 'http:'}//${_options.host || location.host}`;
     return `${api_host}${httpRoute()}`;
 }
 
@@ -58,12 +58,12 @@ export function clientId(): string {
 
 /** Redirect URI for the OAuth flow */
 export function redirectUri(): string {
-    return _options?.redirect_uri;
+    return _options.redirect_uri;
 }
 
 /** Bearer token for authenticating requests to engine */
 export function token(): string {
-    if (_options?.mock) {
+    if (_options.mock) {
         return 'mock-token';
     }
     const expires_at = `${_storage.getItem(`${_client_id}_expires_at`)}`;
@@ -81,7 +81,7 @@ export function refreshToken(): string {
 
 /** Host domain of the PlaceOS server */
 export function host(): string {
-    return _options?.host || location.host;
+    return _options.host || location.host;
 }
 
 /** Whether the application has an authentication token */
@@ -101,12 +101,12 @@ export function isOnline(): boolean {
 
 /** Whether engine is online */
 export function isMock(): boolean {
-    return !!_options?.mock;
+    return !!_options.mock;
 }
 
 /** Whether engine connection is secure */
 export function isSecure(): boolean {
-    return !!_options?.secure;
+    return !!_options.secure;
 }
 
 /** Observable for the online state of engine */
@@ -148,10 +148,10 @@ export function fixedDevice(): boolean {
 
 /** Initialise authentication for the http and realtime APIs */
 export function setup(options: PlaceAuthOptions) {
-    _options = options;
+    _options = options || _options;
     // Intialise storage
-    _storage = options.storage === 'session' ? sessionStorage : localStorage;
-    _client_id = Md5.hashStr(options.redirect_uri, false) as string;
+    _storage = _options.storage === 'session' ? sessionStorage : localStorage;
+    _client_id = Md5.hashStr(_options.redirect_uri, false) as string;
     return loadAuthority();
 }
 
@@ -167,6 +167,7 @@ export function cleanupAuth() {
     _state = '';
     // Clear local subscriptions
     for (const key in _promises) {
+        /* istanbul ignore else */
         if (_promises.hasOwnProperty(key)) {
             delete _promises[key];
         }
@@ -192,23 +193,24 @@ export function invalidateToken(): void {
     _storage.removeItem(`${_client_id}_expires_at`);
 }
 
+/* istanbul ignore else */
 /**
  * Check the users authentication credentials and perform actions
  * required for the user to authenticate
  * @param state Additional state information for auth requests
  */
-export function authorise(state?: string): Promise<string> {
+export function authorise(state?: string): Promise<string>;
+export function authorise(
+    state?: string,
+    api_authority: PlaceAuthority = _authority as any
+): Promise<string> {
     /* istanbul ignore else */
     if (!_promises.authorise) {
         _promises.authorise = new Promise<string>((resolve, reject) => {
-            if (!_authority) {
+            if (!api_authority) {
                 return reject('Authority is not loaded');
             }
             log('Auth', 'Authorising user...');
-            const api_authority = _authority || {
-                session: false,
-                login_url: '/login?continue={{url}}'
-            };
             const check_token = () => {
                 if (token()) {
                     log('Auth', 'Valid token found.');
@@ -226,35 +228,16 @@ export function authorise(state?: string): Promise<string> {
                         }
                     ];
                     if (_options && _options.auth_type === 'password') {
-                        generateTokenWithCredentials((_options || {}) as any).then(
-                            ...token_handlers
-                        );
+                        generateTokenWithCredentials(_options).then(...token_handlers);
                     } else if (_code || refreshToken()) {
                         generateToken().then(...token_handlers);
                     } else {
-                        if (api_authority.session) {
+                        if (api_authority!.session) {
                             log('Auth', 'Users has session. Authorising application...');
-                            // Generate tokens
-                            const login_url = createLoginURL(state);
-                            /* istanbul ignore else */
-                            if (localStorage) {
-                                localStorage.setItem('oauth_redirect', location.href);
-                            }
-                            setTimeout(() => window.location.assign(login_url), 300);
-                            delete _promises.authorise;
+                            sendToAuthorize(state);
                         } else {
                             log('Auth', 'No user session');
-                            /* istanbul ignore else */
-                            if (_options?.handle_login !== false) {
-                                log('Auth', 'Redirecting to login page...');
-                                // Redirect to login form
-                                const url = api_authority.login_url?.replace(
-                                    '{{url}}',
-                                    encodeURIComponent(location.href)
-                                );
-                                setTimeout(() => window.location.assign(url), 300);
-                                delete _promises.authorise;
-                            }
+                            sendToLogin(api_authority);
                         }
                         reject();
                     }
@@ -293,7 +276,7 @@ function loadAuthority(tries: number = 0): Promise<void> {
     if (!_promises.load_authority) {
         _promises.load_authority = new Promise<void>(resolve => {
             _online.next(false);
-            if (_options?.mock) {
+            if (_options.mock) {
                 // Setup mock authority
                 _authority = MOCK_AUTHORITY;
                 log('Auth', `System in mock mode`);
@@ -303,27 +286,17 @@ function loadAuthority(tries: number = 0): Promise<void> {
             }
             log('Auth', `Fixed: ${fixedDevice()} | Trusted: ${trusted()}`);
             log('Auth', `Loading authority...`);
-            const secure = _options?.secure || location.protocol.indexOf('https') >= 0;
+            const secure = _options.secure || location.protocol.indexOf('https') >= 0;
             fetch(`${secure ? 'https:' : 'http:'}//${host()}/auth/authority`)
-                .then(resp => {
-                    return resp.json();
-                })
-                .then(api_authority => {
-                    if (api_authority) {
-                        _authority = api_authority;
-                        const response = () => {
-                            _online.next(true);
-                            setTimeout(() => delete _promises.load_authority, 500);
-                            resolve();
-                        };
-                        authorise('').then(response, response);
-                    } else {
-                        // Retry if authority fails to load
-                        setTimeout(
-                            () => loadAuthority(tries).then(_ => resolve()),
-                            300 * Math.min(20, ++tries)
-                        );
-                    }
+                .then(resp => resp.json())
+                .then((api_authority: PlaceAuthority) => {
+                    _authority = api_authority;
+                    const response = () => {
+                        _online.next(true);
+                        setTimeout(() => delete _promises.load_authority, 500);
+                        resolve();
+                    };
+                    authorise('').then(response, response);
                 })
                 .catch(err => {
                     log('Auth', `Failed to load authority(${err})`);
@@ -340,6 +313,31 @@ function loadAuthority(tries: number = 0): Promise<void> {
     return _promises.load_authority;
 }
 
+function sendToAuthorize(state?: string) {
+    // Generate tokens
+    const login_url = createLoginURL(state);
+    /* istanbul ignore else */
+    if (localStorage) {
+        localStorage.setItem('oauth_redirect', location.href);
+    }
+    setTimeout(() => window.location.assign(login_url), 300);
+    delete _promises.authorise;
+}
+
+function sendToLogin(api_authority: PlaceAuthority) {
+    /* istanbul ignore else */
+    if (_options.handle_login !== false) {
+        log('Auth', 'Redirecting to login page...');
+        // Redirect to login form
+        const url = api_authority!.login_url?.replace(
+            '{{url}}',
+            encodeURIComponent(location.href)
+        );
+        setTimeout(() => window.location.assign(url), 300);
+    }
+    delete _promises.authorise;
+}
+
 /**
  * Check authentication token
  */
@@ -347,28 +345,17 @@ function checkToken(): Promise<boolean> {
     /* istanbul ignore else */
     if (!_promises.check_token) {
         _promises.check_token = new Promise((resolve, reject) => {
-            if (_authority) {
-                if (token()) {
-                    log('Auth', 'Valid token found.');
-                    resolve(token());
-                } else {
-                    log('Auth', 'No token. Checking URL for auth credentials...');
-                    checkForAuthParameters().then(
-                        _ => resolve(_),
-                        _ => reject(_)
-                    );
-                }
-                _promises.check_token = undefined;
+            if (token()) {
+                log('Auth', 'Valid token found.');
+                resolve(token());
             } else {
-                log('Auth', 'Waiting for authority before checking token...');
-                setTimeout(() => {
-                    _promises.check_token = undefined;
-                    checkToken().then(
-                        _ => resolve(_),
-                        _ => reject(_)
-                    );
-                }, 300);
+                log('Auth', 'No token. Checking URL for auth credentials...');
+                checkForAuthParameters().then(
+                    _ => resolve(_),
+                    _ => reject(_)
+                );
             }
+            _promises.check_token = undefined;
         });
     }
     return _promises.check_token as Promise<boolean>;
@@ -502,21 +489,15 @@ function revokeToken(): Promise<void> {
     if (!_promises.revoke_token) {
         _promises.revoke_token = new Promise<void>((resolve, reject) => {
             const token_uri = _options.token_uri || '/auth/token';
-            if (!hasToken()) {
-                resolve();
-                delete _promises.revoke_token;
-            } else {
-                fetch(`${token_uri}?token=${token()}`, { method: 'POST' })
-                    .then(r => r.text())
-                    .then(() => {
-                        resolve();
-                        delete _promises.revoke_token;
-                    })
-                    .catch(err => {
-                        reject(err);
-                        delete _promises.revoke_token;
-                    });
-            }
+            fetch(`${token_uri}?token=${token()}`, { method: 'POST' })
+                .then(_ => {
+                    resolve();
+                    delete _promises.revoke_token;
+                })
+                .catch(err => {
+                    reject(err);
+                    delete _promises.revoke_token;
+                });
         });
     }
     return _promises.revoke_token;
@@ -547,12 +528,8 @@ function generateTokenWithUrl(url: string): Promise<void> {
             fetch(url, { method: 'POST' })
                 .then(r => r.json())
                 .then((tokens: PlaceTokenResponse) => {
-                    if (tokens) {
-                        _storeTokenDetails(tokens);
-                        resolve();
-                    } else {
-                        reject();
-                    }
+                    _storeTokenDetails(tokens);
+                    resolve();
                     delete _promises.generate_tokens;
                 })
                 .catch(err => {
@@ -565,6 +542,7 @@ function generateTokenWithUrl(url: string): Promise<void> {
     return _promises.generate_tokens as Promise<void>;
 }
 
+/* istanbul ignore next */
 function _storeTokenDetails(details: PlaceTokenResponse) {
     // Store access token
     if (details.access_token) {

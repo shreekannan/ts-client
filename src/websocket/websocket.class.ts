@@ -59,6 +59,7 @@ let _health_check: number | undefined;
 export const debug_events = new Subject<PlaceDebugEvent>();
 _observers._place_os_debug_events = debug_events.asObservable();
 
+/* istanbul ignore next */
 /**
  * @ignore
  */
@@ -411,6 +412,7 @@ function createWebsocket() {
         fixedDevice() ? '?fixed_device=true' : ''
     }`;
     log('WS', `Connecting to ws${secure ? 's' : ''}://${host()}${httpRoute()}`);
+    /* istanbul ignore next */
     return webSocket<any>({
         url,
         serializer: data => (typeof data === 'object' ? JSON.stringify(data) : data),
@@ -447,7 +449,7 @@ function reconnect() {
  * Send ping through the websocket
  */
 function ping() {
-    _websocket?.next('ping');
+    _websocket!.next('ping');
 }
 
 /**

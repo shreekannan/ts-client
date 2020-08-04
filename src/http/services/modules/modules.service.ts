@@ -1,4 +1,5 @@
 
+import { Observable } from 'rxjs';
 import { HashMap } from '../../../utilities/types.utilities';
 import { create, query, remove, show, task, update } from '../resources/resources.service';
 import { PlaceSettings } from '../settings/settings.class';
@@ -57,7 +58,7 @@ export function stopModule(id: string) {
  * Pings the IP address of the module with the given ID
  * @param id Module ID
  */
-export function pingModule(id: string): Promise<PlaceModulePingOptions> {
+export function pingModule(id: string): Observable<PlaceModulePingOptions> {
     return task(id, 'stop', undefined, undefined, undefined, PATH);
 }
 
@@ -66,7 +67,7 @@ export function pingModule(id: string): Promise<PlaceModulePingOptions> {
  * @param id Module ID
  * @param lookup Status variable of interest. If set it will return only the state of this variable
  */
-export function moduleState(id: string): Promise<HashMap> {
+export function moduleState(id: string): Observable<HashMap> {
     return task(id, 'state', undefined, 'get', undefined, PATH);
 }
 
@@ -75,7 +76,7 @@ export function moduleState(id: string): Promise<HashMap> {
  * @param id Module ID
  * @param key Status variable of interest. If set it will return only the state of this variable
  */
-export function lookupModuleState(id: string, key: string): Promise<HashMap> {
+export function lookupModuleState(id: string, key: string): Observable<HashMap> {
     return task(id, `state${key}`, undefined, 'get', undefined, PATH);
 }
 
@@ -83,7 +84,7 @@ export function lookupModuleState(id: string, key: string): Promise<HashMap> {
  * Manually load module into PlaceOS core. Only use if module should be loaded but isn't present.
  * @param id Module ID
  */
-export function loadModule(id: string): Promise<HashMap> {
+export function loadModule(id: string): Observable<HashMap> {
     return task(id, 'load', undefined, 'post', undefined, PATH);
 }
 

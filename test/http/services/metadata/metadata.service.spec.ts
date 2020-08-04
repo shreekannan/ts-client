@@ -1,11 +1,12 @@
-import { PlaceMetadata } from '../../../../src/http/services/metadata/metadata.class';
 
 import { of } from 'rxjs';
+import { PlaceMetadata } from '../../../../src/http/services/metadata/metadata.class';
+import { PlaceZoneMetadata } from '../../../../src/http/services/metadata/zone-metadata.class';
+
 import * as SERVICE from '../../../../src/http/services/metadata/metadata.service';
 import * as Resources from '../../../../src/http/services/resources/resources.service';
 
 describe('Applications API', () => {
-
     it('should allow listing metadata', async () => {
         const spy = jest.spyOn(Resources, 'show');
         spy.mockImplementation((_, _1, process: any, _2) => of(process([{}]) as any));
@@ -36,8 +37,17 @@ describe('Applications API', () => {
 
     it('should allow removing metadata', async () => {
         const spy = jest.spyOn(Resources, 'remove');
-        spy.mockImplementation( () => of());
+        spy.mockImplementation(() => of());
         const item = await SERVICE.removeMetadata('1', {}).toPromise();
         expect(item).toBeFalsy();
+    });
+
+    it('should allow listing child zone metadata', async () => {
+        const spy = jest.spyOn(Resources, 'task');
+        spy.mockImplementation((_, _0, _1, _2, process: any, _3) =>
+            of(process([{ metadata: {} }]) as any)
+        );
+        const item = await SERVICE.listChildMetadata('1', {}).toPromise();
+        expect(item[0]).toBeInstanceOf(PlaceZoneMetadata);
     });
 });

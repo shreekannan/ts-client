@@ -27,6 +27,7 @@ const _response_headers: HashMap<HashMap<string>> = {};
 
 export function responseHeaders(
     url: string,
+    /* istanbul ignore next */
     headers: HashMap<HashMap<string>> = _response_headers
 ): HashMap<string> {
     return headers[url] || {};
@@ -134,6 +135,7 @@ export function del(
     return handler('DELETE', url, { response_type: 'void', ...options });
 }
 
+/* istanbul ignore else */
 /**
  * Convert response into the format requested
  * @param response Request response contents
@@ -182,6 +184,7 @@ async function onError(error: Response, onAuthError: () => void = reloadAuth): P
     };
 }
 
+/* istanbul ignore else */
 /**
  * Perform AJAX Request
  * @param method Request verb. `GET`, `POST`, `PUT`, `PATCH`, or `DELETE`
