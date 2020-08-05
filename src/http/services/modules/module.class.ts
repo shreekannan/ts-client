@@ -68,7 +68,7 @@ export class PlaceModule extends PlaceResource {
         this.makebreak = raw_data.makebreak || false;
         this.uri = raw_data.uri || '';
         this.custom_name = raw_data.custom_name || '';
-        this.role = raw_data.role || PlaceDriverRole.Logic;
+        this.role = typeof raw_data.role === 'number' ? raw_data.role : PlaceDriverRole.Logic;
         this.notes = raw_data.notes || '';
         this.ignore_connected = raw_data.ignore_connected || false;
         this.connected = raw_data.connected || false;

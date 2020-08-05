@@ -49,6 +49,23 @@ describe('Http', () => {
         expect(Http.responseHeaders('/test')).toEqual({});
     });
 
+    it('should handle errors', done => {
+        jest.useFakeTimers();
+        expect.assertions(1);
+        (window.fetch as any).mockImplementation(async () => {
+            throw { status: 400, text: async () => 'Failed' };
+        });
+        Http.get('_').subscribe(
+            _ => null,
+            err => {
+                expect(err).toEqual({ status: 400, message: 'Failed' });
+                done();
+            }
+        );
+        jest.runOnlyPendingTimers();
+        jest.useRealTimers();
+    });
+
     describe('GET', () => {
         beforeEach(() => {
             (Auth as any).has_token.mockReturnValue(true);

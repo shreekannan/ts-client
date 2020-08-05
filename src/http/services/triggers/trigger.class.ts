@@ -36,18 +36,14 @@ export class PlaceTrigger extends PlaceResource {
 
     /** Actions to perform when the trigger is activated */
     public get actions(): TriggerActions {
-        const actions = this._actions || { functions: [], mailers: [] };
-        const fn_list = (actions.functions || []).map(i => ({ ...i, args: { ...(i.args || {}) } }));
+        const actions = this._actions;
+        const fn_list = (actions.functions || []).map(i => ({ ...i, args: { ...i.args } }));
         const mail_list = (actions.mailers || []).map(i => ({ ...i, emails: [...i.emails] }));
         return { functions: fn_list, mailers: mail_list };
     }
     /** Conditions for activating the trigger */
     public get conditions(): TriggerConditions {
-        const conditions = this._conditions || {
-            comparisons: [],
-            time_dependents: [],
-            webhooks: []
-        };
+        const conditions = this._conditions;
         const cmp_list = (conditions.comparisons || []).map(i => ({
             ...i,
             left: typeof i.left === 'object' ? { ...i.left } : i.left,

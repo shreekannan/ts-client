@@ -31,58 +31,44 @@ describe('PlaceModule', () => {
     it('should create instance', () => {
         expect(module).toBeTruthy();
         expect(module).toBeInstanceOf(PlaceModule);
+        expect(new PlaceModule()).toBeInstanceOf(PlaceModule);
     });
 
-    it('should expose driver id', () => {
+    it('should expose properties', () => {
         expect(module.driver_id).toBe('dep-001');
-    });
-
-    it('should expose system id', () => {
         expect(module.control_system_id).toBe('sys-001');
         expect(module.system_id).toBe('sys-001');
-    });
-
-    it('should expose ip address', () => {
         expect(module.ip).toBe('1.1.1.1');
-    });
-
-    it('should expose TLS', () => {
         expect(module.tls).toBe(false);
-    });
-
-    it('should expose UDP', () => {
         expect(module.udp).toBe(false);
-    });
-
-    it('should expose port number', () => {
         expect(module.port).toBe(32000);
-    });
-
-    it('should expose makebreak', () => {
         expect(module.makebreak).toBe(false);
-    });
-
-    it('should expose uri', () => {
         expect(module.uri).toBe('test.com');
-    });
-
-    it('should expose custom name', () => {
         expect(module.custom_name).toBe('mi-name');
-    });
-
-    it('should expose settings', () => {
         expect(module.settings).toBeInstanceOf(Object);
-    });
-
-    it('should expose role', () => {
         expect(module.role).toBe(PlaceDriverRole.Device);
-    });
-
-    it('should expose notes', () => {
         expect(module.notes).toEqual('Clone wars');
+        expect(module.ignore_connected).toBe(false);
     });
 
-    it('should expose ignore connected', () => {
-        expect(module.ignore_connected).toBe(false);
+    it('should remove system id for non-logic modules', () => {
+        module = new PlaceModule({ control_system_id: 'sys-test', role: PlaceDriverRole.Logic });
+        expect(module.toJSON().control_system_id).toBe('sys-test');
+        module = new PlaceModule({
+            control_system_id: 'sys-test',
+            role: PlaceDriverRole.Websocket
+        });
+        expect(module.toJSON().control_system_id).toBeFalsy();
+        module = new PlaceModule({ control_system_id: 'sys-test', role: PlaceDriverRole.Service });
+        expect(module.toJSON().control_system_id).toBeFalsy();
+        module = new PlaceModule({ control_system_id: 'sys-test', role: PlaceDriverRole.Device });
+        expect(module.toJSON().control_system_id).toBeFalsy();
+        module = new PlaceModule({
+            control_system_id: 'sys-test',
+            role: PlaceDriverRole.SSH,
+            settings: '1'
+        });
+        expect(module.toJSON().control_system_id).toBeFalsy();
+        expect(module.toJSON(true).control_system_id).toBe('sys-test');
     });
 });

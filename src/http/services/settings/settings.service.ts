@@ -1,4 +1,3 @@
-
 import { HashMap } from '../../../utilities/types.utilities';
 import { create, query, remove, show, task, update } from '../resources/resources.service';
 import { PlaceSettings } from './settings.class';
@@ -42,12 +41,7 @@ export function settingsHistory(id: string, query_params: HashMap = {}) {
         'history',
         query_params,
         'get',
-        (resp: HashMap) =>
-            resp && resp instanceof Array
-                ? resp.map(i => process(i))
-                : resp && !(resp instanceof Array) && resp.results
-                ? (resp.results as HashMap[]).map(i => process(i))
-                : [],
+        (resp: HashMap[]) => resp.map(i => process(i)),
         PATH
     );
 }

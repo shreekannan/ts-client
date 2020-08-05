@@ -46,8 +46,8 @@ export function removeRepository(id: string, query_params: HashMap = {}) {
  * Get a list of all the interfaces
  * @param query_params Addition query parameters to pass to the request
  */
-export function listInterfaceRepositories(query_params: HashMap = {}) {
-    return show('interfaces', query_params, (i: HashMap<string>) => i, PATH);
+export function listInterfaceRepositories(query_params: HashMap = {}): Observable<string[]> {
+    return show('interfaces', query_params, undefined, PATH);
 }
 
 /**

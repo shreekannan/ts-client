@@ -1,4 +1,3 @@
-
 import { PlaceTrigger } from '../../../../src/http/services/triggers/trigger.class';
 import {
     TriggerActions,
@@ -15,8 +14,15 @@ describe('PlaceTrigger', () => {
         mailers: [{ emails: ['support@placeos.net'], content: 'Here be some contents' }]
     };
     const conditions: TriggerConditions = {
-        comparisons: [],
-        time_dependents: [{ type: TriggerTimeConditionType.AT, time: 0 }],
+        comparisons: [
+            { left: '', operator: TriggerConditionOperator.EQ, right: '2' },
+            {
+                left: { mod: '1', status: 'he', keys: [] },
+                operator: TriggerConditionOperator.EQ,
+                right: { mod: '2', status: 'con', keys: [] }
+            }
+        ],
+        time_dependents: [{ type: TriggerTimeConditionType.AT, time: 0 }]
     };
 
     beforeEach(() => {
@@ -34,6 +40,7 @@ describe('PlaceTrigger', () => {
             enabled: true,
             activated_count: 22,
             settings: { today: false, future: 'Yeah!' },
+            control_system: { name: 'John' },
             created_at: 999,
             actions,
             conditions
@@ -43,37 +50,18 @@ describe('PlaceTrigger', () => {
     it('should create instance', () => {
         expect(trigger).toBeTruthy();
         expect(trigger).toBeInstanceOf(PlaceTrigger);
+        expect(new PlaceTrigger()).toBeInstanceOf(PlaceTrigger);
     });
 
-    it('should expose system id', () => {
+    it('should expose properties', () => {
         expect(trigger.system_id).toBe('sys-42');
-    });
-
-    it('should expose description', () => {
         expect(trigger.description).toBe('In a galaxy far far away...');
-    });
-
-    it('should expose debounce period', () => {
         expect(trigger.debounce_period).toBe(1000);
-    });
-
-    it('should expose important', () => {
         expect(trigger.important).toBe(true);
-    });
-
-    it('should expose enabled', () => {
         expect(trigger.enabled).toBe(true);
-    });
-
-    it('should expose activation count', () => {
+        expect(trigger.system_name).toBe('John');
         expect(trigger.activated_count).toBe(22);
-    });
-
-    it('should expose actions', () => {
         expect(trigger.actions).toEqual(actions);
-    });
-
-    it('should expose conditions', () => {
         expect(trigger.conditions).toEqual(conditions);
     });
 

@@ -1,5 +1,6 @@
 import { create, query, remove, show, task, update } from '../resources/resources.service';
 
+import { Observable } from 'rxjs';
 import { HashMap } from '../../../utilities/types.utilities';
 import { PlaceSettings } from '../settings/settings.class';
 import { PlaceTrigger } from '../triggers/trigger.class';
@@ -44,11 +45,15 @@ export function removeSystem(id: string, query_params: HashMap = {}) {
 }
 
 /**
- * Remove module from the given system
+ * Add module to the given system
  * @param id System ID
- * @param module_id ID of the module to remove
+ * @param module_id ID of the module to add
  */
-export function addSystemModule(id: string, module_id: string, data: HashMap = {}): Promise<void> {
+export function addSystemModule(
+    id: string,
+    module_id: string,
+    data: HashMap = {}
+): Observable<void> {
     return task<void>(id, `module/${module_id}`, data, 'put', undefined, PATH);
 }
 
@@ -57,7 +62,7 @@ export function addSystemModule(id: string, module_id: string, data: HashMap = {
  * @param id System ID
  * @param module_id ID of the module to remove
  */
-export function removeSystemModule(id: string, module_id: string): Promise<void> {
+export function removeSystemModule(id: string, module_id: string): Observable<void> {
     return task<void>(id, `module/${module_id}`, {}, 'del', undefined, PATH);
 }
 
@@ -65,7 +70,7 @@ export function removeSystemModule(id: string, module_id: string): Promise<void>
  * Start the given system and clears any existing caches
  * @param id System ID
  */
-export function startSystem(id: string): Promise<void> {
+export function startSystem(id: string): Observable<void> {
     return task<void>(id, 'start', undefined, undefined, undefined, PATH);
 }
 
@@ -73,7 +78,7 @@ export function startSystem(id: string): Promise<void> {
  * Stops all modules in the given system
  * @param id System ID
  */
-export function stopSystem(id: string): Promise<void> {
+export function stopSystem(id: string): Observable<void> {
     return task<void>(id, 'stop', undefined, undefined, undefined, PATH);
 }
 
@@ -91,7 +96,7 @@ export function executeOnSystem(
     module: string,
     index: number = 1,
     args: any[] = []
-): Promise<HashMap> {
+): Observable<HashMap> {
     return task(id, `${module}_${index}/${method}`, args, undefined, undefined, PATH);
 }
 
@@ -102,7 +107,11 @@ export function executeOnSystem(
  * @param index Module index. Defaults to `1`
  * @param lookup Status variable of interest. If set it will return only the state of this variable
  */
-export function systemModuleState(id: string, module: string, index: number = 1): Promise<HashMap> {
+export function systemModuleState(
+    id: string,
+    module: string,
+    index: number = 1
+): Observable<HashMap> {
     return task(id, `${module}_${index}`, undefined, 'get', undefined, PATH);
 }
 
@@ -118,7 +127,7 @@ export function lookupSystemModuleState(
     module: string,
     index: number = 1,
     lookup: string
-): Promise<HashMap> {
+): Observable<HashMap> {
     return task(id, `${module}_${index}/${lookup}`, undefined, 'get', undefined, PATH);
 }
 
@@ -132,7 +141,7 @@ export function functionList(
     id: string,
     module: string,
     index: number = 1
-): Promise<PlaceModuleFunctionMap> {
+): Observable<PlaceModuleFunctionMap> {
     return task(id, `functions/${module}_${index}`, {}, 'get', undefined, PATH);
 }
 
@@ -141,7 +150,7 @@ export function functionList(
  * @param id System ID
  * @param module Class name of the Module e.g. `Display`, `Lighting` etc.
  */
-export function moduleCount(id: string, module: string): Promise<{ count: number }> {
+export function moduleCount(id: string, module: string): Observable<{ count: number }> {
     return task(id, 'count', { module }, 'get', undefined, PATH);
 }
 
@@ -149,7 +158,7 @@ export function moduleCount(id: string, module: string): Promise<{ count: number
  * List types of modules and counts in the given system
  * @param id System ID
  */
-export function moduleTypes(id: string): Promise<HashMap<number>> {
+export function moduleTypes(id: string): Observable<HashMap<number>> {
     return task(id, 'count', undefined, 'get', undefined, PATH);
 }
 
@@ -157,7 +166,7 @@ export function moduleTypes(id: string): Promise<HashMap<number>> {
  * Get list of Zones for system
  * @param id System ID
  */
-export function listSystemZones(id: string): Promise<PlaceZone[]> {
+export function listSystemZones(id: string): Observable<PlaceZone[]> {
     return task(
         id,
         'zones',
@@ -172,7 +181,7 @@ export function listSystemZones(id: string): Promise<PlaceZone[]> {
  * Get list of triggers for system
  * @param id System ID
  */
-export function listSystemTriggers(id: string): Promise<PlaceTrigger[]> {
+export function listSystemTriggers(id: string): Observable<PlaceTrigger[]> {
     return task(
         id,
         'triggers',
@@ -188,7 +197,7 @@ export function listSystemTriggers(id: string): Promise<PlaceTrigger[]> {
  * @param id System ID
  * @param data Values for trigger properties
  */
-export function addSystemTrigger(id: string, data: HashMap): Promise<PlaceTrigger> {
+export function addSystemTrigger(id: string, data: HashMap): Observable<PlaceTrigger> {
     return task(id, 'triggers', data, 'post', (item: any) => new PlaceTrigger(item), PATH);
 }
 
@@ -197,7 +206,7 @@ export function addSystemTrigger(id: string, data: HashMap): Promise<PlaceTrigge
  * @param id System ID
  * @param trigger_id ID of the trigger
  */
-export function removeSystemTrigger(id: string, trigger_id: string): Promise<void> {
+export function removeSystemTrigger(id: string, trigger_id: string): Observable<void> {
     return task(id, `triggers/${trigger_id}`, undefined, 'del', undefined, PATH);
 }
 
@@ -205,7 +214,7 @@ export function removeSystemTrigger(id: string, trigger_id: string): Promise<voi
  * Fetch settings of modules, zones and drivers associated with the system
  * @param id System ID
  */
-export function systemSettings(id: string): Promise<PlaceSettings[]> {
+export function systemSettings(id: string): Observable<PlaceSettings[]> {
     return task(
         id,
         'settings',
