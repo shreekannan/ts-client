@@ -41,7 +41,7 @@ export interface PlaceAuthority {
 }
 
 export interface PlaceAuthOptions {
-    auth_type?: 'oauth' | 'password';
+    auth_type?: 'auth_code' | 'implicit' | 'password';
     /** Host name and port of the engine server */
     host?: string;
     /** Whether application uses TLS/SSL */

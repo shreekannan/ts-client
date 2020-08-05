@@ -313,15 +313,36 @@ function loadAuthority(tries: number = 0): Promise<void> {
     return _promises.load_authority;
 }
 
-function sendToAuthorize(state?: string) {
-    // Generate tokens
-    const login_url = createLoginURL(state);
-    /* istanbul ignore else */
-    if (localStorage) {
-        localStorage.setItem('oauth_redirect', location.href);
-    }
-    setTimeout(() => window.location.assign(login_url), 300);
+async function sendToAuthorize(state?: string) {
+    const auth_url = createLoginURL(state);
+    // Authorise application
+    const resp = await fetch(auth_url);
     delete _promises.authorise;
+    /* istanbul ignore next */
+    if (resp.ok) {
+        const auth_resp_url = resp.headers.get('Location');
+        const fragments = auth_resp_url?.split('?')[1].split('&')
+            .map(i => ({
+                key: i.split('=')[0],
+                value: decodeURIComponent(i.split('=')[1])
+            }));
+        // Generate or grab tokens
+        const code = fragments?.find(pair => pair.key === 'code');
+        if (code) {
+            _code = code.value;
+            return generateToken();
+        }
+        const access_token = fragments?.find(pair => pair.key === 'access_token');
+        const refresh = fragments?.find(pair => pair.key === 'refresh_token');
+        const expire = fragments?.find(pair => pair.key === 'expires_in');
+        if (access_token && expire) {
+            _storeTokenDetails({
+                access_token: access_token.value,
+                refresh_token: refresh?.value || '',
+                expires_in: expire.value
+            });
+        }
+    }
 }
 
 function sendToLogin(api_authority: PlaceAuthority) {
@@ -329,10 +350,7 @@ function sendToLogin(api_authority: PlaceAuthority) {
     if (_options.handle_login !== false) {
         log('Auth', 'Redirecting to login page...');
         // Redirect to login form
-        const url = api_authority!.login_url?.replace(
-            '{{url}}',
-            encodeURIComponent(location.href)
-        );
+        const url = api_authority!.login_url?.replace('{{url}}', encodeURIComponent(location.href));
         setTimeout(() => window.location.assign(url), 300);
     }
     delete _promises.authorise;
