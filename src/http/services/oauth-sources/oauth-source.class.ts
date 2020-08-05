@@ -25,6 +25,10 @@ export class PlaceOAuthSource extends PlaceResource {
     public readonly scope: string;
     /** URL to grab user's profile details with a valid token */
     public readonly raw_info_url: string;
+    /** Additional params to be sent as part of the authorization reqest */
+    public readonly authorize_params: HashMap<string>;
+    /** Security checks to be made on the returned data */
+    public readonly ensure_matching: HashMap<string[]>;
 
     constructor(raw_data: HashMap) {
         super(raw_data);
@@ -41,5 +45,7 @@ export class PlaceOAuthSource extends PlaceResource {
         this.auth_scheme = raw_data.auth_scheme || 'request_body';
         this.scope = raw_data.scope || '';
         this.raw_info_url = raw_data.raw_info_url || '';
+        this.authorize_params = raw_data.authorize_params || {};
+        this.ensure_matching = raw_data.ensure_matching || {};
     }
 }

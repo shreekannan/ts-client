@@ -1,5 +1,7 @@
+import { Observable } from 'rxjs';
 import { HashMap } from '../../../utilities/types.utilities';
 import { create, query, remove, show, task, update } from '../resources/resources.service';
+import { PlaceTrigger } from '../triggers/trigger.class';
 import { PlaceZone } from './zone.class';
 import { PlaceZoneQueryOptions, PlaceZoneShowOptions } from './zone.interfaces';
 
@@ -33,4 +35,18 @@ export function addZone(form_data: HashMap, query_params: HashMap = {}) {
 
 export function removeZone(id: string, query_params: HashMap = {}) {
     return remove(id, query_params, PATH);
+}
+
+export function listZoneTriggers(
+    id: string,
+    query_params: HashMap = {}
+): Observable<PlaceTrigger[]> {
+    return task(
+        id,
+        'triggers',
+        query_params,
+        'get',
+        list => list.map((i: HashMap) => new PlaceTrigger(i)),
+        PATH
+    );
 }

@@ -122,6 +122,6 @@ export interface PlaceDebugEvent {
     level: PlaceLogLevel;
     /** Contents of the debug event */
     message: string;
-    /** Unix epoch of message arrival in seconds */
+    /** Unix epoch of the message arrival in seconds */
     time: number;
 }

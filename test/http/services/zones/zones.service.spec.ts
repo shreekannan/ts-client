@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 import { PlaceZone } from '../../../../src/http/services/zones/zone.class';
 
 import * as Resources from '../../../../src/http/services/resources/resources.service';
+import { PlaceTrigger } from '../../../../src/http/services/triggers/trigger.class';
 import * as SERVICE from '../../../../src/http/services/zones/zones.service';
 
 describe('Zones API', () => {
@@ -47,5 +48,13 @@ describe('Zones API', () => {
         let item = await SERVICE.removeZone('1').toPromise();
         expect(item).toBeFalsy();
         item = await SERVICE.removeZone('1', {}).toPromise();
+    });
+
+    it('should allow listing zone\'s triggers', async () => {
+        (Resources.task as any) = jest.fn().mockImplementation((_, _1, _2, _3, cb) => of(cb([{}])));
+        let item = await SERVICE.listZoneTriggers('1').toPromise();
+        expect(item).toBeTruthy();
+        expect(item[0]).toBeInstanceOf(PlaceTrigger);
+        item = await SERVICE.listZoneTriggers('1', {}).toPromise();
     });
 });

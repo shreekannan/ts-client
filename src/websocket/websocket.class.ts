@@ -267,7 +267,8 @@ function onMessage(message: PlaceResponse | 'pong'): void {
                 module: `${meta.mod}_${meta.index}`,
                 class_name: message.klass || '<empty>',
                 message: message.msg || '<empty>',
-                level: message.level || PlaceLogLevel.Debug
+                level: message.level || PlaceLogLevel.Debug,
+                time: Math.floor(new Date().getTime() / 1000)
             });
         } else if (message.type === 'error') {
             handleError(message);
