@@ -2,11 +2,9 @@ import { addSeconds, isBefore, startOfMinute } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 
-import { cleanupAPI } from '../http/services/resources/resources.service';
 import { destroyWaitingAsync } from '../utilities/async.utilities';
 import { generateNonce, getFragments, log, removeFragment } from '../utilities/general.utilities';
 import { HashMap } from '../utilities/types.utilities';
-import { cleanupRealtime } from '../websocket/websocket.class';
 import {
     MOCK_AUTHORITY,
     PlaceAuthOptions,
@@ -172,8 +170,6 @@ export function cleanupAuth() {
             delete _promises[key];
         }
     }
-    cleanupAPI();
-    cleanupRealtime();
     destroyWaitingAsync();
 }
 
