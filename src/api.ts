@@ -1,10 +1,17 @@
 /* istanbul ignore file */
 
+import { from } from 'rxjs';
+
 export * from './http/http.service';
 export * from './http/http.interfaces';
 
 export * from './http/mock/mock-http.service';
 export * from './http/mock/mock-http.interfaces';
+
+export * from './http/services/applications/applications.service';
+export * from './http/services/applications/application.class';
+export * from './http/services/applications/application.interfaces';
+export * from './http/services/auth-sources/auth-source.interfaces';
 
 export * from './http/services/broker/broker.class';
 export * from './http/services/broker/brokers.service';
@@ -41,6 +48,8 @@ export * from './http/services/repositories/repositories.service';
 export * from './http/services/repositories/repository.class';
 export * from './http/services/repositories/repository.interfaces';
 export * from './http/services/repositories/repository.utilities';
+
+export * from './http/services/resources/resources.service';
 
 export * from './http/services/saml-sources/saml-sources.service';
 export * from './http/services/saml-sources/saml-source.class';
