@@ -1,4 +1,5 @@
 import { Observable, Subscriber } from 'rxjs';
+import { share } from 'rxjs/operators';
 
 import { invalidateToken, isMock, refreshAuthority, token } from '../auth/auth.service';
 import { log } from '../utilities/general.utilities';
@@ -213,6 +214,7 @@ function request(
         options.headers['Content-Type'] = `application/json`;
         const resp = await fetch(url, {
             ...options,
+            body: JSON.stringify(options.body),
             method,
             credentials: 'same-origin',
             signal: ctrl?.signal
@@ -230,7 +232,7 @@ function request(
             make_request(obs);
             make_request = null;
         }
-    });
+    }).pipe(share());
     setTimeout(() => {
         let is_done = false;
         observable.subscribe(

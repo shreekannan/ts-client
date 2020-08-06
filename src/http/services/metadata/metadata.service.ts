@@ -22,7 +22,7 @@ export function showMetadata(
     return show(
         id,
         query_params,
-        query_params.name ? process : list => list.map((i: HashMap) => process(i)),
+        query_params.name ? process : list => (list || []).map((i: HashMap) => process(i)),
         PATH
     );
 }

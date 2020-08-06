@@ -5,8 +5,8 @@ import { PlaceRepository } from '../../../../src/http/services/repositories/repo
 import * as SERVICE from '../../../../src/http/services/repositories/repositories.service';
 import * as Resources from '../../../../src/http/services/resources/resources.service';
 
-describe('Repositorys API', () => {
-    it('should allow querying repositorys', async () => {
+describe('Repositories API', () => {
+    it('should allow querying repositories', async () => {
         const spy = jest.spyOn(Resources, 'query');
         spy.mockImplementation((_, process: any, __) => of([process({})]));
         let list = await SERVICE.queryRepositories().toPromise();
@@ -24,7 +24,7 @@ describe('Repositorys API', () => {
         item = await SERVICE.showRepository('1', {}).toPromise();
     });
 
-    it('should allow creating new repositorys', async () => {
+    it('should allow creating new repositories', async () => {
         const spy = jest.spyOn(Resources, 'create');
         spy.mockImplementation((_, _1, process: any, _2) => of(process({}) as any));
         let item = await SERVICE.addRepository({}).toPromise();

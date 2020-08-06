@@ -9,13 +9,13 @@ import { HashMap } from '../../../utilities/types.utilities';
 import { del, get, patch, post, put, responseHeaders } from '../../http.service';
 
 /** Total number of items returned by the last basic index query */
-export function total(): number {
-    return _total;
+export function requestTotal(name: string): number {
+    return _total[name] || 0;
 }
 
 /** Total number of items returned by the last basic index query */
-export function last_total(): number {
-    return _last_total;
+export function lastRequestTotal(name: string): number {
+    return _last_total[name] || 0;
 }
 
 /** URL for the next query page */
@@ -25,9 +25,9 @@ export function next(): string {
 /** Map of promises for Service */
 const _obserables: { [key: string]: Observable<any> } = {};
 /** Total number of items returned by the last basic index query */
-let _total: number = 0;
+let _total: HashMap<number> = {};
 /** Total number of items returned by the last index query */
-let _last_total: number = 0;
+let _last_total: HashMap<number> = {};
 /** URL to get the next page */
 let _next: string = '';
 
@@ -37,8 +37,8 @@ export function cleanupAPI() {
             delete _obserables[key];
         }
     }
-    _total = 0;
-    _last_total = 0;
+    _total = {};
+    _last_total = {};
     _next = '';
 }
 
@@ -51,33 +51,18 @@ export function query<T>(
     fn: (data: HashMap) => T = process,
     path: string = 'resource'
 ): Observable<T[]> {
-    let cache = 1000;
-    /* istanbul ignore else */
-    if (query_params && query_params.cache) {
-        cache = query_params.cache;
-        delete query_params.cache;
-    }
     const query_str = toQueryString(query_params);
-    const key = `${path}|query|${query_str}`;
-    /* istanbul ignore else */
-    if (!_obserables[key]) {
-        const url = `${apiEndpoint()}/${path}${query_str ? '?' + query_str : ''}`;
-        _obserables[key] = get(url).pipe(
-            map((resp: HashMap) => {
-                handleHeaders(url, query_str);
-                return resp && resp instanceof Array
-                    ? resp.map(i => fn(i))
-                    : resp && !(resp instanceof Array) && resp.results
-                    ? (resp.results as HashMap[]).map(i => process(i))
-                    : [];
-            })
-        );
-        _obserables[key].toPromise().then(
-            () => timeout(key, () => delete _obserables[key], cache),
-            () => timeout(key, () => delete _obserables[key], 1)
-        );
-    }
-    return _obserables[key];
+    const url = `${apiEndpoint()}/${path}${query_str ? '?' + query_str : ''}`;
+    return get(url).pipe(
+        map((resp: HashMap) => {
+            handleHeaders(url, query_str, path);
+            return resp && resp instanceof Array
+                ? resp.map(i => fn(i))
+                : resp && !(resp instanceof Array) && resp.results
+                ? (resp.results as HashMap[]).map(i => process(i))
+                : [];
+        })
+    );
 }
 
 /**
@@ -92,17 +77,8 @@ export function show<T>(
     path: string = 'resource'
 ): Observable<T> {
     const query_str = toQueryString(query_params);
-    const key = `${path}|show|${id}|${query_str}`;
-    /* istanbul ignore else */
-    if (!_obserables[key]) {
-        const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
-        _obserables[key] = get(url).pipe(map((resp: HashMap) => fn(resp)));
-        _obserables[key].toPromise().then(
-            () => timeout(key, () => delete _obserables[key], 500),
-            () => timeout(key, () => delete _obserables[key], 1)
-        );
-    }
-    return _obserables[key];
+    const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
+    return get(url).pipe(map((resp: HashMap) => fn(resp)));
 }
 
 /**
@@ -138,22 +114,12 @@ export function task<U = any>(
     path: string = 'resource'
 ): Observable<U> {
     const query_str = toQueryString(form_data);
-    const key = `${path}|task|${id}|${task_name}|${query_str}`;
-    /* istanbul ignore else */
-    if (!_obserables[key]) {
-        const post_data = form_data;
-        const url = `${apiEndpoint()}/${path}/${id}/${task_name}`;
-        const request =
-            method === 'post' || method === 'put'
-                ? (method === 'post' ? post : put)(url, post_data)
-                : (method === 'get' ? get : del)(`${url}${query_str ? '?' + query_str : ''}`);
-        _obserables[key] = request.pipe(map((resp: HashMap) => callback(resp)));
-        _obserables[key].toPromise().then(
-            () => timeout(key, () => delete _obserables[key], 500),
-            () => timeout(key, () => delete _obserables[key], 1)
-        );
-    }
-    return _obserables[key];
+    const url = `${apiEndpoint()}/${path}/${id}/${task_name}`;
+    const request =
+        method === 'post' || method === 'put'
+            ? (method === 'post' ? post : put)(url, form_data)
+            : (method === 'get' ? get : del)(`${url}${query_str ? '?' + query_str : ''}`);
+    return request.pipe(map((resp: HashMap) => callback(resp)));
 }
 
 /**
@@ -170,20 +136,9 @@ export function update<T>(
     fn: (data: HashMap) => T = process,
     path: string = 'resource'
 ): Observable<T> {
-    const key = `${path}|update|${id}`;
-    /* istanbul ignore else */
-    if (!_obserables[key]) {
-        const query_str = toQueryString(query_params);
-        const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
-        _obserables[key] = (type === 'put' ? put : patch)(url, form_data).pipe(
-            map((resp: HashMap) => fn(resp))
-        );
-        _obserables[key].toPromise().then(
-            () => timeout(key, () => delete _obserables[key], 500),
-            () => timeout(key, () => delete _obserables[key], 1)
-        );
-    }
-    return _obserables[key];
+    const query_str = toQueryString(query_params);
+    const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
+    return (type === 'put' ? put : patch)(url, form_data).pipe(map((resp: HashMap) => fn(resp)));
 }
 
 /**
@@ -194,29 +149,20 @@ export function remove(
     id: string,
     query_params: HashMap = {},
     path: string = 'resource'
-): Observable<void> {
+): Observable<any> {
     const query_str = toQueryString(query_params);
-    const key = `${path}|delete|${id}|${query_str}`;
-    /* istanbul ignore else */
-    if (!_obserables[key]) {
-        const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
-        _obserables[key] = del(url);
-        _obserables[key].toPromise().then(
-            () => delete _obserables[key],
-            () => delete _obserables[key]
-        );
-    }
-    return _obserables[key];
+    const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
+    return del(url);
 }
 
-function handleHeaders(url: string, query_str: string) {
+function handleHeaders(url: string, query_str: string, name: string) {
     const headers = responseHeaders(url);
     if (headers && headers['x-total-count']) {
         const total_value = +(headers['x-total-count'] || 0);
         if (query_str.length < 2 || (query_str.length < 12 && query_str.indexOf('offset=') >= 0)) {
-            _total = total_value;
+            _total[name] = total_value;
         }
-        _last_total = total_value;
+        _last_total[name] = total_value;
     }
     if (headers && headers.Link) {
         const link_map = parseLinkHeader(headers.Link || '');

@@ -3,8 +3,8 @@ import { create, query, remove, show, task, update } from '../resources/resource
 import { PlaceSettings } from './settings.class';
 import { PlaceSettingsQueryOptions } from './settings.interfaces';
 
-const PATH = 'settingss';
-const NAME = 'Settingss';
+const PATH = 'settings';
+const NAME = 'Settings';
 
 function process(item: HashMap) {
     return new PlaceSettings(item);

@@ -97,8 +97,8 @@ describe('Resource API', () => {
             [{ test: true }],
             [{ test: true }]
         );
-        expect(Resource.total()).toBe(10);
-        expect(Resource.last_total()).toBe(25);
+        expect(Resource.requestTotal('resource')).toBe(10);
+        expect(Resource.lastRequestTotal('resource')).toBe(25);
     });
 
     it('should allow for grabbing the show endpoint for an item', async () => {

@@ -10,8 +10,8 @@ import {
     PlaceRepositoryPullQuery
 } from './repository.interfaces';
 
-const PATH = 'repositorys';
-const NAME = 'Repositorys';
+const PATH = 'repositories';
+const NAME = 'Repositories';
 
 function process(item: HashMap) {
     return new PlaceRepository(item);

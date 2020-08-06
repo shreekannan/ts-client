@@ -40,5 +40,5 @@ export function recompileDriver(id: string) {
 }
 
 export function isDriverCompiled(id: string) {
-    return task(id, 'recompile', undefined, 'get', undefined, PATH);
+    return task(id, 'compiled', undefined, 'get', undefined, PATH);
 }

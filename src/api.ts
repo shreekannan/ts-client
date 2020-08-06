@@ -1,7 +1,5 @@
 /* istanbul ignore file */
 
-import { from } from 'rxjs';
-
 export * from './http/http.service';
 export * from './http/http.interfaces';
 
