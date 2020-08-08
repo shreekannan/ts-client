@@ -1,13 +1,13 @@
 /* istanbul ignore file */
 
-export * from './websocket/websocket.class';
-export * from './websocket/websocket.interfaces';
-export * from './websocket/binding.service';
+export * from './realtime/functions';
+export * from './realtime/interfaces';
+export * from './realtime/binding';
 
-export * from './websocket/classes/engine-system.class';
-export * from './websocket/classes/engine-module.class';
-export * from './websocket/classes/engine-status-variable.class';
+export * from './realtime/system';
+export * from './realtime/module';
+export * from './realtime/status-variable';
 
-export * from './websocket/mock/mock-system-register.class';
-export * from './websocket/mock/mock-engine-system.class';
-export * from './websocket/mock/mock-engine-module.class';
+export * from './realtime/mock';
+export * from './realtime/mock-system';
+export * from './realtime/mock-module';

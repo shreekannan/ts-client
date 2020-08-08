@@ -1,4 +1,4 @@
 /* istanbul ignore file */
 
-export * from './auth/auth.service';
-export * from './auth/auth.interfaces';
+export * from './auth/functions';
+export * from './auth/interfaces';

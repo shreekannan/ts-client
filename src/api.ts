@@ -1,75 +1,73 @@
 /* istanbul ignore file */
 
-export * from './http/http.service';
-export * from './http/http.interfaces';
+export * from './http/functions';
+export * from './http/interfaces';
+export * from './http/mock';
 
-export * from './http/mock/mock-http.service';
-export * from './http/mock/mock-http.interfaces';
+export * from './applications/functions';
+export * from './applications/application';
+export * from './applications/interfaces';
+export * from './auth-sources/interfaces';
 
-export * from './http/services/applications/applications.service';
-export * from './http/services/applications/application.class';
-export * from './http/services/applications/application.interfaces';
-export * from './http/services/auth-sources/auth-source.interfaces';
+export * from './broker/broker';
+export * from './broker/functions';
 
-export * from './http/services/broker/broker.class';
-export * from './http/services/broker/brokers.service';
+export * from './clusters/functions';
+export * from './clusters/cluster';
+export * from './clusters/interfaces';
+export * from './clusters/process';
 
-export * from './http/services/clusters/clusters.service';
-export * from './http/services/clusters/cluster.class';
-export * from './http/services/clusters/cluster.interfaces';
-export * from './http/services/clusters/process.class';
+export * from './domains/functions';
+export * from './domains/domain';
 
-export * from './http/services/domains/domains.service';
-export * from './http/services/domains/domain.class';
+export * from './drivers/functions';
+export * from './drivers/driver';
+export * from './drivers/interfaces';
+export * from './drivers/enums';
 
-export * from './http/services/drivers/drivers.service';
-export * from './http/services/drivers/driver.class';
-export * from './http/services/drivers/drivers.interfaces';
-export * from './http/services/drivers/drivers.enums';
+export * from './ldap-sources/functions';
+export * from './ldap-sources/ldap-source';
 
-export * from './http/services/ldap-sources/ldap-sources.service';
-export * from './http/services/ldap-sources/ldap-source.class';
+export * from './metadata/functions';
+export * from './metadata/metadata';
+export * from './metadata/interfaces';
+export * from './metadata/zone-metadata';
 
-export * from './http/services/metadata/metadata.service';
-export * from './http/services/metadata/metadata.class';
-export * from './http/services/metadata/metadata.interfaces';
-export * from './http/services/metadata/zone-metadata.class';
+export * from './modules/functions';
+export * from './modules/module';
+export * from './modules/interfaces';
 
-export * from './http/services/modules/modules.service';
-export * from './http/services/modules/module.class';
-export * from './http/services/modules/module.interfaces';
+export * from './oauth-sources/functions';
+export * from './oauth-sources/oauth-source';
 
-export * from './http/services/oauth-sources/oauth-sources.service';
-export * from './http/services/oauth-sources/oauth-source.class';
+export * from './repositories/functions';
+export * from './repositories/repository';
+export * from './repositories/interfaces';
+export * from './repositories/utilities';
 
-export * from './http/services/repositories/repositories.service';
-export * from './http/services/repositories/repository.class';
-export * from './http/services/repositories/repository.interfaces';
-export * from './http/services/repositories/repository.utilities';
+export * from './resources/functions';
 
-export * from './http/services/resources/resources.service';
+export * from './saml-sources/functions';
+export * from './saml-sources/saml-source';
 
-export * from './http/services/saml-sources/saml-sources.service';
-export * from './http/services/saml-sources/saml-source.class';
+export * from './settings/functions';
+export * from './settings/settings';
+export * from './settings/interfaces';
+export * from './settings/utilities';
 
-export * from './http/services/settings/settings.service';
-export * from './http/services/settings/settings.class';
-export * from './http/services/settings/settings.interfaces';
-export * from './http/services/settings/settings.utilities';
+export * from './systems/functions';
+export * from './systems/system';
+export * from './systems/interfaces';
+export * from './systems/utilities';
 
-export * from './http/services/systems/systems.service';
-export * from './http/services/systems/system.class';
-export * from './http/services/systems/system.interfaces';
-export * from './http/services/systems/system.utilities';
+export * from './triggers/functions';
+export * from './triggers/trigger';
+export * from './triggers/interfaces';
 
-export * from './http/services/triggers/triggers.service';
-export * from './http/services/triggers/trigger.class';
-export * from './http/services/triggers/trigger.interfaces';
+export * from './users/functions';
+export * from './users/user';
+export * from './users/interfaces';
 
-export * from './http/services/users/users.service';
-export * from './http/services/users/user.class';
-export * from './http/services/users/user.interfaces';
-
-export * from './http/services/zones/zones.service';
-export * from './http/services/zones/zone.class';
-export * from './http/services/zones/zone.interfaces';
+export * from './zones/functions';
+export * from './zones/zone';
+export * from './zones/interfaces';
