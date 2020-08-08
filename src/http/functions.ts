@@ -160,7 +160,7 @@ async function transform(
     }
     switch (type) {
         case 'json':
-            return JSON.parse(await resp.text() || '""');
+            return await resp.json().catch(() => ({}));
         case 'text':
             return resp.text();
     }
