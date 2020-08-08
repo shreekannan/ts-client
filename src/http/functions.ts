@@ -160,7 +160,7 @@ async function transform(
     }
     switch (type) {
         case 'json':
-            return resp.json();
+            return JSON.parse(await resp.text() || '""');
         case 'text':
             return resp.text();
     }
@@ -202,7 +202,6 @@ function request(
     success: (e: Response, t: HttpResponseType) => Promise<HttpResponse> = transform,
     err: (e: Response) => Promise<HttpError> = onError
 ): Observable<HttpResponse> {
-    console.log('Request:', method, url);
     if (is_mock()) {
         const request_obs = mock_handler(method, url);
         if (request_obs) {
@@ -220,7 +219,7 @@ function request(
         method,
         credentials: 'same-origin',
     }).pipe(
-        switchMap(async (resp) => {
+        switchMap((resp) => {
             if (!resp.ok) throw resp;
             return success(resp, options.response_type as any);
         }),

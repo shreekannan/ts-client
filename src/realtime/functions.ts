@@ -13,6 +13,7 @@ import {
     isSecure,
     refreshAuthority,
     token,
+    needsTokenHeader,
 } from '../auth/functions';
 import { log } from '../utilities/general';
 import { HashMap } from '../utilities/types';
@@ -427,13 +428,17 @@ function connect(tries: number = 0): Promise<void> {
 function createWebsocket() {
     const secure = isSecure() || location.protocol.indexOf('https') >= 0;
     const expiry = `expires=${formatISO(Math.floor(new Date().getTime() / 1000 + 120))};`;
-    document.cookie = `bearer_token=${token()}; ${expiry} path=${httpRoute()}; ${
-        secure ? 'Secure;' : ''
-    } SameSite=Strict`;
-    const url = `ws${secure ? 's' : ''}://${host()}${httpRoute()}${
+    let url = `ws${secure ? 's' : ''}://${host()}${websocketRoute()}${
         isFixedDevice() ? '?fixed_device=true' : ''
     }`;
-    log('WS', `Connecting to ws${secure ? 's' : ''}://${host()}${httpRoute()}`);
+    if (!needsTokenHeader()) {
+        document.cookie = `bearer_token=${token()}; ${expiry} path=${httpRoute()}; ${
+            secure ? 'Secure;' : ''
+        } SameSite=Strict`;
+    } else {
+        url += `${url.indexOf('?') >= 0 ? '&' : '?'}bearer_token=${token()}`;
+    }
+    log('WS', `Connecting to ws${secure ? 's' : ''}://${host()}${websocketRoute()}`);
     /* istanbul ignore next */
     return webSocket<any>({
         url,
