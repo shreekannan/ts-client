@@ -19,18 +19,35 @@ import {
 
 const PATH = 'repositories';
 
+/** Convert raw server data to a repository object */
 function process(item: HashMap) {
     return new PlaceRepository(item);
 }
 
+/**
+ * Query the available repositories
+ * @param query_params Query parameters to add the to request URL
+ */
 export function queryRepositories(query_params?: HashMap) {
     return query(query_params, process, PATH);
 }
 
+/**
+ * Get the data for a repository
+ * @param id ID of the repository to retrieve
+ * @param query_params Query parameters to add the to request URL
+ */
 export function showRepository(id: string, query_params: HashMap = {}) {
     return show(id, query_params, process, PATH);
 }
 
+/**
+ * Update the repository in the database
+ * @param id ID of the repository
+ * @param form_data New values for the repository
+ * @param query_params Query parameters to add the to request URL
+ * @param method HTTP verb to use on request. Defaults to `patch`
+ */
 export function updateRepository(
     id: string,
     form_data: HashMap | PlaceRepository,
@@ -40,10 +57,20 @@ export function updateRepository(
     return update(id, form_data, query_params, method, process, PATH);
 }
 
+/**
+ * Add a new repository to the database
+ * @param form_data Repository data
+ * @param query_params Query parameters to add the to request URL
+ */
 export function addRepository(form_data: HashMap, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 
+/**
+ * Remove an repository from the database
+ * @param id ID of the repository
+ * @param query_params Query parameters to add the to request URL
+ */
 export function removeRepository(id: string, query_params: HashMap = {}) {
     return remove(id, query_params, PATH);
 }

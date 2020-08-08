@@ -17,18 +17,35 @@ import {
 
 const PATH = 'modules';
 
+/** Convert raw server data to a module object */
 function process(item: HashMap) {
     return new PlaceModule(item);
 }
 
+/**
+ * Query the available moduels
+ * @param query_params Query parameters to add the to request URL
+ */
 export function queryModules(query_params?: PlaceModuleQueryOptions) {
     return query(query_params, process, PATH);
 }
 
+/**
+ * Get the data for a module
+ * @param id ID of the module to retrieve
+ * @param query_params Query parameters to add the to request URL
+ */
 export function showModule(id: string, query_params: HashMap = {}) {
     return show(id, query_params, process, PATH);
 }
 
+/**
+ * Update the module in the database
+ * @param id ID of the module
+ * @param form_data New values for the module
+ * @param query_params Query parameters to add the to request URL
+ * @param method HTTP verb to use on request. Defaults to `patch`
+ */
 export function updateModule(
     id: string,
     form_data: HashMap | PlaceModule,
@@ -38,10 +55,20 @@ export function updateModule(
     return update(id, form_data, query_params, method, process, PATH);
 }
 
+/**
+ * Add a new module to the database
+ * @param form_data Module data
+ * @param query_params Query parameters to add the to request URL
+ */
 export function addModule(form_data: HashMap, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 
+/**
+ * Remove a module from the database
+ * @param id ID of the module
+ * @param query_params Query parameters to add the to request URL
+ */
 export function removeModule(id: string, query_params: HashMap = {}) {
     return remove(id, query_params, PATH);
 }

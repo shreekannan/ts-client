@@ -21,18 +21,35 @@ import {
 
 const PATH = 'systems';
 
+/** Convert raw server data to an system object */
 function process(item: HashMap) {
     return new PlaceSystem(item);
 }
 
+/**
+ * Query the available systems
+ * @param query_params Query parameters to add the to request URL
+ */
 export function querySystems(query_params?: PlaceSystemsQueryOptions) {
     return query(query_params, process, PATH);
 }
 
+/**
+ * Get the data for a system
+ * @param id ID of the system to retrieve
+ * @param query_params Query parameters to add the to request URL
+ */
 export function showSystem(id: string, query_params: HashMap = {}) {
     return show(id, query_params, process, PATH);
 }
 
+/**
+ * Update the system in the database
+ * @param id ID of the system
+ * @param form_data New values for the system
+ * @param query_params Query parameters to add the to request URL
+ * @param method HTTP verb to use on request. Defaults to `patch`
+ */
 export function updateSystem(
     id: string,
     form_data: HashMap | PlaceSystem,
@@ -42,10 +59,20 @@ export function updateSystem(
     return update(id, form_data, query_params, method, process, PATH);
 }
 
+/**
+ * Add a new system to the database
+ * @param form_data System data
+ * @param query_params Query parameters to add the to request URL
+ */
 export function addSystem(form_data: HashMap, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 
+/**
+ * Remove an system from the database
+ * @param id ID of the system
+ * @param query_params Query parameters to add the to request URL
+ */
 export function removeSystem(id: string, query_params: HashMap = {}) {
     return remove(id, query_params, PATH);
 }
