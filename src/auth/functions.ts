@@ -1,4 +1,6 @@
-import { addSeconds, isBefore } from 'date-fns';
+import addSeconds from 'date-fns/addSeconds';
+import isBefore from 'date-fns/isBefore';
+
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 

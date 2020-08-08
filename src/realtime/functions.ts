@@ -1,4 +1,4 @@
-import { formatISO } from 'date-fns';
+import formatISO from 'date-fns/formatISO';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 

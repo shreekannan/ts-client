@@ -1,4 +1,5 @@
-import { startOfMinute, sub } from 'date-fns';
+import startOfMinute from 'date-fns/startOfMinute';
+import sub from 'date-fns/sub';
 
 /**
  * Generate mocked out settings object metadata
