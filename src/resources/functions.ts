@@ -5,14 +5,7 @@ import { apiEndpoint } from '../auth/functions';
 import { toQueryString } from '../utilities/api';
 import { parseLinkHeader } from '../utilities/general';
 import { HashMap } from '../utilities/types';
-import {
-    del,
-    get,
-    patch,
-    post,
-    put,
-    responseHeaders,
-} from '../http/functions';
+import { del, get, patch, post, put, responseHeaders } from '../http/functions';
 
 /** Total number of items returned by the last basic index query */
 export function requestTotal(name: string): number {
@@ -83,9 +76,7 @@ export function show<T>(
     path: string = 'resource'
 ): Observable<T> {
     const query_str = toQueryString(query_params);
-    const url = `${apiEndpoint()}/${path}/${id}${
-        query_str ? '?' + query_str : ''
-    }`;
+    const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
     return get(url).pipe(map((resp: HashMap) => fn(resp)));
 }
 
@@ -102,9 +93,7 @@ export function create<T>(
 ): Observable<T> {
     const query_str = toQueryString(query_params);
     const url = `${apiEndpoint()}/${path}${query_str ? '?' + query_str : ''}`;
-    const observable = post(url, form_data).pipe(
-        map((resp: HashMap) => fn(resp))
-    );
+    const observable = post(url, form_data).pipe(map((resp: HashMap) => fn(resp)));
     return observable;
 }
 
@@ -128,9 +117,7 @@ export function task<U = any>(
     const request =
         method === 'post' || method === 'put'
             ? (method === 'post' ? post : put)(url, form_data)
-            : (method === 'get' ? get : del)(
-                  `${url}${query_str ? '?' + query_str : ''}`
-              );
+            : (method === 'get' ? get : del)(`${url}${query_str ? '?' + query_str : ''}`);
     return request.pipe(map((resp: HashMap) => callback(resp)));
 }
 
@@ -148,13 +135,9 @@ export function update<T>(
     fn: (data: HashMap) => T = process,
     path: string = 'resource'
 ): Observable<T> {
-    const query_str = toQueryString(query_params);
-    const url = `${apiEndpoint()}/${path}/${id}${
-        query_str ? '?' + query_str : ''
-    }`;
-    return (type === 'put' ? put : patch)(url, form_data).pipe(
-        map((resp: HashMap) => fn(resp))
-    );
+    const query_str = toQueryString({ ...query_params, version: form_data.version || 0 });
+    const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
+    return (type === 'put' ? put : patch)(url, form_data).pipe(map((resp: HashMap) => fn(resp)));
 }
 
 /**
@@ -167,9 +150,7 @@ export function remove(
     path: string = 'resource'
 ): Observable<any> {
     const query_str = toQueryString(query_params);
-    const url = `${apiEndpoint()}/${path}/${id}${
-        query_str ? '?' + query_str : ''
-    }`;
+    const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
     return del(url);
 }
 
@@ -177,10 +158,7 @@ function handleHeaders(url: string, query_str: string, name: string) {
     const headers = responseHeaders(url);
     if (headers && headers['x-total-count']) {
         const total_value = +(headers['x-total-count'] || 0);
-        if (
-            query_str.length < 2 ||
-            (query_str.length < 12 && query_str.indexOf('offset=') >= 0)
-        ) {
+        if (query_str.length < 2 || (query_str.length < 12 && query_str.indexOf('offset=') >= 0)) {
             _total[name] = total_value;
         }
         _last_total[name] = total_value;
