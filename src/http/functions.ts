@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { fromFetch } from 'rxjs/fetch';
 
-import { invalidateToken, isMock, refreshAuthority, token } from '../auth/functions';
+import { invalidateToken, isMock, refreshAuthority, token, needsTokenHeader } from '../auth/functions';
 import { log } from '../utilities/general';
 import { HashMap } from '../utilities/types';
 import {
@@ -210,7 +210,9 @@ function request(
         }
     }
     options.headers = options.headers || {};
-    options.headers.Authorization = `Bearer ${token()}`;
+    if (needsTokenHeader()) {
+        options.headers.Authorization = `Bearer ${token()}`;
+    }
     options.headers['Content-Type'] = `application/json`;
     return fromFetch(url, {
         ...options,

@@ -51,6 +51,10 @@ export function httpRoute() {
     return `/api/engine/v2`;
 }
 
+export function needsTokenHeader(): boolean {
+    return !!_options.token_header
+}
+
 /** OAuth 2 client ID for the application */
 export function clientId(): string {
     return _client_id;

@@ -68,6 +68,8 @@ export interface PlaceAuthOptions {
     password?: string;
     /** Application secret */
     client_secret?: string;
+    /** Whether access tokens should be injected into request headers */
+    token_header?: boolean;
 }
 
 export interface PlaceTokenResponse {
