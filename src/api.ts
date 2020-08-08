@@ -1,73 +1,235 @@
 /* istanbul ignore file */
 
-export * from './http/functions';
-export * from './http/interfaces';
-export * from './http/mock';
+export { get, post, put, patch, del } from './http/functions';
+export {
+    HttpError,
+    HttpOptions,
+    HttpResponse,
+    HttpResponseType,
+    MockHttpRequest,
+    MockHttpRequestHandler,
+    MockHttpRequestHandlerOptions
+} from './http/interfaces';
+export { registerMockEndpoint, deregisterMockEndpoint } from './http/mock';
 
-export * from './applications/functions';
-export * from './applications/application';
-export * from './applications/interfaces';
-export * from './auth-sources/interfaces';
+export {
+    queryApplications,
+    showApplication,
+    addApplication,
+    updateApplication,
+    removeApplication
+} from './applications/functions';
+export { PlaceApplication } from './applications/application';
+export { PlaceApplicationQueryOptions } from './applications/interfaces';
+export { PlaceAuthSourceQueryOptions } from './auth-sources/interfaces';
 
-export * from './broker/broker';
-export * from './broker/functions';
+export { PlaceMQTTBroker, AuthType } from './broker/broker';
+export {
+    queryBrokers,
+    showBroker,
+    addBroker,
+    updateBroker,
+    removeBroker
+} from './broker/functions';
 
-export * from './clusters/functions';
-export * from './clusters/cluster';
-export * from './clusters/interfaces';
-export * from './clusters/process';
+export { queryClusters, queryProcesses, terminateProcess } from './clusters/functions';
+export { PlaceCluster } from './clusters/cluster';
+export { PlaceProcess } from './clusters/process';
+export { PlaceClusterQueryOptions } from './clusters/interfaces';
 
-export * from './domains/functions';
-export * from './domains/domain';
+export {
+    queryDomains,
+    showDomain,
+    addDomain,
+    updateDomain,
+    removeDomain
+} from './domains/functions';
+export { PlaceDomain } from './domains/domain';
 
-export * from './drivers/functions';
-export * from './drivers/driver';
-export * from './drivers/interfaces';
-export * from './drivers/enums';
+export {
+    queryDrivers,
+    showDriver,
+    addDriver,
+    updateDriver,
+    removeDriver,
+    recompileDriver,
+    isDriverCompiled
+} from './drivers/functions';
+export { PlaceDriver } from './drivers/driver';
+export { PlaceDriverQueryOptions, PlaceDriverDetails } from './drivers/interfaces';
+export { PlaceDriverRole } from './drivers/enums';
 
-export * from './ldap-sources/functions';
-export * from './ldap-sources/ldap-source';
+export {
+    queryLDAPSources,
+    showLDAPSource,
+    addLDAPSource,
+    updateLDAPSource,
+    removeLDAPSource
+} from './ldap-sources/functions';
+export { PlaceLDAPSource } from './ldap-sources/ldap-source';
 
-export * from './metadata/functions';
-export * from './metadata/metadata';
-export * from './metadata/interfaces';
-export * from './metadata/zone-metadata';
+export {
+    showMetadata,
+    updateMetadata,
+    addMetadata,
+    removeMetadata,
+    listChildMetadata
+} from './metadata/functions';
+export { PlaceMetadata } from './metadata/metadata';
+export { PlaceMetadataOptions, PlaceZoneMetadataOptions } from './metadata/interfaces';
+export { PlaceZoneMetadata } from './metadata/zone-metadata';
 
-export * from './modules/functions';
-export * from './modules/module';
-export * from './modules/interfaces';
+export {
+    queryModules,
+    showModule,
+    addModule,
+    updateModule,
+    removeModule,
+    startModule,
+    stopModule,
+    moduleState,
+    moduleSettings,
+    lookupModuleState,
+    loadModule
+} from './modules/functions';
+export { PlaceModule } from './modules/module';
+export { PlaceModuleQueryOptions, PlaceModulePingOptions } from './modules/interfaces';
 
-export * from './oauth-sources/functions';
-export * from './oauth-sources/oauth-source';
+export {
+    queryOAuthSources,
+    showOAuthSource,
+    addOAuthSource,
+    updateOAuthSource,
+    removeOAuthSource
+} from './oauth-sources/functions';
+export { PlaceOAuthSource } from './oauth-sources/oauth-source';
 
-export * from './repositories/functions';
-export * from './repositories/repository';
-export * from './repositories/interfaces';
-export * from './repositories/utilities';
+export {
+    queryRepositories,
+    showRepository,
+    addRepository,
+    updateRepository,
+    removeRepository,
+    listInterfaceRepositories,
+    listRepositoryBranches,
+    listRepositoryCommits,
+    listRepositoryDriverDetails,
+    listRepositoryDrivers,
+    pullRepositoryChanges
+} from './repositories/functions';
+export { PlaceRepository } from './repositories/repository';
+export {
+    PlaceRepositoryType,
+    PlaceRepositoryCommitQuery,
+    GitCommitDetails,
+    PlaceRepositoryDetailsQuery,
+    PlaceRepositoryPullQuery,
+    PlaceRepositoryCommit
+} from './repositories/interfaces';
 
-export * from './resources/functions';
+export {
+    query,
+    show,
+    create,
+    update,
+    remove,
+    requestTotal,
+    lastRequestTotal
+} from './resources/functions';
 
-export * from './saml-sources/functions';
-export * from './saml-sources/saml-source';
+export {
+    querySAMLSources,
+    showSAMLSource,
+    addSAMLSource,
+    updateSAMLSource,
+    removeSAMLSource
+} from './saml-sources/functions';
+export { PlaceSAMLSource, PlaceSamlRequestAttribute } from './saml-sources/saml-source';
 
-export * from './settings/functions';
-export * from './settings/settings';
-export * from './settings/interfaces';
-export * from './settings/utilities';
+export {
+    querySettings,
+    showSettings,
+    addSettings,
+    updateSettings,
+    removeSettings,
+    settingsHistory
+} from './settings/functions';
+export { PlaceSettings } from './settings/settings';
+export { PlaceSettingsQueryOptions, EncryptionLevel } from './settings/interfaces';
 
-export * from './systems/functions';
-export * from './systems/system';
-export * from './systems/interfaces';
-export * from './systems/utilities';
+export {
+    querySystems,
+    showSystem,
+    addSystem,
+    updateSystem,
+    removeSystem,
+    addSystemModule,
+    addSystemTrigger,
+    removeSystemModule,
+    removeSystemTrigger,
+    startSystem,
+    stopSystem,
+    systemModuleState,
+    systemSettings,
+    listSystemTriggers,
+    listSystemZones,
+    lookupSystemModuleState,
+    executeOnSystem,
+    functionList
+} from './systems/functions';
+export { PlaceSystem } from './systems/system';
+export {
+    PlaceModuleFunctionMap,
+    PlaceModuleFunction,
+    PlaceSystemsQueryOptions,
+    PlaceSystemShowOptions
+} from './systems/interfaces';
 
-export * from './triggers/functions';
-export * from './triggers/trigger';
-export * from './triggers/interfaces';
+export {
+    queryTriggers,
+    showTrigger,
+    addTrigger,
+    updateTrigger,
+    removeTrigger
+} from './triggers/functions';
+export { PlaceTrigger } from './triggers/trigger';
+export {
+    TriggerActions,
+    TriggerMailer,
+    TriggerFunction,
+    Args,
+    TriggerConditions,
+    TriggerComparison,
+    TriggerConditionOperator,
+    TriggerConditionValue,
+    TriggerConditionConstant,
+    TriggerStatusVariable,
+    TriggerTimeCondition,
+    TriggerAtTimeCondition,
+    TriggerCronTimeCondition,
+    TriggerTimeConditionType,
+    TriggerWebhook,
+    TriggerWebhookType
+} from './triggers/interfaces';
 
-export * from './users/functions';
-export * from './users/user';
-export * from './users/interfaces';
+export {
+    queryUsers,
+    showUser,
+    addUser,
+    updateUser,
+    removeUser,
+    currentUser
+} from './users/functions';
+export { PlaceUser } from './users/user';
+export { PlaceUserQueryOptions } from './users/interfaces';
 
-export * from './zones/functions';
-export * from './zones/zone';
-export * from './zones/interfaces';
+export {
+    queryZones,
+    showZone,
+    addZone,
+    updateZone,
+    removeZone,
+    listZoneTriggers
+} from './zones/functions';
+export { PlaceZone } from './zones/zone';
+export { PlaceZoneQueryOptions, PlaceZoneShowOptions } from './zones/interfaces';

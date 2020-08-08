@@ -1,19 +1,4 @@
-export interface Trigger {
-    /** Name of the trigger */
-    name: string;
-    /** Description of the trigger */
-    description: string;
-    /** Actions to perform when the trigger is activated */
-    actions?: TriggerActions;
-    /** Conditions for activating the trigger */
-    conditions?: TriggerConditions;
-    /** Duration with which to ignore sequential activations of the trigger */
-    debounce_period: number;
-    /** Whether the trigger should take priority */
-    important: boolean;
-    /** System associated with the trigger */
-    control_system_id: string;
-}
+import { HashMap } from '../utilities/types';
 
 export interface TriggerActions {
     /** List of functions to execute when the trigger is activated */
@@ -38,9 +23,7 @@ export interface TriggerFunction {
     args?: Args;
 }
 
-export interface Args {
-    [argument: string]: any;
-}
+export type Args = HashMap;
 
 export interface TriggerConditions {
     /** List of comparisions used to activate the trigger */

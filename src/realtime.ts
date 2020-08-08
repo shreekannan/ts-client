@@ -1,13 +1,37 @@
 /* istanbul ignore file */
 
-export * from './realtime/functions';
-export * from './realtime/interfaces';
-export * from './realtime/binding';
+export {
+    websocketRoute,
+    is_connected,
+    status,
+    listen,
+    value,
+    bind,
+    unbind,
+    execute,
+    debug,
+    ignore,
+    debug_events
+} from './realtime/functions';
+export {
+    PlaceCommand,
+    PlaceCommandRequest,
+    PlaceCommandRequestMetadata,
+    PlaceRequestOptions,
+    PlaceExecRequestOptions,
+    PlaceWebsocketOptions,
+    PlaceResponse,
+    PlaceErrorCodes,
+    SimpleNetworkError,
+    PlaceLogLevel,
+    PlaceDebugEvent,
+} from './realtime/interfaces';
+export { getSystem, getModule } from './realtime/binding';
 
-export * from './realtime/system';
-export * from './realtime/module';
-export * from './realtime/status-variable';
+export { PlaceSystemBinding } from './realtime/system';
+export { PlaceModuleBinding } from './realtime/module';
+export { PlaceVariableBinding } from './realtime/status-variable';
 
-export * from './realtime/mock';
-export * from './realtime/mock-system';
-export * from './realtime/mock-module';
+export { registerSystem, deregisterSystem, mockSystem } from './realtime/mock';
+export { MockPlaceWebsocketSystem } from './realtime/mock-system';
+export { MockPlaceWebsocketModule } from './realtime/mock-module';
