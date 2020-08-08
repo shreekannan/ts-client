@@ -184,11 +184,11 @@ describe('Resource API', () => {
             ['test', item, { test: true }]
         );
         expect(Http.patch).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource/test',
+            'http://localhost/api/engine/v2/resource/test?version=0',
             item
         );
         expect(Http.patch).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource/test?test=true',
+            'http://localhost/api/engine/v2/resource/test?test=true&version=0',
             item
         );
     });

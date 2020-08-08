@@ -1,4 +1,4 @@
-import formatISO from 'date-fns/formatISO';
+import { formatISO } from 'date-fns';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
@@ -114,9 +114,7 @@ export function status() {
  * Listen to binding changes on the given status variable
  * @param binding_details Binding details
  */
-export function listen<T = any>(
-    binding_details: PlaceRequestOptions
-): Observable<T>;
+export function listen<T = any>(binding_details: PlaceRequestOptions): Observable<T>;
 export function listen<T = any>(
     binding_details: PlaceRequestOptions,
     bindings: HashMap<BehaviorSubject<T>> = _binding,
@@ -236,10 +234,7 @@ export function ignore(
  * Send request to engine through the websocket connection
  * @param request New request to post to the server
  */
-function send<T = any>(
-    request: PlaceCommandRequest,
-    tries: number = 0
-): Promise<T> {
+function send<T = any>(request: PlaceCommandRequest, tries: number = 0): Promise<T> {
     const key = `${request.cmd}|${request.sys}|${request.mod}${request.index}|${request.name}`;
     /* istanbul ignore else */
     if (!_requests[key]) {
@@ -252,18 +247,14 @@ function send<T = any>(
                 req.resolve = resolve;
                 req.reject = reject;
                 const binding = `${request.sys}, ${request.mod}_${request.index}, ${request.name}`;
-                log(
-                    'WS',
-                    `[${request.cmd.toUpperCase()}](${request.id}) ${binding}`,
-                    request.args
-                );
+                log('WS', `[${request.cmd.toUpperCase()}](${request.id}) ${binding}`, request.args);
                 _websocket.next(request);
             } else {
                 connect().then(() => {
                     delete _requests[key];
                     send(request, tries).then(
-                        _ => resolve(_),
-                        _ => reject(_)
+                        (_) => resolve(_),
+                        (_) => reject(_)
                     );
                 });
             }
@@ -315,8 +306,8 @@ function onMessage(message: PlaceResponse | 'pong'): void {
  */
 function handleSuccess(message: PlaceResponse) {
     const request = Object.keys(_requests)
-        .map(i => _requests[i])
-        .find(i => i.id === message.id);
+        .map((i) => _requests[i])
+        .find((i) => i.id === message.id);
     log('WS', `[SUCCESS](${message.id})`);
     /* istanbul ignore else */
     if (request && request.resolve) {
@@ -354,15 +345,10 @@ function handleError(message: PlaceResponse) {
             type = 'UNKNOWN COMMAND';
             break;
     }
-    log(
-        'WS',
-        `[ERROR] ${type}(${message.id}): ${message.msg}`,
-        undefined,
-        'error'
-    );
+    log('WS', `[ERROR] ${type}(${message.id}): ${message.msg}`, undefined, 'error');
     const request = Object.keys(_requests)
-        .map(i => _requests[i])
-        .find(i => i.id === message.id);
+        .map((i) => _requests[i])
+        .find((i) => i.id === message.id);
     if (request && request.reject) {
         request.reject(message);
         delete _requests[request.key];
@@ -386,11 +372,7 @@ function handleNotify<T = any>(
         observers[key] = bindings[key].asObservable();
     }
     const binding = `${options.sys}, ${options.mod}_${options.index}, ${options.name}`;
-    log('WS', `[NOTIFY] ${binding} changed`, [
-        bindings[key].getValue(),
-        '→',
-        updated_value,
-    ]);
+    log('WS', `[NOTIFY] ${binding} changed`, [bindings[key].getValue(), '→', updated_value]);
     bindings[key].next(updated_value);
 }
 
@@ -398,7 +380,7 @@ function handleNotify<T = any>(
  * Connect to engine websocket
  */
 function connect(tries: number = 0): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
         _connection_attempts++;
         _websocket = isMock() ? createMockWebSocket() : createWebsocket();
         if (_websocket && (token() || isMock()) && isOnline()) {
@@ -432,17 +414,9 @@ function connect(tries: number = 0): Promise<void> {
         } else {
             /* istanbul ignore else */
             if (!_websocket) {
-                log(
-                    'WS',
-                    `Failed to create websocket(${tries}). Retrying...`,
-                    undefined,
-                    'error'
-                );
+                log('WS', `Failed to create websocket(${tries}). Retrying...`, undefined, 'error');
             }
-            setTimeout(
-                async () => resolve(await connect(tries)),
-                300 * Math.min(20, ++tries)
-            );
+            setTimeout(async () => resolve(await connect(tries)), 300 * Math.min(20, ++tries));
         }
     });
 }
@@ -452,9 +426,7 @@ function connect(tries: number = 0): Promise<void> {
  */
 function createWebsocket() {
     const secure = isSecure() || location.protocol.indexOf('https') >= 0;
-    const expiry = `expires=${formatISO(
-        Math.floor(new Date().getTime() / 1000 + 120)
-    )};`;
+    const expiry = `expires=${formatISO(Math.floor(new Date().getTime() / 1000 + 120))};`;
     document.cookie = `bearer_token=${token()}; ${expiry} path=${httpRoute()}; ${
         secure ? 'Secure;' : ''
     } SameSite=Strict`;
@@ -465,9 +437,8 @@ function createWebsocket() {
     /* istanbul ignore next */
     return webSocket<any>({
         url,
-        serializer: data =>
-            typeof data === 'object' ? JSON.stringify(data) : data,
-        deserializer: data => {
+        serializer: (data) => (typeof data === 'object' ? JSON.stringify(data) : data),
+        deserializer: (data) => {
             let return_value = data.data;
             try {
                 const obj = JSON.parse(data.data);
@@ -493,10 +464,7 @@ function reconnect() {
             _keep_alive = undefined;
         }
     }
-    setTimeout(
-        () => connect(),
-        Math.min(5000, _connection_attempts * 300 || 1000)
-    );
+    setTimeout(() => connect(), Math.min(5000, _connection_attempts * 300 || 1000));
 }
 
 /**
@@ -555,26 +523,22 @@ function handleMockSend(
     const key = `${request.sys}|${request.mod}_${request.index}|${request.name}`;
     const system: MockPlaceWebsocketSystem = mockSystem(request.sys);
     const module: MockPlaceWebsocketModule =
-        system && system[request.mod]
-            ? system[request.mod][request.index - 1 || 0]
-            : null;
+        system && system[request.mod] ? system[request.mod][request.index - 1 || 0] : null;
     if (module) {
         switch (request.cmd) {
             case 'bind':
-                listeners[key] = module
-                    .listen(request.name)
-                    .subscribe(new_value => {
-                        setTimeout(
-                            () => {
-                                websocket.next({
-                                    type: 'notify',
-                                    value: new_value,
-                                    meta: request,
-                                });
-                            },
-                            Math.floor(Math.random() * 100 + 50) // Add natural delay before response
-                        );
-                    });
+                listeners[key] = module.listen(request.name).subscribe((new_value) => {
+                    setTimeout(
+                        () => {
+                            websocket.next({
+                                type: 'notify',
+                                value: new_value,
+                                meta: request,
+                            });
+                        },
+                        Math.floor(Math.random() * 100 + 50) // Add natural delay before response
+                    );
+                });
                 break;
             case 'unbind':
                 /* istanbul ignore else */
@@ -588,10 +552,7 @@ function handleMockSend(
             const resp = {
                 id: request.id,
                 type: 'success',
-                value:
-                    request.cmd === 'exec'
-                        ? module.call(request.name, request.args)
-                        : null,
+                value: request.cmd === 'exec' ? module.call(request.name, request.args) : null,
             } as PlaceResponse;
             websocket.next(resp);
         }, 10);
@@ -602,9 +563,7 @@ function handleMockSend(
                 websocket.next({
                     id: request.id,
                     type: 'error',
-                    code: system
-                        ? PlaceErrorCodes.SYS_NOT_FOUND
-                        : PlaceErrorCodes.MOD_NOT_FOUND,
+                    code: system ? PlaceErrorCodes.SYS_NOT_FOUND : PlaceErrorCodes.MOD_NOT_FOUND,
                 } as PlaceResponse),
             10
         );

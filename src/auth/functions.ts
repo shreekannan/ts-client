@@ -1,5 +1,5 @@
-import addSeconds from 'date-fns/addSeconds';
-import isBefore from 'date-fns/isBefore';
+import { addSeconds } from 'date-fns';
+import { isBefore } from 'date-fns';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -10,7 +10,7 @@ import { HashMap } from '../utilities/types';
 import { MOCK_AUTHORITY, PlaceAuthOptions, PlaceAuthority, PlaceTokenResponse } from './interfaces';
 
 import * as sha256 from 'fast-sha256';
-import * as base64 from "byte-base64";
+import * as base64 from 'byte-base64';
 
 let _options: PlaceAuthOptions = {} as any;
 /** Browser key store to use for authentication credentials. Defaults to localStorage */
@@ -25,8 +25,6 @@ let _client_id: string = '';
 let _code: string = '';
 /** In memory store for access token */
 let _access_token: string = '';
-/** In memory store for refresh token */
-let _expires_at: number = 0;
 /** In memory store for expiry time of access token */
 let _refresh_token: string = '';
 /** Whether engine is online */
@@ -68,7 +66,7 @@ export function token(): string {
     if (_options.mock) {
         return 'mock-token';
     }
-    const expires_at = `${_expires_at || _storage.getItem(`${_client_id}_expires_at`)}`;
+    const expires_at = `${_storage.getItem(`${_client_id}_expires_at`)}`;
     if (isBefore(new Date(+expires_at), new Date())) {
         log('Auth', 'Token expired. Requesting new token...');
         invalidateToken();
@@ -163,6 +161,8 @@ export function setup(options: PlaceAuthOptions) {
 export function cleanupAuth() {
     _options = {} as any;
     _authority = undefined;
+    _access_token = '';
+    _refresh_token = '';
     _online.next(false);
     _client_id = '';
     _code = '';
@@ -227,7 +227,7 @@ export function authorise(
                         (_: any) => {
                             delete _promises.authorise;
                             reject(_);
-                        }
+                        },
                     ];
                     if (_options && _options.auth_type === 'password') {
                         generateTokenWithCredentials(_options).then(...token_handlers);
@@ -276,7 +276,7 @@ export function logout(): void {
  */
 function loadAuthority(tries: number = 0): Promise<void> {
     if (!_promises.load_authority) {
-        _promises.load_authority = new Promise<void>(resolve => {
+        _promises.load_authority = new Promise<void>((resolve) => {
             _online.next(false);
             if (_options.mock) {
                 // Setup mock authority
@@ -290,7 +290,7 @@ function loadAuthority(tries: number = 0): Promise<void> {
             log('Auth', `Loading authority...`);
             const secure = _options.secure || location.protocol.indexOf('https') >= 0;
             fetch(`${secure ? 'https:' : 'http:'}//${host()}/auth/authority`)
-                .then(resp => resp.json())
+                .then((resp) => resp.json())
                 .then((api_authority: PlaceAuthority) => {
                     _authority = api_authority;
                     const response = () => {
@@ -300,13 +300,13 @@ function loadAuthority(tries: number = 0): Promise<void> {
                     };
                     authorise('').then(response, response);
                 })
-                .catch(err => {
+                .catch((err) => {
                     log('Auth', `Failed to load authority(${err})`);
                     _online.next(false);
                     delete _promises.load_authority;
                     // Retry if authority fails to load
                     setTimeout(
-                        () => loadAuthority(tries).then(_ => resolve()),
+                        () => loadAuthority(tries).then((_) => resolve()),
                         300 * Math.min(20, ++tries)
                     );
                 });
@@ -344,8 +344,8 @@ function checkToken(): Promise<boolean> {
             } else {
                 log('Auth', 'No token. Checking URL for auth credentials...');
                 checkForAuthParameters().then(
-                    _ => resolve(_),
-                    _ => reject(_)
+                    (_) => resolve(_),
+                    (_) => reject(_)
                 );
             }
             _promises.check_token = undefined;
@@ -434,7 +434,11 @@ function generateChallenge(length: number = 43) {
         .map(() => AVAILABLE_CHARS[Math.floor(Math.random() * AVAILABLE_CHARS.length)])
         .join('');
     var uint8array = base64.base64ToBytes(base64.base64encode(challenge));
-    var verify = base64.bytesToBase64(sha256.hash(uint8array)).split("=")[0].replace(/\//g, '_').replace(/\+/g, '-');
+    var verify = base64
+        .bytesToBase64(sha256.hash(uint8array))
+        .split('=')[0]
+        .replace(/\//g, '_')
+        .replace(/\+/g, '-');
     return { challenge, verify };
 }
 
@@ -485,11 +489,13 @@ function revokeToken(): Promise<void> {
         _promises.revoke_token = new Promise<void>((resolve, reject) => {
             const token_uri = _options.token_uri || '/auth/token';
             fetch(`${token_uri}?token=${token()}`, { method: 'POST' })
-                .then(_ => {
+                .then((_) => {
+                    _access_token = '';
+                    _refresh_token = '';
                     resolve();
                     delete _promises.revoke_token;
                 })
-                .catch(err => {
+                .catch((err) => {
                     reject(err);
                     delete _promises.revoke_token;
                 });
@@ -521,13 +527,13 @@ function generateTokenWithUrl(url: string): Promise<void> {
         _promises.generate_tokens = new Promise<void>((resolve, reject) => {
             log('Auth', 'Generating new token...');
             fetch(url, { method: 'POST' })
-                .then(r => r.json())
+                .then((r) => r.json())
                 .then((tokens: PlaceTokenResponse) => {
                     _storeTokenDetails(tokens);
                     resolve();
                     delete _promises.generate_tokens;
                 })
-                .catch(err => {
+                .catch((err) => {
                     log('Auth', 'Error generating new tokens.', err);
                     reject();
                     delete _promises.generate_tokens;
@@ -551,15 +557,14 @@ function _storeTokenDetails(details: PlaceTokenResponse) {
             _storage.setItem(`${_client_id}_refresh_token`, details.refresh_token);
             removeFragment('refresh_token');
         }
-        // Store token expiry time
-        if (details.expires_in) {
-            _storage.setItem(`${_client_id}_expires_at`, `${expires_at.valueOf()}`);
-            removeFragment('expires_in');
-        }
+    }
+    // Store token expiry time
+    if (details.expires_in) {
+        _storage.setItem(`${_client_id}_expires_at`, `${expires_at.valueOf()}`);
+        removeFragment('expires_in');
     }
     _access_token = details.access_token || '';
     _refresh_token = details.refresh_token || '';
-    _expires_at = expires_at.valueOf();
 }
 
 /**

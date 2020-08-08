@@ -7,6 +7,17 @@ import * as Auth from '../../src/auth/functions';
 
 describe('Auth', () => {
     beforeEach(() => {
+        Object.defineProperty(window, 'location', {
+            writable: true,
+            value: {
+                assign: jest.fn(),
+                protocol: 'http:',
+                origin: 'http://undefined',
+                href: 'http://undefined',
+                host: 'undefined',
+                hostname: 'undefined',
+            },
+        });
         window.fetch = jest.fn().mockImplementation(async () => ({
             json: async () =>
                 ({
@@ -47,9 +58,7 @@ describe('Auth', () => {
     });
 
     it('should expose the API endpoint', () => {
-        expect(Auth.apiEndpoint()).toBe(
-            `${location.origin}${Auth.httpRoute()}`
-        );
+        expect(Auth.apiEndpoint()).toBe(`${location.origin}${Auth.httpRoute()}`);
     });
 
     it('should expose the API route', async () => {
@@ -106,22 +115,14 @@ describe('Auth', () => {
         };
         await Auth.setup(options);
         expect(Auth.token()).toBe('mock-token');
-        window.history.pushState(
-            {},
-            'Test Title',
-            '/not-login.html?access_token=test&expires_in=3600'
-        );
+        window.location.search = '?access_token=test&expires_in=3600';
         await Auth.setup({ ...options, mock: false });
         await Auth.authorise();
         expect(Auth.token()).toBe('test');
     });
 
     it('should clear expired tokens', async () => {
-        window.history.pushState(
-            {},
-            'Test Title',
-            '/not-login.html?access_token=test&expires_in=3600'
-        );
+        window.location.search = '?access_token=test&expires_in=3600';
         const options = {
             auth_uri: '',
             token_uri: '',
@@ -130,15 +131,12 @@ describe('Auth', () => {
         };
         await Auth.setup(options);
         expect(Auth.token()).toBe('test');
-        localStorage.setItem(
-            `${Auth.clientId()}_expires_at`,
-            `${new Date().getTime() - 3600}`
-        );
+        localStorage.setItem(`${Auth.clientId()}_expires_at`, `${new Date().getTime() - 3600}`);
         expect(Auth.token()).toBe('');
     });
 
     it('should expose the refresh token', async () => {
-        window.history.pushState({}, 'Test Title', '/not-login.html?code=test');
+        window.location.search = '?code=test';
         const options = {
             auth_uri: '',
             token_uri: 'token',
@@ -180,11 +178,7 @@ describe('Auth', () => {
     });
 
     it('should allow using session storage', async () => {
-        window.history.pushState(
-            {},
-            'Test Title',
-            '/not-login.html?access_token=test&expires_in=3600'
-        );
+        window.location.search = '?access_token=test&expires_in=3600&trust=true';
         await Auth.setup({
             auth_uri: '',
             token_uri: '',
@@ -193,20 +187,12 @@ describe('Auth', () => {
             storage: 'session',
         });
         expect(Auth.token()).toBe('test');
-        expect(
-            localStorage.getItem(`${Auth.clientId()}_access_token`)
-        ).toBeNull();
-        expect(sessionStorage.getItem(`${Auth.clientId()}_access_token`)).toBe(
-            'test'
-        );
+        expect(localStorage.getItem(`${Auth.clientId()}_access_token`)).toBeNull();
+        expect(sessionStorage.getItem(`${Auth.clientId()}_access_token`)).toBe('test');
     });
 
     it('should handle refresh token in URL', async () => {
-        window.history.pushState(
-            {},
-            'Test Title',
-            '/not-login.html?access_token=test&refresh_token=hehe&expires_in=3600&state=;^_^'
-        );
+        window.location.search = '?access_token=test&refresh_token=hehe&expires_in=3600&state=;^_^&&trust=true';
         await Auth.setup({
             auth_uri: '',
             token_uri: '',
@@ -214,29 +200,24 @@ describe('Auth', () => {
             scope: 'public',
         });
         expect(Auth.token()).toBe('test');
-        expect(localStorage.getItem(`${Auth.clientId()}_access_token`)).toBe(
-            'test'
-        );
-        expect(localStorage.getItem(`${Auth.clientId()}_refresh_token`)).toBe(
-            'hehe'
-        );
+        expect(localStorage.getItem(`${Auth.clientId()}_access_token`)).toBe('test');
+        expect(localStorage.getItem(`${Auth.clientId()}_refresh_token`)).toBe('hehe');
     });
 
     it('should fail to authorise before authority loaded', async () => {
         expect.assertions(1);
-        await Auth.authorise().catch(err => {
+        await Auth.authorise().catch((err) => {
             expect(err).toBe('Authority is not loaded');
         });
     });
 
-    it('should redirect to login when user has no session', async done => {
+    it('should redirect to login when user has no session', async (done) => {
         window.fetch = jest.fn().mockImplementation(async () => ({
             json: async () =>
                 ({
                     version: '1.0.0',
                 } as PlaceAuthority),
         }));
-        const spy = jest.spyOn(location, 'assign');
         await Auth.setup({
             auth_uri: '',
             token_uri: '',
@@ -244,17 +225,13 @@ describe('Auth', () => {
             scope: 'public',
         });
         setTimeout(() => {
-            expect(spy).toHaveBeenCalled();
+            expect(location.assign).toHaveBeenCalled();
             done();
         }, 400);
     });
 
-    it('should handle logging out', async done => {
-        window.history.pushState(
-            {},
-            'Test Title',
-            '/not-login.html?access_token=test&expires_in=3600'
-        );
+    it('should handle logging out', async (done) => {
+        window.location.search = '?access_token=test&expires_in=3600';
         const spy = jest.spyOn(location, 'assign');
         await Auth.setup({
             auth_uri: '',
@@ -300,9 +277,7 @@ describe('Auth', () => {
     it('should handle error when loading authority', async () => {
         window.fetch = jest
             .fn()
-            .mockImplementationOnce(async () => {
-                throw { status: 500, ok: false, text: async () => '' };
-            })
+            .mockImplementationOnce(async () => ({ status: 500, ok: false, text: async () => '' }))
             .mockImplementation(async () => ({
                 json: async () =>
                     ({

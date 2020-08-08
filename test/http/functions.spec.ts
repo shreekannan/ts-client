@@ -13,6 +13,27 @@ describe('Http', () => {
         (Auth as any).invalidateToken = jest.fn(() => Promise.resolve());
         (Auth as any).has_token = jest.fn();
         (Auth as any).has_token.mockReturnValue(true);
+        (Auth as any).has_token.mockReturnValue(true);
+        window.fetch = jest.fn().mockImplementation(
+            async () =>
+                ({
+                    status: 200,
+                    ok: true,
+                    json: async () => ({ message: 'MSG Received!!!' }),
+                    text: async () => 'MSG Received!!!',
+                    headers: {
+                        Authorisation: 'test',
+                        'x-total-count': 100,
+                    },
+                } as any)
+        );
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        (window.fetch as any).mockReset();
+        (window.fetch as any).mockRestore();
+        jest.useRealTimers();
     });
 
     it('should refresh auth on 401 errors on GET and DELETE requests', async () => {
@@ -23,7 +44,7 @@ describe('Http', () => {
         }));
         await Http.get('_')
             .toPromise()
-            .catch(_ => {
+            .catch((_) => {
                 expect(Auth.refreshAuthority).not.toBeCalled();
             });
         (Auth as any).has_token.mockReturnValue(false);
@@ -33,371 +54,224 @@ describe('Http', () => {
         }));
         await Http.get('_')
             .toPromise()
-            .catch(_ => _);
+            .catch((_) => _);
         expect(Auth.refreshAuthority).toBeCalled();
         (Auth as any).has_token.mockReturnValue(true);
         await Http.get('_')
             .toPromise()
-            .catch(_ => {
+            .catch((_) => {
                 expect(Auth.invalidateToken).toHaveBeenCalledTimes(2);
                 expect(Auth.refreshAuthority).toHaveBeenCalledTimes(2);
             });
-        (window.fetch as any).mockReset();
-        (window.fetch as any).mockRestore();
     });
 
     it('should expose response headers', () => {
         expect(Http.responseHeaders('/test')).toEqual({});
     });
 
-    it('should handle errors', done => {
-        jest.useFakeTimers();
-        expect.assertions(1);
-        (window.fetch as any).mockImplementation(async () => {
-            throw { status: 400, text: async () => 'Failed' };
+    it('should allow GET requests', (done) => {
+        expect.assertions(2);
+        Http.get('test_url').subscribe((data) => {
+            expect(data).toEqual({ message: 'MSG Received!!!' });
+            done();
         });
+        expect(window.fetch).toHaveBeenCalled();
+        (Http as any).get('', undefined, () => of());
+    });
+
+    it('should allow returning text data for GET', (done) => {
+        expect.assertions(2);
+        Http.get('test_url', { response_type: 'text' }).subscribe((data) => {
+            expect(data).toBe('MSG Received!!!');
+            done();
+        });
+        expect(window.fetch).toHaveBeenCalled();
+        jest.runOnlyPendingTimers();
+    });
+
+    it('should allow custom headers for GET', () => {
+        expect.assertions(1);
+        Http.get('test_url', {
+            headers: { 'CUSTOM-HEADER-X': 'Trump Cards :)' },
+        }).subscribe((_) => null);
+        expect(window.fetch).toHaveBeenCalled();
+    });
+
+    it('should handle GET errors ', (done) => {
+        expect.assertions(1);
+        (window.fetch as any).mockImplementation(async () => ({
+            status: 400,
+            text: async () => 'Bad Request',
+        }));
         Http.get('_').subscribe(
-            _ => null,
-            err => {
-                expect(err).toEqual({ status: 400, message: 'Failed' });
+            (_) => null,
+            (err) => {
+                expect(err).toEqual({
+                    status: 400,
+                    message: 'Bad Request',
+                });
                 done();
             }
         );
         jest.runOnlyPendingTimers();
-        jest.useRealTimers();
     });
 
-    describe('GET', () => {
-        beforeEach(() => {
-            (Auth as any).has_token.mockReturnValue(true);
-            window.fetch = jest.fn().mockImplementation(
-                async () =>
-                    ({
-                        status: 200,
-                        ok: true,
-                        json: async () => ({ message: 'GET Received!!!' }),
-                        text: async () => 'GET Received!!!',
-                        headers: {
-                            Authorisation: 'test',
-                            'x-total-count': 100,
-                        },
-                    } as any)
-            );
-            jest.useFakeTimers();
+    it('should allow POST requests', (done) => {
+        expect.assertions(2);
+        Http.post('test_url', 'test_body').subscribe((data) => {
+            expect(data).toEqual({ message: 'MSG Received!!!' });
+            done();
         });
-
-        afterEach(() => {
-            (window.fetch as any).mockReset();
-            (window.fetch as any).mockRestore();
-            jest.useRealTimers();
-        });
-
-        it('should allow GET requests', done => {
-            expect.assertions(2);
-            Http.get('test_url').subscribe(data => {
-                expect(data).toEqual({ message: 'GET Received!!!' });
-                done();
-            });
-            expect(window.fetch).toHaveBeenCalled();
-            (Http as any).get('', undefined, () => of());
-        });
-
-        it('should allow returning text data', done => {
-            expect.assertions(2);
-            Http.get('test_url', { response_type: 'text' }).subscribe(data => {
-                expect(data).toBe('GET Received!!!');
-                done();
-            });
-            expect(window.fetch).toHaveBeenCalled();
-            jest.runOnlyPendingTimers();
-        });
-
-        it('should allow custom headers', () => {
-            expect.assertions(1);
-            Http.get('test_url', {
-                headers: { 'CUSTOM-HEADER-X': 'Trump Cards :)' },
-            }).subscribe(_ => null);
-            expect(window.fetch).toHaveBeenCalled();
-        });
-
-        it('should handle errors', done => {
-            expect.assertions(1);
-            (window.fetch as any).mockImplementation(async () => ({
-                status: 400,
-                text: async () => 'Bad Request',
-            }));
-            Http.get('_').subscribe(
-                _ => null,
-                err => {
-                    expect(err).toEqual({
-                        status: 400,
-                        message: 'Bad Request',
-                    });
-                    done();
-                }
-            );
-            jest.runOnlyPendingTimers();
-        });
+        expect(window.fetch).toHaveBeenCalled();
+        (Http as any).post('', '', undefined, () => of());
     });
 
-    describe('POST', () => {
-        beforeEach(() => {
-            (Auth as any).has_token.mockReturnValue(true);
-            window.fetch = jest.fn().mockImplementation(
-                async () =>
-                    ({
-                        status: 200,
-                        ok: true,
-                        json: async () => ({ message: 'POST Received!!!' }),
-                        text: async () => 'POST Received!!!',
-                        headers: {
-                            Authorisation: 'test',
-                            'x-total-count': 100,
-                        },
-                    } as any)
-            );
-            jest.useFakeTimers();
+    it('should allow returning POST text data', (done) => {
+        expect.assertions(2);
+        Http.post('test_url', 'test_body', {
+            response_type: 'text',
+        }).subscribe((data) => {
+            expect(data).toBe('MSG Received!!!');
+            done();
         });
-
-        afterEach(() => {
-            (window.fetch as any).mockReset();
-            (window.fetch as any).mockRestore();
-            jest.useRealTimers();
-        });
-
-        it('should allow requests', done => {
-            expect.assertions(2);
-            Http.post('test_url', 'test_body').subscribe(data => {
-                expect(data).toEqual({ message: 'POST Received!!!' });
-                done();
-            });
-            expect(window.fetch).toHaveBeenCalled();
-            (Http as any).post('', '', undefined, () => of());
-        });
-
-        it('should allow returning text data', done => {
-            expect.assertions(2);
-            Http.post('test_url', 'test_body', {
-                response_type: 'text',
-            }).subscribe(data => {
-                expect(data).toBe('POST Received!!!');
-                done();
-            });
-            expect(window.fetch).toHaveBeenCalled();
-        });
-
-        it('should allow custom headers', () => {
-            expect.assertions(1);
-            Http.post('test_url', 'test_body', {
-                headers: { 'CUSTOM-HEADER-X': 'Trump Cards :)' },
-            }).subscribe(_ => null);
-            expect(window.fetch).toHaveBeenCalled();
-        });
-
-        it('should handle errors', done => {
-            expect.assertions(1);
-            (window.fetch as any).mockImplementation(async () => ({
-                status: 400,
-                text: () => Promise.resolve('Bad Request'),
-            }));
-            Http.post('_', '').subscribe(
-                _ => null,
-                err => {
-                    expect(err).toEqual({
-                        status: 400,
-                        message: 'Bad Request',
-                    });
-                    done();
-                }
-            );
-            jest.runOnlyPendingTimers();
-        });
+        expect(window.fetch).toHaveBeenCalled();
     });
 
-    describe('PUT', () => {
-        beforeEach(() => {
-            (Auth as any).has_token.mockReturnValue(true);
-            window.fetch = jest.fn().mockImplementation(
-                async () =>
-                    ({
-                        status: 200,
-                        ok: true,
-                        json: async () => ({ message: 'PUT Received!!!' }),
-                        text: async () => 'PUT Received!!!',
-                        headers: {
-                            Authorisation: 'test',
-                            'x-total-count': 100,
-                        },
-                    } as any)
-            );
-            jest.useFakeTimers();
-        });
-
-        afterEach(() => {
-            (window.fetch as any).mockReset();
-            (window.fetch as any).mockRestore();
-            jest.useRealTimers();
-        });
-
-        it('should allow requests', done => {
-            expect.assertions(2);
-            Http.put('test_url', 'test_body').subscribe(data => {
-                expect(data).toEqual({ message: 'PUT Received!!!' });
-                done();
-            });
-            expect(window.fetch).toHaveBeenCalled();
-            jest.runOnlyPendingTimers();
-            (Http as any).put('', '', undefined, () => of());
-        });
-
-        it('should handle errors', done => {
-            expect.assertions(1);
-            (window.fetch as any).mockImplementation(async () => ({
-                status: 400,
-                text: async () => 'Bad Request',
-            }));
-            Http.put('_', '').subscribe(
-                _ => null,
-                err => {
-                    expect(err).toEqual({
-                        status: 400,
-                        message: 'Bad Request',
-                    });
-                    done();
-                }
-            );
-            jest.runOnlyPendingTimers();
-        });
+    it('should allow custom headers on POST', () => {
+        expect.assertions(1);
+        Http.post('test_url', 'test_body', {
+            headers: { 'CUSTOM-HEADER-X': 'Trump Cards :)' },
+        }).subscribe((_) => null);
+        expect(window.fetch).toHaveBeenCalled();
     });
 
-    describe('PATCH', () => {
-        beforeEach(() => {
-            (Auth as any).has_token.mockReturnValue(true);
-            window.fetch = jest.fn().mockImplementation(
-                async () =>
-                    ({
-                        status: 200,
-                        ok: true,
-                        json: async () => ({ message: 'PATCH Received!!!' }),
-                        text: async () => 'PATCH Received!!!',
-                        headers: {
-                            Authorisation: 'test',
-                            'x-total-count': 100,
-                        },
-                    } as any)
-            );
-            jest.useFakeTimers();
-        });
-
-        afterEach(() => {
-            (window.fetch as any).mockReset();
-            (window.fetch as any).mockRestore();
-            jest.useRealTimers();
-        });
-
-        it('should allow requests', done => {
-            expect.assertions(2);
-            Http.patch('test_url', 'test_body').subscribe((data: any) => {
-                expect(data).toEqual({ message: 'PATCH Received!!!' });
+    it('should handle POST errors', (done) => {
+        expect.assertions(1);
+        (window.fetch as any).mockImplementation(async () => ({
+            status: 400,
+            text: async () => 'Bad Request',
+        }));
+        Http.post('_', '').subscribe(
+            (_) => null,
+            (err) => {
+                expect(err).toEqual({
+                    status: 400,
+                    message: 'Bad Request',
+                });
                 done();
-            });
-            expect(window.fetch).toHaveBeenCalled();
-            jest.runOnlyPendingTimers();
-            (Http as any).patch('', '', undefined, () => of());
-        });
-
-        it('should handle errors', done => {
-            expect.assertions(1);
-            (window.fetch as any).mockImplementation(async () => ({
-                status: 400,
-                text: async () => 'Bad Request',
-            }));
-            Http.patch('_', '').subscribe(
-                (_: any) => null,
-                (err: HttpError) => {
-                    expect(err).toEqual({
-                        status: 400,
-                        message: 'Bad Request',
-                    });
-                    done();
-                }
-            );
-            jest.runOnlyPendingTimers();
-        });
+            }
+        );
+        jest.runOnlyPendingTimers();
     });
 
-    describe('DELETE', () => {
-        beforeEach(() => {
-            (Auth as any).has_token.mockReturnValue(true);
-            window.fetch = jest.fn().mockImplementation(
-                async () =>
-                    ({
-                        status: 200,
-                        ok: true,
-                        json: async () => undefined,
-                        text: async () => '',
-                        headers: {
-                            Authorisation: 'test',
-                            'x-total-count': 100,
-                        },
-                    } as any)
-            );
-            jest.useFakeTimers();
+    it('should allow PUT requests', (done) => {
+        expect.assertions(2);
+        Http.put('test_url', 'test_body').subscribe((data) => {
+            expect(data).toEqual({ message: 'MSG Received!!!' });
+            done();
         });
+        expect(window.fetch).toHaveBeenCalled();
+        jest.runOnlyPendingTimers();
+        (Http as any).put('', '', undefined, () => of());
+    });
 
-        afterEach(() => {
-            (window.fetch as any).mockReset();
-            (window.fetch as any).mockRestore();
-            jest.useRealTimers();
-        });
-
-        it('should allow requests', done => {
-            expect.assertions(2);
-            Http.del('test_url').subscribe((data: any) => {
-                expect(data).toBeUndefined();
+    it('should handle PUT errors', (done) => {
+        expect.assertions(1);
+        (window.fetch as any).mockImplementation(async () => ({
+            status: 400,
+            text: async () => 'Bad Request',
+        }));
+        Http.put('_', '').subscribe(
+            (_) => null,
+            (err) => {
+                expect(err).toEqual({
+                    status: 400,
+                    message: 'Bad Request',
+                });
                 done();
-            });
-            expect(window.fetch).toHaveBeenCalled();
-            (Http as any).del('', undefined, () => of());
-        });
+            }
+        );
+        jest.runOnlyPendingTimers();
+    });
 
-        it('should allow returning json data', async () => {
-            expect.assertions(2);
-            const data = await Http.del('test_url', {
-                response_type: 'json',
-            }).toPromise();
+    it('should allow PATCH requests', (done) => {
+        expect.assertions(2);
+        Http.patch('test_url', 'test_body').subscribe((data: any) => {
+            expect(data).toEqual({ message: 'MSG Received!!!' });
+            done();
+        });
+        expect(window.fetch).toHaveBeenCalled();
+        jest.runOnlyPendingTimers();
+        (Http as any).patch('', '', undefined, () => of());
+    });
+
+    it('should handle PATCH errors', (done) => {
+        expect.assertions(1);
+        (window.fetch as any).mockImplementation(async () => ({
+            status: 400,
+            text: async () => 'Bad Request',
+        }));
+        Http.patch('_', '').subscribe(
+            (_: any) => null,
+            (err: HttpError) => {
+                expect(err).toEqual({
+                    status: 400,
+                    message: 'Bad Request',
+                });
+                done();
+            }
+        );
+        jest.runOnlyPendingTimers();
+    });
+
+    it('should allow DELETE requests', (done) => {
+        expect.assertions(2);
+        Http.del('test_url').subscribe((data: any) => {
             expect(data).toBeUndefined();
-            expect(window.fetch).toHaveBeenCalled();
-            jest.runOnlyPendingTimers();
+            done();
         });
+        expect(window.fetch).toHaveBeenCalled();
+        (Http as any).del('', undefined, () => of());
+    });
 
-        it('should allow returning text data', async () => {
-            expect.assertions(2);
-            const data = await Http.del('test_url', {
-                response_type: 'json',
-            }).toPromise();
-            expect(data).toBeUndefined();
+    it('should allow returning json data on DELETE', (done) => {
+        expect.assertions(2);
+        Http.del('test_url', {
+            response_type: 'json',
+        }).subscribe((data) => {
+            expect(data).toEqual({ message: 'MSG Received!!!' });
             expect(window.fetch).toHaveBeenCalled();
-            jest.runOnlyPendingTimers();
+            done();
         });
+    });
 
-        it('should handle errors', done => {
-            expect.assertions(1);
-            (window.fetch as any).mockImplementation(async () => ({
-                status: 400,
-                text: async () => 'Bad Request',
-            }));
-            Http.del('_').subscribe(
-                (_: any) => null,
-                (err: HttpError) => {
-                    expect(err).toEqual({
-                        status: 400,
-                        message: 'Bad Request',
-                    });
-                    done();
-                }
-            );
-            jest.runOnlyPendingTimers();
+    it('should allow returning text data on DELETE', (done) => {
+        expect.assertions(2);
+        Http.del('test_url', {
+            response_type: 'text',
+        }).subscribe((data) => {
+            expect(data).toEqual('MSG Received!!!');
+            expect(window.fetch).toHaveBeenCalled();
+            done();
         });
+    });
+
+    it('should handle DELETE errors', (done) => {
+        expect.assertions(1);
+        (window.fetch as any).mockImplementation(async () => ({
+            status: 400,
+            text: async () => 'Bad Request',
+        }));
+        Http.del('_').subscribe(
+            (_: any) => null,
+            (err: HttpError) => {
+                expect(err).toEqual({
+                    status: 400,
+                    message: 'Bad Request',
+                });
+                done();
+            }
+        );
+        jest.runOnlyPendingTimers();
     });
 });

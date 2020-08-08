@@ -1,12 +1,8 @@
-import { Observable, Subscriber } from 'rxjs';
-import { share } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { fromFetch } from 'rxjs/fetch';
 
-import {
-    invalidateToken,
-    isMock,
-    refreshAuthority,
-    token,
-} from '../auth/functions';
+import { invalidateToken, isMock, refreshAuthority, token } from '../auth/functions';
 import { log } from '../utilities/general';
 import { HashMap } from '../utilities/types';
 import {
@@ -44,19 +40,12 @@ export function responseHeaders(
  * @param url URL of the GET endpoint
  * @param options Options to add to the request
  */
-export function get(
-    url: string,
-    options?: HttpJsonOptions
-): Observable<HashMap>;
+export function get(url: string, options?: HttpJsonOptions): Observable<HashMap>;
 export function get(url: string, options?: HttpTextOptions): Observable<string>;
 export function get(
     url: string,
     options?: HttpOptions,
-    handler: (
-        m: HttpVerb,
-        url: string,
-        opts: HttpOptions
-    ) => Observable<HttpResponse> = request
+    handler: (m: HttpVerb, url: string, opts: HttpOptions) => Observable<HttpResponse> = request
 ): Observable<HttpResponse> {
     /* istanbul ignore else */
     if (!options) {
@@ -71,25 +60,13 @@ export function get(
  * @param body Body contents of the request
  * @param options Options to add to the request
  */
-export function post(
-    url: string,
-    body: any,
-    options?: HttpJsonOptions
-): Observable<HashMap>;
-export function post(
-    url: string,
-    body: any,
-    options?: HttpTextOptions
-): Observable<string>;
+export function post(url: string, body: any, options?: HttpJsonOptions): Observable<HashMap>;
+export function post(url: string, body: any, options?: HttpTextOptions): Observable<string>;
 export function post(
     url: string,
     body: any,
     options?: HttpOptions,
-    handler: (
-        m: HttpVerb,
-        url: string,
-        opts: HttpOptions
-    ) => Observable<HttpResponse> = request
+    handler: (m: HttpVerb, url: string, opts: HttpOptions) => Observable<HttpResponse> = request
 ): Observable<HttpResponse> {
     /* istanbul ignore else */
     if (!options) {
@@ -104,25 +81,13 @@ export function post(
  * @param body Body contents of the request
  * @param options Options to add to the request
  */
-export function put(
-    url: string,
-    body: any,
-    options?: HttpJsonOptions
-): Observable<HashMap>;
-export function put(
-    url: string,
-    body: any,
-    options?: HttpTextOptions
-): Observable<string>;
+export function put(url: string, body: any, options?: HttpJsonOptions): Observable<HashMap>;
+export function put(url: string, body: any, options?: HttpTextOptions): Observable<string>;
 export function put(
     url: string,
     body: any,
     options?: HttpOptions,
-    handler: (
-        m: HttpVerb,
-        url: string,
-        opts: HttpOptions
-    ) => Observable<HttpResponse> = request
+    handler: (m: HttpVerb, url: string, opts: HttpOptions) => Observable<HttpResponse> = request
 ): Observable<HttpResponse> {
     /* istanbul ignore else */
     if (!options) {
@@ -137,25 +102,13 @@ export function put(
  * @param body Body contents of the request
  * @param options Options to add to the request
  */
-export function patch(
-    url: string,
-    body: any,
-    options?: HttpJsonOptions
-): Observable<HashMap>;
-export function patch(
-    url: string,
-    body: any,
-    options?: HttpTextOptions
-): Observable<string>;
+export function patch(url: string, body: any, options?: HttpJsonOptions): Observable<HashMap>;
+export function patch(url: string, body: any, options?: HttpTextOptions): Observable<string>;
 export function patch(
     url: string,
     body: any,
     options?: HttpOptions,
-    handler: (
-        m: HttpVerb,
-        url: string,
-        opts: HttpOptions
-    ) => Observable<HttpResponse> = request
+    handler: (m: HttpVerb, url: string, opts: HttpOptions) => Observable<HttpResponse> = request
 ): Observable<HttpResponse> {
     /* istanbul ignore else */
     if (!options) {
@@ -169,20 +122,13 @@ export function patch(
  * @param url URL of the DELETE endpoint
  * @param options Options to add to the request
  */
-export function del(
-    url: string,
-    options?: HttpJsonOptions
-): Observable<HashMap>;
+export function del(url: string, options?: HttpJsonOptions): Observable<HashMap>;
 export function del(url: string, options?: HttpTextOptions): Observable<string>;
 export function del(url: string, options?: HttpVoidOptions): Observable<void>;
 export function del(
     url: string,
     options?: HttpOptions,
-    handler: (
-        m: HttpVerb,
-        url: string,
-        opts: HttpOptions
-    ) => Observable<HttpResponse> = request
+    handler: (m: HttpVerb, url: string, opts: HttpOptions) => Observable<HttpResponse> = request
 ): Observable<HttpResponse> {
     /* istanbul ignore else */
     if (!options) {
@@ -208,9 +154,7 @@ async function transform(
         if (resp.headers.forEach) {
             resp.headers.forEach((v, k) => (map[k] = v));
         } else {
-            Object.keys(resp.headers).forEach(
-                k => (map[k] = (resp as any).headers[k])
-            );
+            Object.keys(resp.headers).forEach((k) => (map[k] = (resp as any).headers[k]));
         }
         headers[resp.url || ''] = map;
     }
@@ -231,10 +175,7 @@ const reloadAuth = () => {
  * Format error message
  * @param error Message to format
  */
-async function onError(
-    error: Response,
-    onAuthError: () => void = reloadAuth
-): Promise<HttpError> {
+async function onError(error: Response, onAuthError: () => void = reloadAuth): Promise<HttpError> {
     /* istanbul ignore else */
     if (error.status === HttpStatusCode.UNAUTHORISED) {
         onAuthError();
@@ -257,55 +198,36 @@ function request(
     url: string,
     options: HttpOptions,
     is_mock: () => boolean = isMock,
-    mock_handler: (
-        m: HttpVerb,
-        url: string
-    ) => Observable<HttpResponse> | null = mockRequest,
-    success: (
-        e: Response,
-        t: HttpResponseType
-    ) => Promise<HttpResponse> = transform,
+    mock_handler: (m: HttpVerb, url: string) => Observable<HttpResponse> | null = mockRequest,
+    success: (e: Response, t: HttpResponseType) => Promise<HttpResponse> = transform,
     err: (e: Response) => Promise<HttpError> = onError
 ): Observable<HttpResponse> {
+    console.log('Request:', method, url);
     if (is_mock()) {
         const request_obs = mock_handler(method, url);
         if (request_obs) {
             return request_obs;
         }
     }
-    const ctrl = new AbortController();
-    let make_request: any = async (obs: Subscriber<HttpResponse>) => {
-        options.headers = options.headers || {};
-        options.headers.Authorization = `Bearer ${token()}`;
-        options.headers['Content-Type'] = `application/json`;
-        const resp = await fetch(url, {
-            ...options,
-            body: JSON.stringify(options.body),
-            method,
-            credentials: 'same-origin',
-            signal: ctrl?.signal,
-        }).catch(async e => obs.error(await onError(e)));
-        if (!resp || !resp.ok) {
-            obs.error(await err(resp || ({ text: async () => '' } as any)));
-        } else {
-            const result = await success(resp, options.response_type as any);
-            obs.next(result);
-            obs.complete();
-        }
-    };
-    const observable = new Observable<HttpResponse>(obs => {
-        if (make_request) {
-            make_request(obs);
-            make_request = null;
-        }
-    }).pipe(share());
-    setTimeout(() => {
-        let is_done = false;
-        observable.subscribe(
-            _ => (is_done = true),
-            undefined,
-            () => (!is_done ? ctrl.abort() : '')
-        );
-    });
-    return observable;
+    options.headers = options.headers || {};
+    options.headers.Authorization = `Bearer ${token()}`;
+    options.headers['Content-Type'] = `application/json`;
+    return fromFetch(url, {
+        ...options,
+        body: JSON.stringify(options.body),
+        method,
+        credentials: 'same-origin',
+    }).pipe(
+        switchMap(async (resp) => {
+            if (!resp.ok) throw resp;
+            return success(resp, options.response_type as any);
+        }),
+        catchError(async(error) => {
+            throw (
+                error.message
+                    ? error
+                    : await (err(error || ({ text: async () => 'Unknown Error' } as any)))
+            );
+        })
+    );
 }

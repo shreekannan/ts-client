@@ -1,5 +1,5 @@
-import startOfMinute from 'date-fns/startOfMinute';
-import sub from 'date-fns/sub';
+import { startOfMinute } from 'date-fns';
+import { sub } from 'date-fns';
 
 /**
  * Generate mocked out settings object metadata
@@ -15,13 +15,11 @@ export function generateMockSettings(overrides: any = {}) {
     }).getTime();
     return {
         id: `setting-${Math.floor(Math.random() * 999_999_999)}`,
-        parent_id: `${
-            parent_types[Math.floor(Math.random() * parent_types.length)]
-        }-${Math.floor(Math.random() * 999_999_999)}`,
+        parent_id: `${parent_types[Math.floor(Math.random() * parent_types.length)]}-${Math.floor(
+            Math.random() * 999_999_999
+        )}`,
         created_at: Math.floor(created / 1000),
-        updated_at: Math.floor(
-            created / 1000 + Math.floor(Math.random() * 20) * 15 * 60
-        ),
+        updated_at: Math.floor(created / 1000 + Math.floor(Math.random() * 20) * 15 * 60),
         encryption_level: Math.floor(Math.random() * 4),
         settings_string: '',
         keys: [],

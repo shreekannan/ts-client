@@ -34,8 +34,6 @@ describe('Cluster API', () => {
         (Resources.remove as any) = jest
             .fn()
             .mockImplementation((_, _1, _2) => of());
-        await SERVICE.terminateProcess('1', {
-            driver: '2',
-        }).toPromise();
+        await SERVICE.terminateProcess('1', '2').toPromise();
     });
 });
