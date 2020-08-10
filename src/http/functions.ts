@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { fromFetch } from 'rxjs/fetch';
 
-import { invalidateToken, isMock, refreshAuthority, token, needsTokenHeader } from '../auth/functions';
+import { invalidateToken, isMock, refreshAuthority, token } from '../auth/functions';
 import { log } from '../utilities/general';
 import { HashMap } from '../utilities/types';
 import {
