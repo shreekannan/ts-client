@@ -21,10 +21,11 @@ Before using PlaceOS it will need to be initialised.
 ```typescript
 import { setup } from '@placeos/ts-client/auth';
 
-setup(config);
+setup(config).then(() => doAfterAuthInitialised());
 ```
 
-The init method takes a `config` object with the following properties
+The setup method returns a promise that resolves after the auth flow has completed.
+The setup method takes a `config` object with the following properties
 
 | Property       | Description                                             | Optional | Type                   | Example                   |
 | -------------- | ------------------------------------------------------- | -------- | ---------------------- | ------------------------- |
@@ -34,8 +35,9 @@ The init method takes a `config` object with the following properties
 | `token_uri`    | URI for generating new auth tokens                      | No       | `string`               | `"/auth/token"`           |
 | `redirect_uri` | URI to redirect user to after authorising session       | No       | `string`               | `"/oauth-resp.html"`      |
 | `scope`        | Scope of the user permissions needed by the application | No       | `string`               | `"admin"`                 |
-| `storage`      | Browser storage to use for storing user credentials     | Yes      | `"local" \| "session"` |                           |
+| `storage`      | Browser storage to use for storing user credentials     | Yes      | `"local" | "session"` |                           |
 | `handle_login` | Whether PlaceOS should handle user login                | Yes      | `boolean`              | `true`                    |
+
 
 ### Websocket API
 
