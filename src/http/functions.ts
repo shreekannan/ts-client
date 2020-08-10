@@ -209,9 +209,7 @@ function request(
         }
     }
     options.headers = options.headers || {};
-    if (needsTokenHeader()) {
-        options.headers.Authorization = `Bearer ${token()}`;
-    }
+    options.headers.Authorization = `Bearer ${token()}`;
     options.headers['Content-Type'] = `application/json`;
     return fromFetch(url, {
         ...options,
