@@ -42,7 +42,9 @@ jobs:
       run: npm run test
 
     - name: Build Library
-      run: npm run build
+      run:
+        npm run build
+        npm run docs
 
     - name: Update application version
       env:
@@ -50,13 +52,14 @@ jobs:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: npm run semantic-release
 
-
     - name: Publish generated content to GitHub Pages
       uses: peaceiris/actions-gh-pages@v2.5.0
       env:
         PERSONAL_TOKEN: ${{ secrets.GH_TOKEN }}
         PUBLISH_BRANCH: gh-pages
         PUBLISH_DIR: ./docs
+      with:
+        emptyCommits: false
 
     - name: G-Chat Success Notify
       uses: Co-qn/google-chat-notification@releases/v1
