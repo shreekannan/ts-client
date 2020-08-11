@@ -2,14 +2,26 @@ import { Subscription } from 'rxjs';
 
 /* istanbul ignore file */
 
-/** Store for named timers */
+/**
+ * @private
+ * Store for named timers
+ * */
 const _timers: { [name: string]: number } = {};
-/** Store for named intervals */
+/**
+ * @private
+ * Store for named intervals
+ */
 const _intervals: { [name: string]: number } = {};
-/** Store for named subscription unsub callbacks */
+/**
+ * @private
+ * Store for named subscription unsub callbacks
+ */
 const _subscriptions: { [name: string]: Subscription | (() => void) } = {};
 
-/** Perform any cleanup actions needed before the item is deleted */
+/**
+ * @private
+ * Perform any cleanup actions needed before the item is deleted
+ */
 export function destroyWaitingAsync() {
     // Clear local timers
     for (const key in _timers) {
@@ -32,6 +44,7 @@ export function destroyWaitingAsync() {
 }
 
 /**
+ * @private
  * Creates a named timer
  * @param name Name of the timer
  * @param fn Callback function for the timer
@@ -54,6 +67,7 @@ export function timeout(name: string, fn: () => void, delay: number = 300) {
 }
 
 /**
+ * @private
  * Clears the named timer
  * @param name Timer name
  */
@@ -65,6 +79,7 @@ export function clearAsyncTimeout(name: string) {
 }
 
 /**
+ * @private
  * Creates a named interval
  * @param name Name of the interval
  * @param fn Callback function for the interval
@@ -84,6 +99,7 @@ export function interval(name: string, fn: () => void, delay: number = 300) {
 }
 
 /**
+ * @private
  * Clears the named interval
  * @param name Timer name
  */
@@ -95,6 +111,7 @@ export function clearAsyncInterval(name: string) {
 }
 
 /**
+ * @private
  * Store named subscription
  * @param name Name of the subscription
  * @param fn Unsubscribe callback or Subscription object
@@ -105,6 +122,7 @@ export function subscription(name: string, fn: Subscription | (() => void)) {
 }
 
 /**
+ * @private
  * Call unsubscribe callback with the given name
  * @param name Name of the subscription
  */

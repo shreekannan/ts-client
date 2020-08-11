@@ -15,6 +15,9 @@ import {
     PlaceModuleQueryOptions,
 } from './interfaces';
 
+/**
+ * @private
+ */
 const PATH = 'modules';
 
 /** Convert raw server data to a module object */

@@ -9,6 +9,9 @@ import {
 } from '../resources/functions';
 import { PlaceLDAPSource } from './ldap-source';
 
+/**
+ * @private
+ */
 const PATH = 'ldap_auths';
 
 /** Convert raw server data to an LDAP source object */

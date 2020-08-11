@@ -9,6 +9,9 @@ import {
 } from '../resources/functions';
 import { PlaceDomain } from './domain';
 
+/**
+ * @private
+ */
 const PATH = 'domains';
 
 /** Convert raw server data to a domain object */

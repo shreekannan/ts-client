@@ -3,6 +3,9 @@ import { create, query, remove, show, task, update } from '../resources/function
 import { PlaceSettings } from './settings';
 import { PlaceSettingsQueryOptions } from './interfaces';
 
+/**
+ * @private
+ */
 const PATH = 'settings';
 
 /** Convert raw server data to an settings object */

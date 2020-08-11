@@ -17,6 +17,9 @@ import {
     PlaceRepositoryPullQuery,
 } from './interfaces';
 
+/**
+ * @private
+ */
 const PATH = 'repositories';
 
 /** Convert raw server data to a repository object */

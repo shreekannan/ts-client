@@ -12,24 +12,54 @@ import { MOCK_AUTHORITY, PlaceAuthOptions, PlaceAuthority, PlaceTokenResponse } 
 import * as sha256 from 'fast-sha256';
 import * as base64 from 'byte-base64';
 
+/**
+ * @private
+ */
 let _options: PlaceAuthOptions = {} as any;
-/** Browser key store to use for authentication credentials. Defaults to localStorage */
+/**
+ * @private
+ * Browser key store to use for authentication credentials. Defaults to localStorage
+ */
 let _storage: Storage = localStorage;
-/** Authentication authority of for the current domain */
+/**
+ * @private
+ * Authentication authority of for the current domain
+ */
 let _authority: PlaceAuthority | undefined;
-/** Map of promises */
+/**
+ * @private
+ * Map of promises
+ */
 const _promises: HashMap<Promise<any> | undefined> = {};
-/** OAuth 2 client ID for the application */
+/**
+ * @private
+ * OAuth 2 client ID for the application
+ */
 let _client_id: string = '';
-/** OAuth 2 token generation code */
+/**
+ * @private
+ * OAuth 2 token generation code
+ */
 let _code: string = '';
-/** In memory store for access token */
+/**
+ * @private
+ * In memory store for access token
+ */
 let _access_token: string = '';
-/** In memory store for expiry time of access token */
+/**
+ * @private
+ * In memory store for expiry time of access token
+ */
 let _refresh_token: string = '';
-/** Whether engine is online */
+/**
+ * @private
+ * Whether engine is online
+ */
 const _online = new BehaviorSubject(false);
-/** Observer for the online state of engine */
+/**
+ * @private
+ * Observer for the online state of engine
+ */
 const _online_observer = _online.asObservable();
 
 /** API Endpoint for the retrieved version of engine */
@@ -51,6 +81,9 @@ export function httpRoute() {
     return `/api/engine/v2`;
 }
 
+/**
+ * @hidden
+ */
 export function needsTokenHeader(): boolean {
     return !!_options.token_header
 }
@@ -160,7 +193,7 @@ export function setup(options: PlaceAuthOptions) {
 }
 
 /**
- * @ignore
+ * @private
  */
 export function cleanupAuth() {
     _options = {} as any;
@@ -276,9 +309,10 @@ export function logout(): void {
 }
 
 /**
+ * @private
  * Load authority details from engine
  */
-function loadAuthority(tries: number = 0): Promise<void> {
+export function loadAuthority(tries: number = 0): Promise<void> {
     if (!_promises.load_authority) {
         _promises.load_authority = new Promise<void>((resolve) => {
             _online.next(false);
@@ -319,12 +353,20 @@ function loadAuthority(tries: number = 0): Promise<void> {
     return _promises.load_authority;
 }
 
-async function sendToAuthorize(state?: string) {
+/**
+ * @private
+ * @param state
+ */
+export async function sendToAuthorize(state?: string) {
     const auth_url = createLoginURL(state);
     return location.assign(auth_url);
 }
 
-function sendToLogin(api_authority: PlaceAuthority) {
+/**
+ * @private
+ * @param api_authority
+ */
+export function sendToLogin(api_authority: PlaceAuthority) {
     /* istanbul ignore else */
     if (_options.handle_login !== false) {
         log('Auth', 'Redirecting to login page...');
@@ -336,9 +378,10 @@ function sendToLogin(api_authority: PlaceAuthority) {
 }
 
 /**
+ * @private
  * Check authentication token
  */
-function checkToken(): Promise<boolean> {
+export function checkToken(): Promise<boolean> {
     /* istanbul ignore else */
     if (!_promises.check_token) {
         _promises.check_token = new Promise((resolve, reject) => {
@@ -359,9 +402,10 @@ function checkToken(): Promise<boolean> {
 }
 
 /**
+ * @private
  * Check URL for auth parameters
  */
-function checkForAuthParameters(): Promise<boolean> {
+export function checkForAuthParameters(): Promise<boolean> {
     /* istanbul ignore else */
     if (!_promises.check_params) {
         _promises.check_params = new Promise((resolve, reject) => {
@@ -405,10 +449,11 @@ function checkForAuthParameters(): Promise<boolean> {
 }
 
 /**
+ * @private
  * Generate login URL for the user to authenticate
  * @param state State information to send to the server
  */
-function createLoginURL(state?: string): string {
+export function createLoginURL(state?: string): string {
     const nonce = createAndSaveNonce();
     state = state ? `${nonce};${state}` : nonce;
     const has_query = _options ? (_options.auth_uri || '').indexOf('?') >= 0 : false;
@@ -430,9 +475,15 @@ function createLoginURL(state?: string): string {
     return url;
 }
 
+/**
+ * @private
+ */
 const AVAILABLE_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
-
-function generateChallenge(length: number = 43) {
+/**
+ * @private
+ * @param length Length of the challenge string
+ */
+export function generateChallenge(length: number = 43) {
     const challenge = new Array(length)
         .fill(0)
         .map(() => AVAILABLE_CHARS[Math.floor(Math.random() * AVAILABLE_CHARS.length)])
@@ -447,9 +498,10 @@ function generateChallenge(length: number = 43) {
 }
 
 /**
+ * @private
  * Generate token generation URL
  */
-function createRefreshURL(): string {
+export function createRefreshURL(): string {
     const refresh_uri = _options.token_uri || '/auth/token';
     let url = refresh_uri + `?client_id=${encodeURIComponent(_client_id)}`;
     url += `&redirect_uri=${encodeURIComponent(_options.redirect_uri)}`;
@@ -468,10 +520,11 @@ function createRefreshURL(): string {
 }
 
 /**
+ * @private
  * Geneate a token URL for basic auth with the given credentials
  * @param options Credentials to add to the token
  */
-function createCredentialsURL(options: PlaceAuthOptions) {
+export function createCredentialsURL(options: PlaceAuthOptions) {
     const refresh_uri = options.token_uri || '/auth/token';
     let url = refresh_uri + `?client_id=${encodeURIComponent(_client_id)}`;
     url += `&client_secret=${encodeURIComponent(options.client_secret || '')}`;
@@ -485,9 +538,10 @@ function createCredentialsURL(options: PlaceAuthOptions) {
 }
 
 /**
+ * @private
  * Revoke the current access token
  */
-function revokeToken(): Promise<void> {
+export function revokeToken(): Promise<void> {
     /* istanbul ignore else */
     if (!_promises.revoke_token) {
         _promises.revoke_token = new Promise<void>((resolve, reject) => {
@@ -509,23 +563,26 @@ function revokeToken(): Promise<void> {
 }
 
 /**
+ * @private
  * Generate new tokens from a auth code or refresh token
  */
-function generateToken() {
+export function generateToken() {
     return generateTokenWithUrl(createRefreshURL());
 }
 
 /**
+ * @private
  * Generate new tokens from a username and password
  */
-function generateTokenWithCredentials(options: PlaceAuthOptions) {
+export function generateTokenWithCredentials(options: PlaceAuthOptions) {
     return generateTokenWithUrl(createCredentialsURL(options));
 }
 
 /**
+ * @private
  * Make a request to the tokens endpoint with the given URL
  */
-function generateTokenWithUrl(url: string): Promise<void> {
+export function generateTokenWithUrl(url: string): Promise<void> {
     /* istanbul ignore else */
     if (!_promises.generate_tokens) {
         _promises.generate_tokens = new Promise<void>((resolve, reject) => {
@@ -548,7 +605,11 @@ function generateTokenWithUrl(url: string): Promise<void> {
 }
 
 /* istanbul ignore next */
-function _storeTokenDetails(details: PlaceTokenResponse) {
+/**
+ * @private
+ * @param details
+ */
+export function _storeTokenDetails(details: PlaceTokenResponse) {
     const expires_at = addSeconds(new Date(), parseInt(details.expires_in, 10));
     if (isTrusted()) {
         // Store access token
@@ -572,9 +633,10 @@ function _storeTokenDetails(details: PlaceTokenResponse) {
 }
 
 /**
+ * @private
  * Create nonce and save it to the set key store
  */
-function createAndSaveNonce(): string {
+export function createAndSaveNonce(): string {
     const nonce = generateNonce();
     _storage.setItem(`${_client_id}_nonce`, nonce);
     return nonce;

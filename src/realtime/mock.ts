@@ -1,7 +1,10 @@
 import { HashMap } from '../utilities/types';
 import { MockPlaceWebsocketSystem } from './mock-system';
 
-/** List of registered mock systems for websocket bindings */
+/**
+ * @private
+ * List of registered mock systems for websocket bindings
+ */
 const _mock_systems: HashMap<MockPlaceWebsocketSystem> = {};
 
 /** Register a mock system for websocket bindings */

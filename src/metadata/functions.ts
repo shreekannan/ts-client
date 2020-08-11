@@ -15,6 +15,9 @@ import { PlaceZoneMetadata } from './zone-metadata';
 import { Observable } from 'rxjs';
 import { HashMap } from '../utilities/types';
 
+/**
+ * @private
+ */
 const PATH = 'metadata';
 
 /** Convert raw server data to a metadata object */

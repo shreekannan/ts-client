@@ -4,6 +4,9 @@ import { PlaceCluster } from './cluster';
 import { PlaceClusterQueryOptions } from './interfaces';
 import { PlaceProcess } from './process';
 
+/**
+ * @private
+ */
 const PATH = 'clusters';
 
 /** Convert raw server data to a cluster object */

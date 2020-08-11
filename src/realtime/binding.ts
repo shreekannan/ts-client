@@ -2,7 +2,10 @@ import { HashMap } from '../utilities/types';
 import { PlaceModuleBinding } from './module';
 import { PlaceSystemBinding } from './system';
 
-/** Mapping of system IDs to binding interfaces */
+/**
+ * @private
+ * Mapping of system IDs to binding interfaces
+ */
 const _system_list: HashMap<PlaceSystemBinding> = {};
 
 /**

@@ -24,7 +24,10 @@ import { mockRequest } from './mock';
  */
 export const engine_http: any = { log };
 
-/** Map of headers from the last request made */
+/**
+ * @private
+ * Map of headers from the last request made
+ */
 const _response_headers: HashMap<HashMap<string>> = {};
 
 export function responseHeaders(
@@ -137,13 +140,13 @@ export function del(
     return handler('DELETE', url, { response_type: 'void', ...options });
 }
 
-/* istanbul ignore else */
 /**
+ * @private
  * Convert response into the format requested
  * @param response Request response contents
  * @param type Type of data to return
  */
-async function transform(
+export async function transform(
     resp: Response,
     type: HttpResponseType,
     headers: HashMap<HashMap<string>> = _response_headers
@@ -166,16 +169,20 @@ async function transform(
     }
 }
 
+/**
+ * @private
+ */
 const reloadAuth = () => {
     invalidateToken();
     refreshAuthority();
 };
 
 /**
+ * @private
  * Format error message
  * @param error Message to format
  */
-async function onError(error: Response, onAuthError: () => void = reloadAuth): Promise<HttpError> {
+export async function onError(error: Response, onAuthError: () => void = reloadAuth): Promise<HttpError> {
     /* istanbul ignore else */
     if (error.status === HttpStatusCode.UNAUTHORISED) {
         onAuthError();
@@ -186,14 +193,14 @@ async function onError(error: Response, onAuthError: () => void = reloadAuth): P
     };
 }
 
-/* istanbul ignore else */
 /**
+ * @private
  * Perform AJAX Request
  * @param method Request verb. `GET`, `POST`, `PUT`, `PATCH`, or `DELETE`
  * @param url URL of the request endpoint
  * @param options Options to add to the request
  */
-function request(
+export function request(
     method: HttpVerb,
     url: string,
     options: HttpOptions,

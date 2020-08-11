@@ -37,7 +37,7 @@ describe('Realtime API', () => {
             .mockImplementation(() => fake_socket);
         ws.ignore({ sys: 'sys-A0', mod: 'mod', index: 1, name: 'power' });
         count++;
-        conn_spy = jest.spyOn(ws, 'is_connected');
+        conn_spy = jest.spyOn(ws, 'isConnected');
         conn_spy.mockReturnValue(true);
         jest.runOnlyPendingTimers();
     });
@@ -266,10 +266,10 @@ describe('Realtime API', () => {
             }
         });
         (Auth as any).token.mockReturnValue('test');
-        (ws.is_connected as any).mockReturnValue(false);
+        (ws.isConnected as any).mockReturnValue(false);
         ws.bind(metadata);
         jest.runOnlyPendingTimers();
-        (ws.is_connected as any).mockReturnValue(true);
+        (ws.isConnected as any).mockReturnValue(true);
         another_fake_socket.next({ id: 1, type: 'success' } as PlaceResponse);
         jest.runOnlyPendingTimers();
         done();

@@ -8,6 +8,9 @@ import {
 } from '../resources/functions';
 import { PlaceMQTTBroker } from './broker';
 
+/**
+ * @private
+ */
 const PATH = 'brokers';
 
 /** Convert raw server data to a broker object */

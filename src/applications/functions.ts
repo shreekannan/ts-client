@@ -9,6 +9,9 @@ import {
 import { PlaceApplication } from './application';
 import { PlaceApplicationQueryOptions } from './interfaces';
 
+/**
+ * @private
+ */
 const PATH = 'applications';
 
 /** Convert raw server data to an application object */

@@ -9,6 +9,9 @@ import {
 import { PlaceUser } from './user';
 import { PlaceUserQueryOptions } from './interfaces';
 
+/**
+ * @private
+ */
 const PATH = 'users';
 
 /** Convert raw server data to a trigger object */

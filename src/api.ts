@@ -197,7 +197,7 @@ export {
     TriggerActions,
     TriggerMailer,
     TriggerFunction,
-    Args,
+    ExecuteArgs,
     TriggerConditions,
     TriggerComparison,
     TriggerConditionOperator,

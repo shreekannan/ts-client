@@ -20,10 +20,11 @@ export interface TriggerFunction {
     /** Name of the function to execute */
     method: string;
     /** Map of arguments to pass to the function */
-    args?: Args;
+    args?: ExecuteArgs;
 }
 
-export type Args = HashMap;
+/** Mapping of method parameters to argument value */
+export type ExecuteArgs = HashMap;
 
 export interface TriggerConditions {
     /** List of comparisions used to activate the trigger */

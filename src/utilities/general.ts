@@ -50,6 +50,7 @@ export function log(
 }
 /* istanbul ignore next */
 /**
+ * @private
  * Whether the console has colours
  * @hidden
  */
@@ -86,6 +87,7 @@ export function getFragments(): HashMap<string> {
 }
 
 /**
+ * @private
  * Convert string of key value pairs to a dictionary object
  * @param str String of values
  */
@@ -104,6 +106,7 @@ export function convertPairStringToMap(str: string): HashMap<string> {
 }
 
 /**
+ * @private
  * Create a nonce with the given length
  * @param length Length of the nonce string. Defaults to 40 characters
  */
@@ -120,6 +123,7 @@ export function generateNonce(length: number = 40): string {
 }
 
 /**
+ * @private
  * Replace the URL fragment with the given name
  * @param name Name of the fragment to remove
  */
@@ -159,6 +163,7 @@ export function humanReadableByteCount(bytes: number, si: boolean = false) {
 }
 
 /**
+ * @private
  * Parse URLs from Link header string
  * @param header Header value
  */
@@ -184,6 +189,7 @@ export function parseLinkHeader(header: string): HashMap<string> {
 }
 
 /**
+ * @private
  * Remove properties from object with given values
  * @param object Object to clean
  * @param delete_values List of property values to remove

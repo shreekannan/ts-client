@@ -9,6 +9,9 @@ import {
 } from '../resources/functions';
 import { PlaceOAuthSource } from './oauth-source';
 
+/**
+ * @private
+ */
 const PATH = 'oauth_sources';
 
 /** Convert raw server data to an OAuth source object */

@@ -19,6 +19,9 @@ import {
     PlaceSystemsQueryOptions,
 } from './interfaces';
 
+/**
+ * @private
+ */
 const PATH = 'systems';
 
 /** Convert raw server data to an system object */

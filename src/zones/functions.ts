@@ -12,6 +12,9 @@ import { PlaceTrigger } from '../triggers/trigger';
 import { PlaceZone } from './zone';
 import { PlaceZoneQueryOptions, PlaceZoneShowOptions } from './interfaces';
 
+/**
+ * @private
+ */
 const PATH = 'zones';
 
 /** Convert raw server data to an application object */

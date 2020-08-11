@@ -12,6 +12,9 @@ import {
 import { PlaceSystem } from '../systems/system';
 import { PlaceTrigger } from './trigger';
 
+/**
+ * @private
+ */
 const PATH = 'triggers';
 
 /** Convert raw server data to a trigger object */

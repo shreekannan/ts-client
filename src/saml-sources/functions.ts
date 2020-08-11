@@ -9,6 +9,9 @@ import {
 } from '../resources/functions';
 import { PlaceSAMLSource } from './saml-source';
 
+/**
+ * @private
+ */
 const PATH = 'saml_auths';
 
 /** Convert raw server data to an SAML source object */

@@ -10,6 +10,9 @@ import {
     MockHttpRequest
 } from './interfaces';
 
+/**
+ * @private
+ */
 const _handlers: HashMap<MockHttpRequestHandler> = {};
 
 /**
@@ -61,6 +64,7 @@ export function deregisterMockEndpoint(
 }
 
 /**
+ * @private
  * Remove mapping of handlers for Mock Http requests
  * @param handler_map Handler map to clear. Defaults to the global handler map
  */
@@ -75,6 +79,7 @@ export function clearMockEndpoints(
 }
 
 /**
+ * @private
  * Perform mock request for the given method and URL.
  * Returns `null` if no handler for URL and method
  * @param method Http Verb for request
@@ -90,12 +95,13 @@ export function mockRequest<T>(
     const handler = findRequestHandler(method, url, handler_map);
     if (handler) {
         const request = processRequest(url, handler);
-        return mock_request(handler, request);
+        return onMockRequest(handler, request);
     }
     return null;
 }
 
 /**
+ * @private
  * Find a request handler for the given URL and method
  * @param method HTTP verb for the request
  * @param url URL of the request
@@ -142,11 +148,12 @@ export function findRequestHandler(
 }
 
 /**
+ * @private
  * Generate mock HTTP request from the given URL and handler
  * @param url URL to mock
  * @param handler Handler for the given URL
  */
-function processRequest<T = any>(
+export function processRequest<T = any>(
     url: string,
     handler: MockHttpRequestHandler<T>,
     body?: any
@@ -180,11 +187,12 @@ function processRequest<T = any>(
 }
 
 /**
+ * @private
  * Perform request and return an observable for the generated response
  * @param handler Request handler
  * @param request Request contents
  */
-function mock_request(
+export function onMockRequest(
     handler: MockHttpRequestHandler,
     request: MockHttpRequest
 ) {

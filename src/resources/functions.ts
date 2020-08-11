@@ -21,15 +21,30 @@ export function lastRequestTotal(name: string): number {
 export function next(): string {
     return _next;
 }
-/** Map of promises for Service */
+/**
+ * @private
+ * Map of promises for Service
+ */
 const _obserables: { [key: string]: Observable<any> } = {};
-/** Total number of items returned by the last basic index query */
+/**
+ * @private
+ * Total number of items returned by the last basic index query
+ */
 let _total: HashMap<number> = {};
-/** Total number of items returned by the last index query */
+/**
+ * @private
+ * Total number of items returned by the last index query
+ */
 let _last_total: HashMap<number> = {};
-/** URL to get the next page */
+/**
+ * @private
+ * URL to get the next page
+ */
 let _next: string = '';
 
+/**
+ * @private
+ */
 export function cleanupAPI() {
     for (const key in _obserables) {
         if (_obserables[key]) {
@@ -42,6 +57,7 @@ export function cleanupAPI() {
 }
 
 /**
+ * @hidden
  * Query the index of the API route associated with this service
  * @param query_params Map of query paramaters to add to the request URL
  */
@@ -65,6 +81,7 @@ export function query<T>(
 }
 
 /**
+ * @hidden
  * Query the API route for a sepecific item
  * @param id ID of the item
  * @param query_params Map of query paramaters to add to the request URL
@@ -81,6 +98,7 @@ export function show<T>(
 }
 
 /**
+ * @hidden
  * Make post request for a new item to the service
  * @param form_data Data to post to the server
  * @param query_params Map of query paramaters to add to the request URL
@@ -98,6 +116,7 @@ export function create<T>(
 }
 
 /**
+ * @hidden
  * Perform API task for the given item ID
  * @param id ID of the item
  * @param task_name Name of the task
@@ -122,6 +141,7 @@ export function task<U = any>(
 }
 
 /**
+ * @hidden
  * Make put request for changes to the item with the given id
  * @param id ID of the item being updated
  * @param form_data New values for the item
@@ -141,6 +161,7 @@ export function update<T>(
 }
 
 /**
+ * @hidden
  * Make delete request for the given item
  * @param id ID of item
  */
@@ -154,7 +175,13 @@ export function remove(
     return del(url);
 }
 
-function handleHeaders(url: string, query_str: string, name: string) {
+/**
+ * @private
+ * @param url
+ * @param query_str
+ * @param name
+ */
+export function handleHeaders(url: string, query_str: string, name: string) {
     const headers = responseHeaders(url);
     if (headers && headers['x-total-count']) {
         const total_value = +(headers['x-total-count'] || 0);

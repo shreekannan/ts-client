@@ -10,6 +10,9 @@ import {
 import { PlaceDriver } from './driver';
 import { PlaceDriverQueryOptions } from './interfaces';
 
+/**
+ * @private
+ */
 const PATH = 'drivers';
 
 /** Convert raw server data to a driver object */

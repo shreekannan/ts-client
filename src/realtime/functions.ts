@@ -32,28 +32,61 @@ import {
     SimpleNetworkError,
 } from './interfaces';
 
-/** Time in seconds to ping the server to keep the websocket connection alive */
+/**
+ * @private
+ * Time in seconds to ping the server to keep the websocket connection alive
+ */
 const KEEP_ALIVE = 20;
-/** Global counter for websocket request IDs */
+/**
+ * @private
+ * Global counter for websocket request IDs
+ */
 let REQUEST_COUNT = 0;
-/** Websocket for connecting to engine */
+/**
+ * @private
+ * Websocket for connecting to engine
+ * */
 let _websocket: WebSocketSubject<any> | Subject<any> | undefined;
-/** Request promises */
+/**
+ * @private
+ * Request promises
+ * */
 const _requests: { [id: string]: PlaceCommandRequestMetadata } = {};
-/** Subjects for listening to values of bindings */
+/**
+ * @private
+ * Subjects for listening to values of bindings
+ * */
 const _binding: { [id: string]: BehaviorSubject<any> } = {};
-/** Observers for the binding subjects */
+/**
+ * @private
+ * Observers for the binding subjects
+ */
 const _observers: { [id: string]: Observable<any> } = {};
-/** Observers for the binding subjects */
+/**
+ * @private
+ * Observers for the binding subjects
+ */
 const _listeners: { [id: string]: Subscription } = {};
-/** BehaviorSubject holding the connection status of the websocket */
+/**
+ * @private
+ * BehaviorSubject holding the connection status of the websocket
+ */
 const _status = new BehaviorSubject<boolean>(false);
 _observers._place_os_status = _status.asObservable();
-/** Interval ID for the server ping callback */
+/**
+ * @private
+ * Interval ID for the server ping callback
+ */
 let _keep_alive: number | undefined;
-/** Number of connection attempts made before the session is established */
+/**
+ * @private
+ * Number of connection attempts made before the session is established
+ */
 let _connection_attempts: number = 0;
-/** Timer to check the initial health of the websocket connection */
+/**
+ * @private
+ * Timer to check the initial health of the websocket connection
+ */
 let _health_check: number | undefined;
 
 /** Listener for debugging events */
@@ -62,7 +95,7 @@ _observers._place_os_debug_events = debug_events.asObservable();
 
 /* istanbul ignore next */
 /**
- * @ignore
+ * @private
  */
 export function cleanupRealtime() {
     _websocket = undefined;
@@ -100,7 +133,7 @@ export function websocketRoute() {
 }
 
 /** Whether the websocket is connected */
-export function is_connected(): boolean {
+export function isConnected(): boolean {
     return _status.getValue();
 }
 
@@ -232,16 +265,17 @@ export function ignore(
 }
 
 /**
+ * @private
  * Send request to engine through the websocket connection
  * @param request New request to post to the server
  */
-function send<T = any>(request: PlaceCommandRequest, tries: number = 0): Promise<T> {
+export function send<T = any>(request: PlaceCommandRequest, tries: number = 0): Promise<T> {
     const key = `${request.cmd}|${request.sys}|${request.mod}${request.index}|${request.name}`;
     /* istanbul ignore else */
     if (!_requests[key]) {
         const req: PlaceCommandRequestMetadata = { ...request, key };
         req.promise = new Promise((resolve, reject) => {
-            if (_websocket && is_connected()) {
+            if (_websocket && isConnected()) {
                 if (isMock()) {
                     handleMockSend(request, _websocket, _listeners);
                 }
@@ -266,10 +300,11 @@ function send<T = any>(request: PlaceCommandRequest, tries: number = 0): Promise
 }
 
 /**
+ * @private
  * Callback for messages from the server
  * @param message Message from the engine server
  */
-function onMessage(message: PlaceResponse | 'pong'): void {
+export function onMessage(message: PlaceResponse | 'pong'): void {
     if (message !== 'pong' && message instanceof Object) {
         if (message.type === 'notify' && message.meta) {
             let updated_value = message.value;
@@ -302,10 +337,11 @@ function onMessage(message: PlaceResponse | 'pong'): void {
 }
 
 /**
+ * @private
  * Handle websocket success response
  * @param message Success message
  */
-function handleSuccess(message: PlaceResponse) {
+export function handleSuccess(message: PlaceResponse) {
     const request = Object.keys(_requests)
         .map((i) => _requests[i])
         .find((i) => i.id === message.id);
@@ -318,10 +354,11 @@ function handleSuccess(message: PlaceResponse) {
 }
 
 /**
+ * @private
  * Handle websocket request error
  * @param message Error response
  */
-function handleError(message: PlaceResponse) {
+export function handleError(message: PlaceResponse) {
     let type = 'UNEXPECTED FAILURE';
     switch (message.code) {
         case PlaceErrorCodes.ACCESS_DENIED:
@@ -357,11 +394,12 @@ function handleError(message: PlaceResponse) {
 }
 
 /**
+ * @private
  * Update the current value of the binding
  * @param options Binding details
  * @param updated_value New binding value
  */
-function handleNotify<T = any>(
+export function handleNotify<T = any>(
     options: PlaceRequestOptions,
     updated_value: T,
     bindings: HashMap<BehaviorSubject<T>> = _binding,
@@ -378,9 +416,10 @@ function handleNotify<T = any>(
 }
 
 /**
+ * @private
  * Connect to engine websocket
  */
-function connect(tries: number = 0): Promise<void> {
+export function connect(tries: number = 0): Promise<void> {
     return new Promise<void>((resolve) => {
         _connection_attempts++;
         _websocket = isMock() ? createMockWebSocket() : createWebsocket();
@@ -423,9 +462,10 @@ function connect(tries: number = 0): Promise<void> {
 }
 
 /**
+ * @private
  * Create websocket connection
  */
-function createWebsocket() {
+export function createWebsocket() {
     const secure = isSecure() || location.protocol.indexOf('https') >= 0;
     const expiry = `expires=${formatISO(Math.floor(new Date().getTime() / 1000 + 120))};`;
     let url = `ws${secure ? 's' : ''}://${host()}${websocketRoute()}${
@@ -457,11 +497,12 @@ function createWebsocket() {
 }
 
 /**
+ * @private
  * Close old websocket connect and open a new one
  */
-function reconnect() {
+export function reconnect() {
     /* istanbul ignore else */
-    if (_websocket && is_connected) {
+    if (_websocket && isConnected) {
         _websocket.complete();
         /* istanbul ignore else */
         if (_keep_alive) {
@@ -473,17 +514,19 @@ function reconnect() {
 }
 
 /**
+ * @private
  * Send ping through the websocket
  */
-function ping() {
+export function ping() {
     _websocket!.next('ping');
 }
 
 /**
+ * @private
  * Handle errors on the websocket
  * @param err Network error response
  */
-function onWebSocketError(err: SimpleNetworkError) {
+export function onWebSocketError(err: SimpleNetworkError) {
     _status.next(false);
     log('WS', 'Websocket error:', err, undefined, 'error');
     /* istanbul ignore else */
@@ -496,9 +539,10 @@ function onWebSocketError(err: SimpleNetworkError) {
 }
 
 /**
+ * @private
  * Clear health check timer
  */
-function clearHealthCheck() {
+export function clearHealthCheck() {
     if (_health_check) {
         clearTimeout(_health_check);
         _health_check = undefined;
@@ -506,9 +550,10 @@ function clearHealthCheck() {
 }
 
 /**
+ * @private
  * Connect to engine websocket
  */
-function createMockWebSocket() {
+export function createMockWebSocket() {
     const websocket = new Subject<PlaceResponse | PlaceCommandRequest>();
     websocket.subscribe((resp: PlaceResponse | PlaceCommandRequest) =>
         onMessage(resp as PlaceResponse)
@@ -517,10 +562,11 @@ function createMockWebSocket() {
 }
 
 /**
+ * @private
  * Send request to engine through the websocket connection
  * @param request New request to post to the server
  */
-function handleMockSend(
+export function handleMockSend(
     request: PlaceCommandRequest,
     websocket: Subject<any>,
     listeners: HashMap<Subscription>

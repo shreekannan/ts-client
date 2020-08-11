@@ -2,7 +2,7 @@
 
 export {
     websocketRoute,
-    is_connected,
+    isConnected as is_connected,
     status,
     listen,
     value,
