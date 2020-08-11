@@ -12,7 +12,7 @@ import { PlaceOAuthSource } from './oauth-source';
 /**
  * @private
  */
-const PATH = 'oauth_sources';
+const PATH = 'oauth_auths';
 
 /** Convert raw server data to an OAuth source object */
 function process(item: HashMap) {
