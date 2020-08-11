@@ -16,46 +16,44 @@ You can install the PlaceOS Typescript client with the npm command
 
 `npm install --save-dev @placeos/ts-client`
 
-After the package is installed you can import `PlaceOS` into your application
+Before using PlaceOS it will need to be initialised.
 
 ```typescript
-import { PlaceOS } from '@placeos/ts-client'
+import { setup } from '@placeos/ts-client/auth';
+
+setup(config).then(() => doAfterAuthInitialised());
 ```
 
-Before using PlaceOS it will need to be intialised.
+The setup method returns a promise that resolves after the auth flow has completed.
+The setup method takes a `config` object with the following properties
 
-```typescript
-PlaceOS.init(config);
-```
+| Property       | Description                                             | Optional | Type                   | Example                   |
+| -------------- | ------------------------------------------------------- | -------- | ---------------------- | ------------------------- |
+| `host`         | Host name and port of the PlaceOS server                | Yes      | `string`               | `"dev.placeos.com:8080"`  |
+| `mock`         | Whether to initialise PlaceOS with mock services        | Yes      | `boolean`              | `true`                    |
+| `auth_uri`     | URI for authorising users session                       | No       | `string`               | `"/auth/oauth/authorize"` |
+| `token_uri`    | URI for generating new auth tokens                      | No       | `string`               | `"/auth/token"`           |
+| `redirect_uri` | URI to redirect user to after authorising session       | No       | `string`               | `"/oauth-resp.html"`      |
+| `scope`        | Scope of the user permissions needed by the application | No       | `string`               | `"admin"`                 |
+| `storage`      | Browser storage to use for storing user credentials     | Yes      | `"local" | "session"` |                           |
+| `handle_login` | Whether PlaceOS should handle user login                | Yes      | `boolean`              | `true`                    |
 
-The init method takes a `config` object with the following properties
-
-|Property|Description|Optional|Type|Example|
-|--------|-----------|--------|----|-------|
-|`host`|Host name and port of the PlaceOS server|Yes|`string`|`"dev.placeos.com:8080"`|
-|`mock`|Whether to initialise PlaceOS with mock services|Yes|`boolean`|`true`|
-|`auth_uri`|URI for authorising users session|No|`string`|`"/auth/oauth/authorize"`|
-|`token_uri`|URI for generating new auth tokens|No|`string`|`"/auth/token"`|
-|`redirect_uri`|URI to redirect user to after authorising session|No|`string`|`"/oauth-resp.html"`|
-|`scope`|Scope of the user permissions needed by the application|No|`string`|`"admin"`|
-|`storage`|Browser storage to use for storing user credentials|Yes|`"local" \| "session"`| |
-|`handle_login`|Whether PlaceOS should handle user login|Yes|`boolean`|`true`|
-
-Once initialised the `PlaceOS` object will expose interfaces to PlaceOS's websocket and http APIs
 
 ### Websocket API
 
-`PlaceOS` exposes a websocket API through the `bindings` service.
+`PlaceOS` exposes a websocket API through the `realtime` entrypoint.
 
-The `bindings` service is used to provide real-time interaction with modules running on PlaceOS. It provides an interface to build efficient, responsive user interfaces, monitoring systems and other extensions which require live, two-way or asynchronous interaction.
+The `realtime` entrypoint to provides methods for real-time interaction with modules running on PlaceOS. It provides an interface to build efficient, responsive user interfaces, monitoring systems and other extensions which require live, two-way or asynchronous interaction.
 
 Once PlaceOS has initialised you can listen to values on modules
 
 ```typescript
-const my_mod = PlaceOS.bindings.module('sys-death-star', 'TestModule', 3);
+import { getModule } from '@placeos/ts-client/realtime';
+
+const my_mod = getModule('sys-death-star', 'TestModule', 3);
 const my_variable = my_mod.binding('power');
 const unbind = my_variable.bind();
-const sub = my_variable.listen((value) => doSomething(value));
+const sub = my_variable.listen(value => doSomething(value));
 ```
 
 This binds to the `power` status variable on the 3rd `TestModule` in the system `sys-death-star`.
@@ -64,8 +62,8 @@ Any changes to the value of `power` on PlaceOS will then be emitted to the funct
 Other than listening to changes of values you can also remotely execute methods on modules.
 
 ```typescript
-const my_mod = PlaceOS.bindings.module('sys-death-star', 'DemoModule', 2);
-my_mod.exec('power_off').then(
+const my_mod = getModule('sys-death-star', 'DemoModule', 2);
+my_mod.execute('power_off').then(
     (resp) => handleSuccess(resp)
     (err) => handleError(err)
 );
@@ -73,90 +71,86 @@ my_mod.exec('power_off').then(
 
 This will execute the method `power_off` on the 2nd `DemoModule` in the system `sys-death-star`.
 If the method doesn't exist or the system is turned off it will return an error.
-The response from PlaceOS can be handled using the promise returned by the `exec` method.
-
+The response from PlaceOS can be handled using the promise returned by the `execute` method.
 
 ### HTTP API
 
-For the HTTP API, `PlaceOS` provides a service for each of the root endpoints available on PlaceOS's RESTful API.
+For the HTTP API, `PlaceOS` provides various methods for each of the root endpoints available on PlaceOS's RESTful API.
 
 Docs for the API can be found here https://docs.placeos.com/api/control
 
-Services are provided for `drivers`, `modules`, `systems`, `users`, and `zones`
-
-Each service except for `users` provides CRUD methods. `users` provides _RUD.
+Methods are provided for `brokers`, `drivers`, `metadata`, `modules`, `repositories`, `settings`, `systems`, `triggers`, `users`, and `zones`.
 
 ```typescript
 // Drivers CRUD
-PlaceOS.drivers.add(driver_data).then((new_driver) => doSomething(new_driver));
-PlaceOS.drivers.show(driver_id).then((driver) => doSomething(driver));
-PlaceOS.drivers.update(driver_id, driver_data).then((updated_driver) => doSomething(updated_driver));
-PlaceOS.drivers.delete(driver_id).then(() => doSomething());
+addDriver(driver_data).subscribe(new_driver => doSomething(new_driver));
+showDriver(driver_id).subscribe(driver => doSomething(driver));
+updateDriver(driver_id, driver_data).subscribe(updated_driver => doSomething(updated_driver));
+removeDriver(driver_id).subscribe(() => doSomething());
 
 // Modules CRUD
-PlaceOS.modules.add(module_data).then((new_module) => doSomething(new_module));
-PlaceOS.modules.show(module_id).then((mod) => doSomething(mod));
-PlaceOS.modules.update(module_id, module_data).then((updated_module) => doSomething(updated_module));
-PlaceOS.modules.delete(module_id).then(() => doSomething());
+addModule(module_data).subscribe(new_module => doSomething(new_module));
+showModule(module_id).subscribe(mod => doSomething(mod));
+updateModule(module_id, module_data).subscribe(updated_module => doSomething(updated_module));
+removeModule(module_id).subscribe(() => doSomething());
 
 // Systems CRUD
-PlaceOS.systems.add(system_data).then((new_system) => doSomething(new_system));
-PlaceOS.systems.show(system_id).then((system) => doSomething(system));
-PlaceOS.systems.update(system_id, system_data).then((updated_system) => doSomething(updated_system));
-PlaceOS.systems.delete(system_id).then(() => doSomething());
+addSystem(system_data).subscribe(new_system => doSomething(new_system));
+showSystem(system_id).subscribe(system => doSomething(system));
+updateSystem(system_id, system_data).subscribe(updated_system => doSomething(updated_system));
+removeSystem(system_id).subscribe(() => doSomething());
 
 // Users CRUD
-PlaceOS.users.add(user_data).then((new_user) => doSomething(new_user)); // This will error
-PlaceOS.users.show(user_id).then((user) => doSomething(user));
-PlaceOS.users.update(user_id, user_data).then((updated_user) => doSomething(updated_user));
-PlaceOS.users.delete(user_id).then(() => doSomething());
+addUser(user_data).subscribe(new_user => doSomething(new_user));
+showUser(user_id).subscribe(user => doSomething(user));
+updateUser(user_id, user_data).subscribe(updated_user => doSomething(updated_user));
+removeUser(user_id).subscribe(() => doSomething());
 
 // Zones CRUD
-PlaceOS.zones.add(zone_data).then((new_zone) => doSomething(new_zone));
-PlaceOS.zones.show(zone_id).then((zone) => doSomething(zone));
-PlaceOS.zones.update(zone_id, zone_data).then((updated_zone) => doSomething(updated_zone));
-PlaceOS.zones.delete(zone_id).then(() => doSomething());
+addZone(zone_data).subscribe(new_zone => doSomething(new_zone));
+showZone(zone_id).subscribe(zone => doSomething(zone));
+updateZone(zone_id, zone_data).subscribe(updated_zone => doSomething(updated_zone));
+removeZone(zone_id).subscribe(() => doSomething());
 ```
 
-The services also provide methods for the various item action endpoints
+The modules also provide methods for the various item action endpoints
 
 ```typescript
 // Driver Actions
-PlaceOS.drivers.reload(driver_id);
+reloadDriver(driver_id);
 
 // Module Actions
-PlaceOS.module.start(module_id);
-PlaceOS.module.stop(module_id);
-PlaceOS.module.ping(module_id);
-PlaceOS.module.lookup(module_id, lookup);
-PlaceOS.module.internalState(module_id);
+startModule(module_id);
+stopModule(module_id);
+pingModule(module_id);
+lookupModuleState(module_id, lookup);
+moduleState(module_id);
 
 // System Actions
-PlaceOS.system.remove(system_id, module_name);
-PlaceOS.system.start(system_id);
-PlaceOS.system.stop(system_id);
-PlaceOS.system.execute(system_id, module_name, index, args);
-PlaceOS.system.state(system_id, module_name, index, lookup);
-PlaceOS.system.functionList(system_id, module_name, index);
-PlaceOS.system.types(system_id, module_name);
-PlaceOS.system.count(system_id);
+addSystemModule(system_id, module_name);
+removeSystemModule(system_id, module_name);
+startSystem(system_id);
+stopSystem(system_id);
+executeOnSystem(system_id, module_name, index, args);
+lookupSystemModuleState(system_id, module_name, index, lookup);
+functionList(system_id, module_name, index);
+moduleTypes(system_id, module_name);
+moduleCount(system_id);
+listSystemZones(system_id);
 
 // User Actions
-PlaceOS.users.current();
+currentUser();
 ```
 
-Objects returned by `show` and `query` methods are immutable,
-though when reassigning value it will be saved under the `changes` property of that object.
-These changes can be saved using the `save` method which will return a promise for the new object.
+Objects returned by `show` and `query` methods are immutable.
+Therefore to change items you'll need to create a new object to store the changes.
 
 ```typescript
-PlaceOS.zones.show(zone_id).then((zone) => {
-    console.log(zone.description); // Prints the current description
-    zone.description = 'New description';
-    console.log(zone.description); // Same a previous print
-    cosnole.log(zone.changes.description) // New description
-    zone.save().then((updated_zone) => {
-        cosnole.log(updated_zone.description) // New description
+showZone(zone_id).then(zone => {
+    cosnole.log(zone.description); // Some Description
+    const zone_edited = new PlaceZone({ ...zone, description: 'New description' });
+    updateZone(zone_edited.id, zone_edited).then(updated_zone => {
+        cosnole.log(updated_zone.description); // New description
     });
 });
 ```
@@ -167,42 +161,48 @@ https://app.swaggerhub.com/apis/ACAprojects/PlaceOS/3.5.0#/
 
 ## Writing mocks
 
-If you don't have access to an PlaceOS server you can also write mocks so that you can still develop interfaces for PlaceOS.
+If you don't have access to a PlaceOS server you can also write mocks so that you can still develop interfaces for PlaceOS.
 
 To use the mock services you can pass `mock: true` into the initialisation object.
 
 ### Websockets
 
-To write mocks for the the realtime(websocket) API you'll need to register your systems in `PlaceSystemsMock` before initialising PlaceOS.
+To write mocks for the the realtime(websocket) API you'll need to register your systems with the `registerSystem` before attempting to bind to the modules it contains.
 
 ```typescript
-PlaceSystemsMock.register('my-system', {
-    "MyModule": [
+import { registerSystem } from '@placeos/ts-client/realtime';
+
+registerSystem('my-system', {
+    MyModule: [
         {
             power: true,
-            $power_on: function () { this.power = true },
-            $power_off: function () { this.power = false }
+            $power_on: function() {
+                this.power = true;
+            },
+            $power_off: function() {
+                this.power = false;
+            }
         }
     ]
 });
 ```
 
-Note that executable methods on mock systems are namespaced with `$` as real systems in engine allow for methods to have the same name as variables.
+Note that executable methods on mock systems are namespaced with `$` as real systems in PlaceOS allow for methods to have the same name as variables.
 
 Once initialised interactions with a system are performed in the same manner as the live system.
 
 ```typescript
-const my_mod = PlaceOS.bindings.module('my-system', 'MyModule', 1);
+const my_mod = getModule('my-system', 'MyModule', 1);
 const my_variable = my_mod.binding('power');
 const unbind = my_variable.bind();
-const sub = my_variable.listen((value) => doSomething(value)); // Emits true
-my_mod.exec('power_off'); // The listen callback will now emit false
+const sub = my_variable.listen(value => doSomething(value)); // Emits true
+my_mod.execute('power_off'); // The listen callback will now emit false
 ```
 
 Some methods may need access to other modules within the system, for this a property is appended on runtime called `_system` which allows for access to the parent system
 
 ```typescript
-PlaceSystemsMock.register('my-system', {
+registerSystem('my-system', {
     "MyModule": [
         {
             $lights_off: function () { this._system.MyOtherModule[0].lights = false; }
@@ -218,21 +218,23 @@ PlaceSystemsMock.register('my-system', {
 
 ### HTTP Requests
 
-HTTP API Requests can be mocked in a similar way to the realtime API by registering handlers with `PlaceHttpMock`
+HTTP API Requests can be mocked in a similar way to the realtime API by registering handlers with `registerMockEndpoint`
 
 ```typescript
-PlaceHttpMock.register({
+import { registerMockEndpoint } from '@placeos/ts-client/api';
+
+registerMockEndpoint({
     path: '/api/engine/v2/systems',
     metadata: {},
     method: 'GET',
-    callback: (request) => my_mock_systems
+    callback: request => my_mock_systems
 });
 ```
 
 Paths allow for route parameters and will pass the value in the callback input.
 
 ```typescript
-PlaceHttpMock.register({
+registerMockEndpoint({
     path: '/api/engine/v2/systems/:system_id',
     ...
     callback: (request) =>
