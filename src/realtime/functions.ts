@@ -85,6 +85,11 @@ let _keep_alive: number | undefined;
 let _connection_attempts: number = 0;
 /**
  * @private
+ * Promise to handle connections to the websocket API
+ */
+let _connection_promise: Promise<void> | null = null;
+/**
+ * @private
  * Timer to check the initial health of the websocket connection
  */
 let _health_check: number | undefined;
@@ -420,45 +425,52 @@ export function handleNotify<T = any>(
  * Connect to engine websocket
  */
 export function connect(tries: number = 0): Promise<void> {
-    return new Promise<void>((resolve) => {
-        _connection_attempts++;
-        _websocket = isMock() ? createMockWebSocket() : createWebsocket();
-        if (_websocket && (token() || isMock()) && isOnline()) {
-            _websocket.subscribe(
-                (resp: PlaceResponse) => {
-                    if (!_status.getValue()) {
-                        resolve();
-                        _status.next(true);
-                    }
-                    _connection_attempts = 0;
-                    clearHealthCheck();
-                    onMessage(resp);
-                },
-                (err: SimpleNetworkError) => {
-                    clearHealthCheck();
-                    onWebSocketError(err);
-                },
-                () => _status.next(false)
-            );
-            if (_keep_alive) {
-                clearInterval(_keep_alive);
+    if (!_connection_promise) {
+        _connection_promise = new Promise<void>((resolve) => {
+            _connection_attempts++;
+            _websocket = isMock() ? createMockWebSocket() : createWebsocket();
+            if (_websocket && (token() || isMock()) && isOnline()) {
+                _websocket.subscribe(
+                    (resp: PlaceResponse) => {
+                        if (!_status.getValue()) {
+                            resolve();
+                            _status.next(true);
+                        }
+                        _connection_attempts = 0;
+                        _connection_promise = null;
+                        clearHealthCheck();
+                        onMessage(resp);
+                    },
+                    (err: SimpleNetworkError) => {
+                        _connection_promise = null;
+                        clearHealthCheck();
+                        onWebSocketError(err);
+                    },
+                    () => _status.next(false)
+                );
+                if (_keep_alive) {
+                    clearInterval(_keep_alive);
+                }
+                ping();
+                _keep_alive = setInterval(() => ping(), KEEP_ALIVE * 1000) as any;
+                clearHealthCheck();
+                _health_check = setTimeout(() => {
+                    log('WS', 'Unhealthy connection. Reconnecting...');
+                    _status.next(false);
+                    _connection_promise = null;
+                    reconnect();
+                }, 30 * 1000) as any;
+            } else {
+                /* istanbul ignore else */
+                if (!_websocket) {
+                    log('WS', `Failed to create websocket(${tries}). Retrying...`, undefined, 'error');
+                }
+                _connection_promise = null;
+                setTimeout(async () => resolve(await connect(tries)), 300 * Math.min(20, ++tries));
             }
-            ping();
-            _keep_alive = setInterval(() => ping(), KEEP_ALIVE * 1000) as any;
-            clearHealthCheck();
-            _health_check = setTimeout(() => {
-                log('WS', 'Unhealthy connection. Reconnecting...');
-                _status.next(false);
-                reconnect();
-            }, 30 * 1000) as any;
-        } else {
-            /* istanbul ignore else */
-            if (!_websocket) {
-                log('WS', `Failed to create websocket(${tries}). Retrying...`, undefined, 'error');
-            }
-            setTimeout(async () => resolve(await connect(tries)), 300 * Math.min(20, ++tries));
-        }
-    });
+        });
+    }
+    return _connection_promise
 }
 
 /**
