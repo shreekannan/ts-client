@@ -25,6 +25,7 @@
         "test:coverage": "jest --coverage",
         "test:ci": "jest --runInBand",
         "lint": "tsdx lint",
+        "semantic-release": "semantic-release",
         "prepare": "npm run build && node ./copy-file.js"
     },
     "peerDependencies": {
