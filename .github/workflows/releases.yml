@@ -50,12 +50,13 @@ jobs:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: npm run semantic-release
 
+
     - name: Publish generated content to GitHub Pages
-      uses: tsunematsu21/actions-publish-gh-pages@v1.0.1
-      with:
-        dir: docs
-        branch: gh-pages
-        token: ${{ secrets.GH_TOKEN }}
+      uses: peaceiris/actions-gh-pages@v2.5.0
+      env:
+        PERSONAL_TOKEN: ${{ secrets.GH_TOKEN }}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: ./docs
 
     - name: G-Chat Success Notify
       uses: Co-qn/google-chat-notification@releases/v1
