@@ -55,7 +55,7 @@ jobs:
       with:
         dir: docs
         branch: gh-pages
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GH_TOKEN }}
 
     - name: G-Chat Success Notify
       uses: Co-qn/google-chat-notification@releases/v1
