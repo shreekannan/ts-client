@@ -59,7 +59,6 @@ export interface MockHttpRequestHandlerOptions<T = any> {
 /** Interface for data needed to handle Mock HTTP requests */
 export interface MockHttpRequestHandler<T = any>
     extends MockHttpRequestHandlerOptions<T> {
-    callback: (handler: MockHttpRequest) => T;
     /** Parameter keys for set path */
     path_parts: string[];
     /** Parameter keys for set path */
