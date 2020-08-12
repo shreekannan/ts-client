@@ -63,8 +63,8 @@ export function consoleHasColours() {
  * Get URL paramters from hash or query string
  */
 export function getFragments(): HashMap<string> {
-    const hash = location.hash ? location.hash.slice(1) : '';
-    let query = location.search ? location.search.slice(1) : '';
+    const hash = location.hash ? location.hash.slice(1) : location.href.split('#')[1] || '';
+    let query = location.search ? location.search.slice(1) : location.href.split('?')[1] || '';
     let hash_fragments = {};
     if (hash) {
         // Hash can also contain the query so we need to check for it
