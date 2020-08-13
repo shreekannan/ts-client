@@ -47,7 +47,7 @@ export function showMetadata(
         id,
         query_params,
         query_params.name
-            ? process
+            ? (data: HashMap) => process(data[query_params.name])
             : (list: HashMap) => Object.keys(list).map((key: string) => process(list[key])) as any,
         PATH
     );
