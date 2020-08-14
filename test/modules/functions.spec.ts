@@ -8,11 +8,11 @@ import { PlaceSettings } from '../../src/settings/settings';
 describe('Modules API', () => {
     it('should allow querying modules', async () => {
         const spy = jest.spyOn(Resources, 'query');
-        spy.mockImplementation((_, process: any, __) => of([process({})]));
+        spy.mockImplementation((_, process: any, __) => of({ data: [process({})] } as any));
         let list = await SERVICE.queryModules().toPromise();
         expect(list).toBeTruthy();
-        expect(list.length).toBe(1);
-        expect(list[0]).toBeInstanceOf(PlaceModule);
+        expect(list.data.length).toBe(1);
+        expect(list.data[0]).toBeInstanceOf(PlaceModule);
         list = await SERVICE.queryModules({}).toPromise();
     });
 

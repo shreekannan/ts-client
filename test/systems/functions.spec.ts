@@ -13,11 +13,11 @@ describe('Systems API', () => {
     it('should allow querying systems', async () => {
         (Resources.query as any) = jest
             .fn()
-            .mockImplementation((_, process: any, __) => of([process({})]));
+            .mockImplementation((_, process: any, __) => of({data: [process({})]}));
         let list = await SERVICE.querySystems().toPromise();
         expect(list).toBeTruthy();
-        expect(list.length).toBe(1);
-        expect(list[0]).toBeInstanceOf(PlaceSystem);
+        expect(list.data.length).toBe(1);
+        expect(list.data[0]).toBeInstanceOf(PlaceSystem);
         list = await SERVICE.querySystems({}).toPromise();
     });
 
@@ -146,7 +146,7 @@ describe('Systems API', () => {
             .mockImplementation((_, _1, _2, _3, cb) => of(cb([{}])));
         const item = await SERVICE.listSystemZones('1').toPromise();
         expect(item).toBeTruthy();
-        expect(item[0]).toBeInstanceOf(PlaceZone);
+        expect(item.data[0]).toBeInstanceOf(PlaceZone);
     });
 
     it("should allow listing system's triggers", async () => {
@@ -155,7 +155,7 @@ describe('Systems API', () => {
             .mockImplementation((_, _1, _2, _3, cb) => of(cb([{}])));
         const item = await SERVICE.listSystemTriggers('1').toPromise();
         expect(item).toBeTruthy();
-        expect(item[0]).toBeInstanceOf(PlaceTrigger);
+        expect(item.data[0]).toBeInstanceOf(PlaceTrigger);
     });
 
     it('should allow adding a trigger to a system', async () => {

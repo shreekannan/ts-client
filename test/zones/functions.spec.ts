@@ -1,18 +1,18 @@
 import { of } from 'rxjs';
 import { PlaceZone } from '../../src/zones/zone';
+import { PlaceTrigger } from '../../src/triggers/trigger';
 
 import * as Resources from '../../src/resources/functions';
-import { PlaceTrigger } from '../../src/triggers/trigger';
 import * as SERVICE from '../../src/zones/functions';
 
 describe('Zones API', () => {
     it('should allow querying zones', async () => {
         const spy = jest.spyOn(Resources, 'query');
-        spy.mockImplementation((_, process: any, __) => of([process({})]));
+        spy.mockImplementation((_, process: any, __) => of({ data: [process({})] } as any));
         let list = await SERVICE.queryZones().toPromise();
         expect(list).toBeTruthy();
-        expect(list.length).toBe(1);
-        expect(list[0]).toBeInstanceOf(PlaceZone);
+        expect(list.data.length).toBe(1);
+        expect(list.data[0]).toBeInstanceOf(PlaceZone);
         list = await SERVICE.queryZones({}).toPromise();
     });
 
@@ -60,7 +60,7 @@ describe('Zones API', () => {
             .mockImplementation((_, _1, _2, _3, cb) => of(cb([{}])));
         let item = await SERVICE.listZoneTriggers('1').toPromise();
         expect(item).toBeTruthy();
-        expect(item[0]).toBeInstanceOf(PlaceTrigger);
+        expect(item.data[0]).toBeInstanceOf(PlaceTrigger);
         item = await SERVICE.listZoneTriggers('1', {}).toPromise();
     });
 });

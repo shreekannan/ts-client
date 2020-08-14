@@ -3,7 +3,7 @@ import { map } from 'rxjs/operators';
 
 import { apiEndpoint } from '../auth/functions';
 import { toQueryString } from '../utilities/api';
-import { parseLinkHeader } from '../utilities/general';
+import { parseLinkHeader, convertPairStringToMap } from '../utilities/general';
 import { HashMap } from '../utilities/types';
 import { del, get, patch, post, put, responseHeaders } from '../http/functions';
 
@@ -56,6 +56,12 @@ export function cleanupAPI() {
     _next = '';
 }
 
+export type QueryResponse<T> = Observable<{
+    total: number;
+    next: () => QueryResponse<T> | null;
+    data: T[];
+}>;
+
 /**
  * @hidden
  * Query the index of the API route associated with this service
@@ -65,17 +71,22 @@ export function query<T>(
     query_params: HashMap = {},
     fn: (data: HashMap) => T = process,
     path: string = 'resource'
-): Observable<T[]> {
+): QueryResponse<T> {
     const query_str = toQueryString(query_params);
     const url = `${apiEndpoint()}/${path}${query_str ? '?' + query_str : ''}`;
     return get(url).pipe(
         map((resp: HashMap) => {
-            handleHeaders(url, query_str, path);
-            return resp && resp instanceof Array
-                ? resp.map(i => fn(i))
-                : resp && !(resp instanceof Array) && resp.results
-                ? (resp.results as HashMap[]).map(i => process(i))
-                : [];
+            const details = handleHeaders(url, query_str, path);
+            return {
+                total: details.total,
+                next: details.next ? () => query(details.next as Object, fn, path) : null,
+                data:
+                    resp && resp instanceof Array
+                        ? resp.map((i) => fn(i))
+                        : resp && !(resp instanceof Array) && resp.results
+                        ? (resp.results as HashMap[]).map((i) => process(i))
+                        : [],
+            } as any;
         })
     );
 }
@@ -128,7 +139,7 @@ export function task<U = any>(
     task_name: string,
     form_data: any = {},
     method: 'post' | 'get' | 'del' | 'put' = 'post',
-    callback: (_: any) => U = _ => _,
+    callback: (_: any) => U = (_) => _,
     path: string = 'resource'
 ): Observable<U> {
     const query_str = toQueryString(form_data);
@@ -183,17 +194,21 @@ export function remove(
  */
 export function handleHeaders(url: string, query_str: string, name: string) {
     const headers = responseHeaders(url);
+    const details: { total: number; next: HashMap<string> | null } = { total: 0, next: null };
     if (headers && headers['x-total-count']) {
         const total_value = +(headers['x-total-count'] || 0);
         if (query_str.length < 2 || (query_str.length < 12 && query_str.indexOf('offset=') >= 0)) {
             _total[name] = total_value;
         }
         _last_total[name] = total_value;
+        details.total = total_value;
     }
     if (headers && headers.Link) {
         const link_map = parseLinkHeader(headers.Link || '');
         _next = link_map.next;
+        details.next = convertPairStringToMap(_next.split('?')[1]);
     }
+    return details;
 }
 
 function process(data: HashMap) {

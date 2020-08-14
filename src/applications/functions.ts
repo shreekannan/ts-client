@@ -12,7 +12,7 @@ import { PlaceApplicationQueryOptions } from './interfaces';
 /**
  * @private
  */
-const PATH = 'applications';
+const PATH = 'oauth_apps';
 
 /** Convert raw server data to an application object */
 function process(item: HashMap) {

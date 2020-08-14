@@ -7,11 +7,11 @@ import * as Resources from '../../src/resources/functions';
 describe('Applications API', () => {
     it('should allow querying applications', async () => {
         const spy = jest.spyOn(Resources, 'query');
-        spy.mockImplementation((_, process: any, __) => of([process({})]));
+        spy.mockImplementation((_, process: any, __) => of({ data: [process({})] } as any));
         let list = await SERVICE.queryApplications().toPromise();
         expect(list).toBeTruthy();
-        expect(list.length).toBe(1);
-        expect(list[0]).toBeInstanceOf(PlaceApplication);
+        expect(list.data.length).toBe(1);
+        expect(list.data[0]).toBeInstanceOf(PlaceApplication);
         list = await SERVICE.queryApplications({}).toPromise();
     });
 

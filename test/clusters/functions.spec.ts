@@ -11,11 +11,11 @@ describe('Cluster API', () => {
     it('should allow querying clusters', async () => {
         (Resources.query as any) = jest
             .fn()
-            .mockImplementation((_, process: any, __) => of([process({})]));
+            .mockImplementation((_, process: any, __) => of({data: [process({})]}));
         const list = await SERVICE.queryClusters().toPromise();
         expect(list).toBeTruthy();
-        expect(list.length).toBe(1);
-        expect(list[0]).toBeInstanceOf(PlaceCluster);
+        expect(list.data.length).toBe(1);
+        expect(list.data[0]).toBeInstanceOf(PlaceCluster);
     });
 
     it('should allow querying processes', async () => {

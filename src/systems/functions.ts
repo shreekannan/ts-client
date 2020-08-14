@@ -222,14 +222,11 @@ export function moduleTypes(id: string): Observable<HashMap<number>> {
  * Get list of Zones for system
  * @param id System ID
  */
-export function listSystemZones(id: string): Observable<PlaceZone[]> {
-    return task(
-        id,
-        'zones',
-        undefined,
-        'get',
-        (list: any[]) => list.map(item => new PlaceZone(item)),
-        PATH
+export function listSystemZones(id: string){
+    return query(
+        {},
+        (i: HashMap) => new PlaceZone(i),
+        `${PATH}/${id}/zones`
     );
 }
 
@@ -237,14 +234,11 @@ export function listSystemZones(id: string): Observable<PlaceZone[]> {
  * Get list of triggers for system
  * @param id System ID
  */
-export function listSystemTriggers(id: string): Observable<PlaceTrigger[]> {
-    return task(
-        id,
-        'triggers',
-        undefined,
-        'get',
-        (list: any[]) => list.map(item => new PlaceTrigger(item)),
-        PATH
+export function listSystemTriggers(id: string) {
+    return query(
+        {},
+        (i: HashMap) => new PlaceTrigger(i),
+        `${PATH}/${id}/triggers`
     );
 }
 

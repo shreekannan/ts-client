@@ -13,16 +13,16 @@ describe('Resource API', () => {
         fn: (...args: any[]) => Observable<T>,
         result: any,
         test1: any[],
-        test2: any[]
+        test2: any[],
     ) {
         const item = result.hasOwnProperty('results') ? result.results : result;
         (Http[method] as jest.Mock)
             .mockReturnValueOnce(of(result))
             .mockReturnValueOnce(of(result))
             .mockImplementationOnce(() => throwError('An Error Value'));
-        const value = await fn(...test1).toPromise();
+        const value: any = await fn(...test1).toPromise();
         jest.runOnlyPendingTimers();
-        expect(value).toEqual(item || []);
+        expect(value.data ? value.data : value).toEqual(item || []);
         // Test request with parameters
         await fn(...test2).toPromise();
         jest.runOnlyPendingTimers();
@@ -63,7 +63,7 @@ describe('Resource API', () => {
         await testRequest(
             'get',
             Resource.query,
-            [item],
+            { results: [item] },
             [],
             [{ cache: 100, test: true }]
         );
@@ -77,16 +77,12 @@ describe('Resource API', () => {
         await testRequest(
             'get',
             Resource.query,
-            { total: 10, results: undefined },
+            { total: 10, results: [] },
             [],
             [{ test: true }]
         );
-        expect(Http.get).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource'
-        );
-        expect(Http.get).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource?test=true'
-        );
+        expect(Http.get).toBeCalledWith('http://localhost/api/engine/v2/resource');
+        expect(Http.get).toBeCalledWith('http://localhost/api/engine/v2/resource?test=true');
     });
 
     it('should save index request totals', async () => {
@@ -106,7 +102,7 @@ describe('Resource API', () => {
         await testRequest(
             'get',
             Resource.query,
-            { total: 25, results: undefined },
+            { total: 25, results: [item] },
             [{ test: true }],
             [{ test: true }]
         );
@@ -117,39 +113,17 @@ describe('Resource API', () => {
     it('should allow for grabbing the show endpoint for an item', async () => {
         expect.assertions(4);
         const item = { id: 'test', name: 'Test' };
-        await testRequest(
-            'get',
-            Resource.show,
-            item,
-            ['test'],
-            ['test', { test: true }]
-        );
-        expect(Http.get).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource/test'
-        );
-        expect(Http.get).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource/test?test=true'
-        );
+        await testRequest('get', Resource.show, item, ['test'], ['test', { test: true }]);
+        expect(Http.get).toBeCalledWith('http://localhost/api/engine/v2/resource/test');
+        expect(Http.get).toBeCalledWith('http://localhost/api/engine/v2/resource/test?test=true');
     });
 
     it('should allow adding new items', async () => {
         expect.assertions(4);
         const item = { id: 'test', name: 'Test' };
-        await testRequest(
-            'post',
-            Resource.create,
-            item,
-            [item],
-            [item, { test: true }]
-        );
-        expect(Http.post).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource',
-            item
-        );
-        expect(Http.post).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource?test=true',
-            item
-        );
+        await testRequest('post', Resource.create, item, [item], [item, { test: true }]);
+        expect(Http.post).toBeCalledWith('http://localhost/api/engine/v2/resource', item);
+        expect(Http.post).toBeCalledWith('http://localhost/api/engine/v2/resource?test=true', item);
     });
 
     it('should allow running POST tasks on items', async () => {
@@ -161,16 +135,10 @@ describe('Resource API', () => {
             ['test', 'a_task'],
             ['test', 'a_task', { test: true }]
         );
-        expect(Http.post).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource/test/a_task',
-            {}
-        );
-        expect(Http.post).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource/test/a_task',
-            {
-                test: true,
-            }
-        );
+        expect(Http.post).toBeCalledWith('http://localhost/api/engine/v2/resource/test/a_task', {});
+        expect(Http.post).toBeCalledWith('http://localhost/api/engine/v2/resource/test/a_task', {
+            test: true,
+        });
     });
 
     it('should allow updating items', async () => {
@@ -196,19 +164,9 @@ describe('Resource API', () => {
     it('should allow deleting items', async () => {
         expect.assertions(4);
         const item = { id: 'test', name: 'Test' };
-        await testRequest(
-            'del',
-            Resource.remove,
-            item,
-            ['test'],
-            ['test', { test: true }]
-        );
-        expect(Http.del).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource/test'
-        );
-        expect(Http.del).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource/test?test=true'
-        );
+        await testRequest('del', Resource.remove, item, ['test'], ['test', { test: true }]);
+        expect(Http.del).toBeCalledWith('http://localhost/api/engine/v2/resource/test');
+        expect(Http.del).toBeCalledWith('http://localhost/api/engine/v2/resource/test?test=true');
     });
 
     it('should allow running GET tasks on items', async () => {
@@ -220,9 +178,7 @@ describe('Resource API', () => {
             ['test', 'a_task', null, 'get'],
             ['test', 'a_task', { test: true }, 'get']
         );
-        expect(Http.get).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource/test/a_task'
-        );
+        expect(Http.get).toBeCalledWith('http://localhost/api/engine/v2/resource/test/a_task');
         expect(Http.get).toBeCalledWith(
             'http://localhost/api/engine/v2/resource/test/a_task?test=true'
         );

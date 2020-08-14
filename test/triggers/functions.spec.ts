@@ -8,11 +8,11 @@ import * as SERVICE from '../../src/triggers/functions';
 describe('Triggers API', () => {
     it('should allow querying triggers', async () => {
         const spy = jest.spyOn(Resources, 'query');
-        spy.mockImplementation((_, process: any, __) => of([process({})]));
+        spy.mockImplementation((_, process: any, __) => of({ data: [process({})] } as any));
         const list = await SERVICE.queryTriggers().toPromise();
         expect(list).toBeTruthy();
-        expect(list.length).toBe(1);
-        expect(list[0]).toBeInstanceOf(PlaceTrigger);
+        expect(list.data.length).toBe(1);
+        expect(list.data[0]).toBeInstanceOf(PlaceTrigger);
     });
 
     it('should allow showing trigger details', async () => {

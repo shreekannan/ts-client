@@ -7,11 +7,11 @@ import * as Resources from '../../src/resources/functions';
 describe('Repositories API', () => {
     it('should allow querying repositories', async () => {
         const spy = jest.spyOn(Resources, 'query');
-        spy.mockImplementation((_, process: any, __) => of([process({})]));
+        spy.mockImplementation((_, process: any, __) => of({ data: [process({})] } as any));
         let list = await SERVICE.queryRepositories().toPromise();
         expect(list).toBeTruthy();
-        expect(list.length).toBe(1);
-        expect(list[0]).toBeInstanceOf(PlaceRepository);
+        expect(list.data.length).toBe(1);
+        expect(list.data[0]).toBeInstanceOf(PlaceRepository);
         list = await SERVICE.queryRepositories({}).toPromise();
     });
 

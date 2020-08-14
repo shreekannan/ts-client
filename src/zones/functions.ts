@@ -1,11 +1,10 @@
-import { Observable } from 'rxjs';
+
 import { HashMap } from '../utilities/types';
 import {
     create,
     query,
     remove,
     show,
-    task,
     update,
 } from '../resources/functions';
 import { PlaceTrigger } from '../triggers/trigger';
@@ -81,13 +80,10 @@ export function removeZone(id: string, query_params: HashMap = {}) {
 export function listZoneTriggers(
     id: string,
     query_params: HashMap = {}
-): Observable<PlaceTrigger[]> {
-    return task(
-        id,
-        'triggers',
+) {
+    return query(
         query_params,
-        'get',
-        list => list.map((i: HashMap) => new PlaceTrigger(i)),
-        PATH
+        (i: HashMap) => new PlaceTrigger(i),
+        `${PATH}/${id}/triggers`
     );
 }

@@ -7,11 +7,11 @@ import * as Resources from '../../src/resources/functions';
 describe('OAuthSources API', () => {
     it('should allow querying oauth sources', async () => {
         const spy = jest.spyOn(Resources, 'query');
-        spy.mockImplementation((_, process: any, __) => of([process({})]));
+        spy.mockImplementation((_, process: any, __) => of({ data: [process({})] } as any));
         const list = await SERVICE.queryOAuthSources().toPromise();
         expect(list).toBeTruthy();
-        expect(list.length).toBe(1);
-        expect(list[0]).toBeInstanceOf(PlaceOAuthSource);
+        expect(list.data.length).toBe(1);
+        expect(list.data[0]).toBeInstanceOf(PlaceOAuthSource);
     });
 
     it('should allow showing oauth source details', async () => {

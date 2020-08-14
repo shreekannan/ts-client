@@ -7,11 +7,11 @@ import * as SERVICE from '../../src/users/functions';
 describe('Users API', () => {
     it('should allow querying users', async () => {
         const spy = jest.spyOn(Resources, 'query');
-        spy.mockImplementation((_, process: any, __) => of([process({})]));
+        spy.mockImplementation((_, process: any, __) => of({ data: [process({})] } as any));
         let list = await SERVICE.queryUsers().toPromise();
         expect(list).toBeTruthy();
-        expect(list.length).toBe(1);
-        expect(list[0]).toBeInstanceOf(PlaceUser);
+        expect(list.data.length).toBe(1);
+        expect(list.data[0]).toBeInstanceOf(PlaceUser);
         list = await SERVICE.queryUsers({}).toPromise();
     });
 
