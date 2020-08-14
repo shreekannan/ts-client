@@ -42,7 +42,7 @@
                     console.log('[ACA][Auth] Main Frame Detected. Processing redirection...');
                     var data = window.location.search || window.location.hash;
                     data = data.replace(/(^#|^\?)/g, '');
-                    var loc = sessionStorage.getItem('oauth_redirect') || origin;
+                    var loc = (location.origin + location.pathname).replace('oauth-resp.html', '');
                     console.log('[ACA][Auth] Returning to ' + loc);
                     var search_index = loc.indexOf('?');
                     var hash_index = loc.indexOf('#');

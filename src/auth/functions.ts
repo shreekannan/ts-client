@@ -359,9 +359,6 @@ export function loadAuthority(tries: number = 0): Promise<void> {
  */
 export async function sendToAuthorize(state?: string) {
     const auth_url = createLoginURL(state);
-    if (sessionStorage) {
-        sessionStorage.setItem('oauth_redirect', location.href);
-    }
     return location.assign(auth_url);
 }
 
