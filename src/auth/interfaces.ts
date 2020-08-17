@@ -13,6 +13,15 @@ export const MOCK_AUTHORITY = {
     version: `2.0.0`,
 };
 
+export interface AuthorizeDetails {
+    /** Access token */
+    token?: string;
+    /** Token generation code */
+    code?: string;
+    /** TTL of access token */
+    expires_in?: string
+}
+
 export interface PlaceAuthority {
     /** Place ID for the Authority */
     readonly id: string;
