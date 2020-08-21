@@ -136,7 +136,7 @@ export function loadModule(id: string): Observable<HashMap> {
 export function moduleSettings(id: string) {
     return task(
         id,
-        'state',
+        'settings',
         undefined,
         'get',
         list => list.map((item: HashMap) => new PlaceSettings(item)),
