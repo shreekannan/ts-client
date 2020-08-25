@@ -174,7 +174,10 @@ export async function transform(
  */
 const reloadAuth = () => {
     invalidateToken();
-    refreshAuthority().then(() => null, () => setTimeout(() => reloadAuth(), 1000));
+    refreshAuthority().then(
+        () => null,
+        () => setTimeout(() => reloadAuth(), 1000)
+    );
 };
 
 /**
@@ -182,7 +185,10 @@ const reloadAuth = () => {
  * Format error message
  * @param error Message to format
  */
-export async function onError(error: Response, onAuthError: () => void = reloadAuth): Promise<HttpError> {
+export async function onError(
+    error: Response,
+    onAuthError: () => void = reloadAuth
+): Promise<HttpError> {
     /* istanbul ignore else */
     if (error.status === HttpStatusCode.UNAUTHORISED) {
         onAuthError();
@@ -228,12 +234,10 @@ export function request(
             if (!resp.ok) throw resp;
             return success(resp, options.response_type as any);
         }),
-        catchError(async(error) => {
-            throw (
-                error.message
-                    ? error
-                    : await (err(error || ({ text: async () => 'Unknown Error' } as any)))
-            );
+        catchError(async (error) => {
+            throw error.message
+                ? error
+                : await err(error || ({ text: async () => 'Unknown Error' } as any));
         })
     );
 }

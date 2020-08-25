@@ -628,7 +628,6 @@ export function generateTokenWithUrl(url: string): Promise<void> {
                     throw r;
                 })
                 .then((tokens: PlaceTokenResponse) => {
-                    console.log('Tokens:', tokens);
                     _storeTokenDetails(tokens);
                     resolve();
                     delete _promises.generate_tokens;
