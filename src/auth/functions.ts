@@ -631,6 +631,7 @@ export function generateTokenWithUrl(url: string): Promise<void> {
                 })
                 .catch((err) => {
                     log('Auth', 'Error generating new tokens.', err);
+                    _storage.removeItem(`${_client_id}_refresh_token`);
                     reject();
                     delete _promises.generate_tokens;
                 });
