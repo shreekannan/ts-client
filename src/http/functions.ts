@@ -174,7 +174,7 @@ export async function transform(
  */
 const reloadAuth = () => {
     invalidateToken();
-    refreshAuthority();
+    refreshAuthority().then(() => null, () => setTimeout(() => reloadAuth(), 1000));
 };
 
 /**

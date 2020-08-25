@@ -226,10 +226,8 @@ export function refreshAuthority(): Promise<void> {
  */
 export function invalidateToken(): void {
     _storage.removeItem(`${_client_id}_access_token`);
-    _storage.removeItem(`${_client_id}_refresh_token`);
     _storage.removeItem(`${_client_id}_expires_at`);
     _access_token = '';
-    _refresh_token = '';
 }
 
 /* istanbul ignore else */
@@ -585,6 +583,8 @@ export function revokeToken(): Promise<void> {
                 .then((_) => {
                     _access_token = '';
                     _refresh_token = '';
+                    _storage.removeItem(`${_client_id}_access_token`);
+                    _storage.removeItem(`${_client_id}_refresh_token`);
                     resolve();
                     delete _promises.revoke_token;
                 })
@@ -623,8 +623,12 @@ export function generateTokenWithUrl(url: string): Promise<void> {
         _promises.generate_tokens = new Promise<void>((resolve, reject) => {
             log('Auth', 'Generating new token...');
             fetch(url, { method: 'POST' })
-                .then((r) => r.json())
+                .then((r) => {
+                    if (r.ok) return r.json()
+                    throw r;
+                })
                 .then((tokens: PlaceTokenResponse) => {
+                    console.log('Tokens:', tokens);
                     _storeTokenDetails(tokens);
                     resolve();
                     delete _promises.generate_tokens;
@@ -632,6 +636,7 @@ export function generateTokenWithUrl(url: string): Promise<void> {
                 .catch((err) => {
                     log('Auth', 'Error generating new tokens.', err);
                     _storage.removeItem(`${_client_id}_refresh_token`);
+                    _refresh_token = '';
                     reject();
                     delete _promises.generate_tokens;
                 });
