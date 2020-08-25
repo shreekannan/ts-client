@@ -145,7 +145,7 @@ export function isConnected(): boolean {
 /**
  * Listen to websocket status changes
  */
-export function status() {
+export function status(): Observable<boolean> {
     return _observers._place_os_status;
 }
 

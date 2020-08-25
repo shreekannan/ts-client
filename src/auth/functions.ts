@@ -547,7 +547,9 @@ export function createRefreshURL(): string {
         const challenge = sessionStorage.getItem(`${_client_id}_challenge`);
         if (challenge) {
             url += `&code_verifier=${challenge}`;
+            sessionStorage.removeItem(`${_client_id}_challenge`);
         }
+        _code = '';
     }
     return url;
 }
