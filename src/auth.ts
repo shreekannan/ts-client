@@ -21,6 +21,7 @@ export {
     refreshAuthority,
     invalidateToken,
     authorise,
-    logout
+    logout,
+    listenForToken
 } from './auth/functions';
 export { PlaceAuthority, PlaceAuthOptions, PlaceTokenResponse } from './auth/interfaces';

@@ -11,6 +11,7 @@ import { MOCK_AUTHORITY, PlaceAuthOptions, PlaceAuthority, PlaceTokenResponse, A
 
 import * as sha256 from 'fast-sha256';
 import * as base64 from 'byte-base64';
+import { map } from 'rxjs/operators';
 
 /**
  * @private
@@ -45,12 +46,12 @@ let _code: string = '';
  * @private
  * In memory store for access token
  */
-let _access_token: string = '';
+let _access_token = new BehaviorSubject('');
 /**
  * @private
  * In memory store for expiry time of access token
  */
-let _refresh_token: string = '';
+let _refresh_token = new BehaviorSubject('');
 /**
  * @private
  * Current API route
@@ -99,6 +100,7 @@ export function redirectUri(): string {
 /** Bearer token for authenticating requests to engine */
 export function token(): string {
     if (_options.mock) {
+        _access_token.next('mock-token');
         return 'mock-token';
     }
     const expires_at = `${_storage.getItem(`${_client_id}_expires_at`)}`;
@@ -106,12 +108,12 @@ export function token(): string {
         log('Auth', 'Token expired. Requesting new token...');
         invalidateToken();
     }
-    return _access_token || _storage.getItem(`${_client_id}_access_token`) || '';
+    return _access_token.getValue() || _storage.getItem(`${_client_id}_access_token`) || '';
 }
 
 /** Refresh token for renewing the access token */
 export function refreshToken(): string {
-    return _refresh_token || _storage.getItem(`${_client_id}_refresh_token`) || '';
+    return _refresh_token.getValue() || _storage.getItem(`${_client_id}_refresh_token`) || '';
 }
 
 /** Host domain of the PlaceOS server */
@@ -122,6 +124,11 @@ export function host(): string {
 /** Whether the application has an authentication token */
 export function hasToken(): boolean {
     return !!token();
+}
+
+/** Observable for token state */
+export function listenForToken(): Observable<boolean> {
+    return _access_token.pipe(map(_ => !!hasToken()))
 }
 
 /** Place Authority details */
@@ -196,8 +203,8 @@ export function setup(options: PlaceAuthOptions) {
 export function cleanupAuth() {
     _options = {} as any;
     _authority = undefined;
-    _access_token = '';
-    _refresh_token = '';
+    _access_token.next('');
+    _refresh_token.next('');
     _online.next(false);
     _client_id = '';
     _code = '';
@@ -226,7 +233,7 @@ export function refreshAuthority(): Promise<void> {
 export function invalidateToken(): void {
     _storage.removeItem(`${_client_id}_access_token`);
     _storage.removeItem(`${_client_id}_expires_at`);
-    _access_token = '';
+    _access_token.next('');
 }
 
 /* istanbul ignore else */
@@ -595,8 +602,8 @@ export function revokeToken(): Promise<void> {
             const token_uri = _options.token_uri || '/auth/token';
             fetch(`${token_uri}?token=${token()}`, { method: 'POST' })
                 .then((_) => {
-                    _access_token = '';
-                    _refresh_token = '';
+                    _access_token.next('');
+                    _refresh_token.next('');
                     _storage.removeItem(`${_client_id}_access_token`);
                     _storage.removeItem(`${_client_id}_refresh_token`);
                     resolve();
@@ -649,7 +656,7 @@ export function generateTokenWithUrl(url: string): Promise<void> {
                 .catch((err) => {
                     log('Auth', 'Error generating new tokens.', err);
                     _storage.removeItem(`${_client_id}_refresh_token`);
-                    _refresh_token = '';
+                    _refresh_token.next('');
                     reject();
                     delete _promises.generate_tokens;
                 });
@@ -683,8 +690,8 @@ export function _storeTokenDetails(details: PlaceTokenResponse) {
         removeFragment('expires_in');
     }
     _online.next(true);
-    _access_token = details.access_token || '';
-    _refresh_token = details.refresh_token || '';
+    _access_token.next(details.access_token || '');
+    _refresh_token.next(details.refresh_token || '');
 }
 
 /**
