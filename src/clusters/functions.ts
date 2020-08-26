@@ -7,7 +7,7 @@ import { PlaceProcess } from './process';
 /**
  * @private
  */
-const PATH = 'clusters';
+const PATH = 'cluster';
 
 /** Convert raw server data to a cluster object */
 function process(item: HashMap) {
