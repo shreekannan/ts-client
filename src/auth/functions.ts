@@ -53,6 +53,11 @@ let _access_token: string = '';
 let _refresh_token: string = '';
 /**
  * @private
+ * Current API route
+ */
+let _route: string = `/api/engine/v2`;
+/**
+ * @private
  * Whether engine is online
  */
 const _online = new BehaviorSubject(false);
@@ -71,14 +76,7 @@ export function apiEndpoint(): string {
 
 /** Path of the API endpoint */
 export function httpRoute() {
-    /* istanbul ignore else */
-    if (_authority) {
-        /* istanbul ignore else */
-        if (!/[2-9]\.[0-9]+\.[0-9]+/g.test(_authority.version || '')) {
-            return `/control/api`;
-        }
-    }
-    return `/api/engine/v2`;
+    return _route;
 }
 
 /**
@@ -203,6 +201,7 @@ export function cleanupAuth() {
     _online.next(false);
     _client_id = '';
     _code = '';
+    _route = `/api/engine/v2`;
     // Clear local subscriptions
     for (const key in _promises) {
         /* istanbul ignore else */
@@ -329,6 +328,7 @@ export function loadAuthority(tries: number = 0): Promise<void> {
                 .then((resp) => resp.json())
                 .then((api_authority: PlaceAuthority) => {
                     _authority = api_authority;
+                    _route = !/[2-9]\.[0-9]+\.[0-9]+/g.test(_authority.version || '') ? `/control/api` : `/api/engine/v2`;
                     const response = () => {
                         _online.next(true);
                         setTimeout(() => delete _promises.load_authority, 500);
@@ -668,6 +668,7 @@ export function _storeTokenDetails(details: PlaceTokenResponse) {
         _storage.setItem(`${_client_id}_expires_at`, `${expires_at.valueOf()}`);
         removeFragment('expires_in');
     }
+    _online.next(true);
     _access_token = details.access_token || '';
     _refresh_token = details.refresh_token || '';
 }

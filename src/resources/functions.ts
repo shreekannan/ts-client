@@ -78,7 +78,7 @@ export function query<T>(
         map((resp: HashMap) => {
             const details = handleHeaders(url, query_str, path);
             return {
-                total: details.total,
+                total: details.total || resp?.total,
                 next: details.next ? () => query(details.next as Object, fn, path) : null,
                 data:
                     resp && resp instanceof Array
