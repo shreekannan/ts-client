@@ -1,4 +1,3 @@
-import { formatISO } from 'date-fns';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
@@ -479,14 +478,13 @@ export function connect(tries: number = 0): Promise<void> {
  */
 export function createWebsocket() {
     const secure = isSecure() || location.protocol.indexOf('https') >= 0;
-    const expiry = `expires=${formatISO(Math.floor(new Date().getTime() / 1000 + 120))};`;
     let url = `ws${secure ? 's' : ''}://${host()}${websocketRoute()}${
         isFixedDevice() ? '?fixed_device=true' : ''
     }`;
     if (!needsTokenHeader()) {
-        document.cookie = `bearer_token=${token()}; ${expiry} path=${httpRoute()}; ${
+        document.cookie = `bearer_token=${token()};max-age=120;path=${httpRoute()};${
             secure ? 'Secure;' : ''
-        } SameSite=Strict`;
+        }SameSite=Strict`;
     } else {
         url += `${url.indexOf('?') >= 0 ? '&' : '?'}bearer_token=${token()}`;
     }
