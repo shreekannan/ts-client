@@ -100,7 +100,6 @@ export function redirectUri(): string {
 /** Bearer token for authenticating requests to engine */
 export function token(): string {
     if (_options.mock) {
-        _access_token.next('mock-token');
         return 'mock-token';
     }
     const expires_at = `${_storage.getItem(`${_client_id}_expires_at`)}`;
