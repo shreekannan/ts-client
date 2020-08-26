@@ -4,7 +4,7 @@ import { isBefore } from 'date-fns';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
 
-import { destroyWaitingAsync } from '../utilities/async';
+import { destroyWaitingAsync, timeout, clearAsyncTimeout } from '../utilities/async';
 import { generateNonce, getFragments, log, removeFragment } from '../utilities/general';
 import { HashMap } from '../utilities/types';
 import { MOCK_AUTHORITY, PlaceAuthOptions, PlaceAuthority, PlaceTokenResponse, AuthorizeDetails } from './interfaces';
@@ -369,28 +369,42 @@ export async function sendToAuthorize(state?: string) {
  * @param url Authorization URL
  */
 export function authorizeWithIFrame(url: string) {
-    return new Promise((resolve, reject) => {
-        const iframe = document.createElement('iframe');
-        iframe.style.position = 'absolute';
-        iframe.style.top = '0';
-        iframe.style.left = '0';
-        iframe.style.height = '1px';
-        iframe.style.width = '1px';
-        iframe.style.zIndex = '-1';
-        iframe.id = 'place-authorize';
-        iframe.src = `${url}`;
-        window.addEventListener('message', (event) => {
-            if (event.origin === location.origin && event.data.type === 'place-os') {
-                const data: AuthorizeDetails = event.data;
-                document.body.removeChild(iframe);
-                if (data.token) return _storeTokenDetails({ access_token: data.token, ...data }  as any);
-                _code = data.code || '';
-                generateToken().then(_ => resolve(_), _ => reject(_));
-            }
+    if (!_promises.iframe_auth) {
+        _promises.iframe_auth = new Promise((resolve, reject) => {
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'absolute';
+            iframe.style.top = '0';
+            iframe.style.left = '0';
+            iframe.style.height = '1px';
+            iframe.style.width = '1px';
+            iframe.style.zIndex = '-1';
+            iframe.id = 'place-authorize';
+            iframe.src = `${url}`;
+            const callback = (event: MessageEvent) => {
+                if (event.origin === location.origin && event.data.type === 'place-os') {
+                    const data: AuthorizeDetails = event.data;
+                    document.body.removeChild(iframe);
+                    clearAsyncTimeout('iframe_auth');
+                    window.removeEventListener('message', callback);
+                    delete _promises.iframe_auth;
+                    if (data.token) {
+                        resolve();
+                        return _storeTokenDetails({ access_token: data.token, ...data }  as any);
+                    }
+                    _code = data.code || '';
+                    generateToken().then(_ => resolve(_), _ => reject(_));
+                }
+            };
+            timeout('iframe_auth', () => reject(), 15 * 1000);
+            window.addEventListener('message', callback);
+            iframe.onerror = _ => {
+                delete _promises.iframe_auth;
+                reject()
+            };
+            document.body.appendChild(iframe);
         });
-        iframe.onerror = _ => reject();
-        document.body.appendChild(iframe);
-    })
+    }
+    return _promises.iframe_auth;
 }
 
 /**

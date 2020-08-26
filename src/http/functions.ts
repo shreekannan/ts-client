@@ -201,7 +201,7 @@ export async function onError(
 
 /**
  * @private
- * Perform AJAX Request
+ * Perform fetch request
  * @param method Request verb. `GET`, `POST`, `PUT`, `PATCH`, or `DELETE`
  * @param url URL of the request endpoint
  * @param options Options to add to the request
