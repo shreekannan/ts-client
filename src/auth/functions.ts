@@ -103,11 +103,13 @@ export function token(): string {
         return 'mock-token';
     }
     const expires_at = `${_storage.getItem(`${_client_id}_expires_at`)}`;
+    const access_token = _access_token.getValue();
     if (isBefore(new Date(+expires_at), new Date())) {
         log('Auth', 'Token expired. Requesting new token...');
         invalidateToken();
+        authorise();
     }
-    return _access_token.getValue() || _storage.getItem(`${_client_id}_access_token`) || '';
+    return access_token || _storage.getItem(`${_client_id}_access_token`) || '';
 }
 
 /** Refresh token for renewing the access token */
@@ -670,7 +672,7 @@ export function generateTokenWithUrl(url: string): Promise<void> {
  * @param details
  */
 export function _storeTokenDetails(details: PlaceTokenResponse) {
-    const expires_at = addSeconds(new Date(), parseInt(details.expires_in, 10));
+    const expires_at = addSeconds(new Date(), parseInt(details.expires_in, 10) - 300);
     if (isTrusted()) {
         // Store access token
         if (details.access_token) {

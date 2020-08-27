@@ -132,6 +132,7 @@ describe('Auth', () => {
         await Auth.setup(options);
         expect(Auth.token()).toBe('test');
         localStorage.setItem(`${Auth.clientId()}_expires_at`, `${new Date().getTime() - 3600}`);
+        expect(Auth.token()).toBe('test');
         expect(Auth.token()).toBe('');
     });
 
