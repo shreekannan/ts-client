@@ -1,17 +1,21 @@
-import { Observable } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { Observable, throwError, of } from 'rxjs';
+import { switchMap, retryWhen, mergeMap, filter, take } from 'rxjs/operators';
 import { fromFetch } from 'rxjs/fetch';
 
-import { invalidateToken, isMock, refreshAuthority, token } from '../auth/functions';
+import {
+    invalidateToken,
+    isMock,
+    refreshAuthority,
+    token,
+    listenForToken,
+} from '../auth/functions';
 import { log } from '../utilities/general';
 import { HashMap } from '../utilities/types';
 import {
-    HttpError,
     HttpJsonOptions,
     HttpOptions,
     HttpResponse,
     HttpResponseType,
-    HttpStatusCode,
     HttpTextOptions,
     HttpVerb,
     HttpVoidOptions,
@@ -182,25 +186,6 @@ const reloadAuth = () => {
 
 /**
  * @private
- * Format error message
- * @param error Message to format
- */
-export async function onError(
-    error: Response,
-    onAuthError: () => void = reloadAuth
-): Promise<HttpError> {
-    /* istanbul ignore else */
-    if (error.status === HttpStatusCode.UNAUTHORISED) {
-        onAuthError();
-    }
-    return {
-        status: error.status,
-        message: await error.text(),
-    };
-}
-
-/**
- * @private
  * Perform fetch request
  * @param method Request verb. `GET`, `POST`, `PUT`, `PATCH`, or `DELETE`
  * @param url URL of the request endpoint
@@ -212,8 +197,7 @@ export function request(
     options: HttpOptions,
     is_mock: () => boolean = isMock,
     mock_handler: (m: HttpVerb, url: string) => Observable<HttpResponse> | null = mockRequest,
-    success: (e: Response, t: HttpResponseType) => Promise<HttpResponse> = transform,
-    err: (e: Response) => Promise<HttpError> = onError
+    success: (e: Response, t: HttpResponseType) => Promise<HttpResponse> = transform
 ): Observable<HttpResponse> {
     if (is_mock()) {
         const request_obs = mock_handler(method, url);
@@ -222,22 +206,35 @@ export function request(
         }
     }
     options.headers = options.headers || {};
-    options.headers.Authorization = `Bearer ${token()}`;
     options.headers['Content-Type'] = `application/json`;
-    return fromFetch(url, {
-        ...options,
-        body: JSON.stringify(options.body),
-        method,
-        credentials: 'same-origin',
-    }).pipe(
-        switchMap((resp) => {
-            if (!resp.ok) throw resp;
-            return success(resp, options.response_type as any);
+    return listenForToken().pipe(
+        filter((_) => _),
+        take(1),
+        switchMap((_) => {
+            options.headers!.Authorization = `Bearer ${token()}`;
+            return fromFetch(url, {
+                ...options,
+                body: JSON.stringify(options.body),
+                method,
+                credentials: 'same-origin',
+            });
         }),
-        catchError(async (error) => {
-            throw error.message
-                ? error
-                : await err(error || ({ text: async () => 'Unknown Error' } as any));
-        })
+        switchMap((resp) => {
+            if (resp.ok) {
+                return success(resp, options.response_type as any);
+            }
+            return throwError(resp);
+        }),
+        retryWhen((attempts: Observable<any>) =>
+            attempts.pipe(
+                mergeMap((error, i) => {
+                    if (i + 1 > 4 || error.status !== 401) {
+                        return throwError(error || {});
+                    }
+                    reloadAuth();
+                    return of(error);
+                })
+            )
+        )
     );
 }

@@ -11,9 +11,10 @@ describe('Http', () => {
     beforeEach(() => {
         (Auth as any).refreshAuthority = jest.fn(() => Promise.resolve());
         (Auth as any).invalidateToken = jest.fn(() => Promise.resolve());
-        (Auth as any).has_token = jest.fn();
-        (Auth as any).has_token.mockReturnValue(true);
-        (Auth as any).has_token.mockReturnValue(true);
+        (Auth as any).hasToken = jest.fn();
+        (Auth as any).hasToken.mockReturnValue(true);
+        (Auth as any).listenForToken = jest.fn(() => of(true, false, true));
+        (Auth as any).hasToken.mockReturnValue(true);
         window.fetch = jest.fn().mockImplementation(
             async () =>
                 ({
@@ -36,33 +37,39 @@ describe('Http', () => {
         jest.useRealTimers();
     });
 
-    it('should refresh auth on 401 errors on GET and DELETE requests', async () => {
-        expect.assertions(4);
+    it('should handle non 401 errors', async () => {
+        expect.assertions(2);
         window.fetch = jest.fn().mockImplementation(async () => ({
             status: 400,
             text: () => Promise.resolve('Bad Request'),
         }));
-        await Http.get('_')
+        await Http.request('GET', '_', {})
             .toPromise()
-            .catch((_) => {
+            .catch((error) => {
                 expect(Auth.refreshAuthority).not.toBeCalled();
+                expect(error.status).toBe(400);
             });
-        (Auth as any).has_token.mockReturnValue(false);
-        window.fetch = jest.fn().mockImplementation(async () => ({
-            status: 401,
-            text: () => Promise.resolve('Unauthorised'),
-        }));
-        await Http.get('_')
+    });
+
+    it('should refresh auth on 401 errors', async () => {
+        expect.assertions(1);
+        window.fetch = jest
+            .fn()
+            .mockImplementation(async () => ({
+                status: 200,
+                text: async () => 'Success',
+                json: async () => {},
+            }))
+            .mockImplementationOnce(async () => ({
+                status: 401,
+                text: async () => 'Unauthorised',
+            }));
+        (Auth as any).listenForToken = jest.fn(() => of(true, false, true));
+        setTimeout(() => (Auth as any).hasToken.mockReturnValue(true), 500);
+        await Http.request('GET', '_', {})
             .toPromise()
             .catch((_) => _);
         expect(Auth.refreshAuthority).toBeCalled();
-        (Auth as any).has_token.mockReturnValue(true);
-        await Http.get('_')
-            .toPromise()
-            .catch((_) => {
-                expect(Auth.invalidateToken).toHaveBeenCalledTimes(2);
-                expect(Auth.refreshAuthority).toHaveBeenCalledTimes(2);
-            });
     });
 
     it('should expose response headers', () => {
@@ -82,10 +89,10 @@ describe('Http', () => {
     it('should allow returning text data for GET', (done) => {
         expect.assertions(2);
         Http.get('test_url', { response_type: 'text' }).subscribe((data) => {
+            expect(window.fetch).toHaveBeenCalled();
             expect(data).toBe('MSG Received!!!');
             done();
         });
-        expect(window.fetch).toHaveBeenCalled();
         jest.runOnlyPendingTimers();
     });
 
@@ -106,10 +113,7 @@ describe('Http', () => {
         Http.get('_').subscribe(
             (_) => null,
             (err) => {
-                expect(err).toEqual({
-                    status: 400,
-                    message: 'Bad Request',
-                });
+                expect(err.status).toBe(400);
                 done();
             }
         );
@@ -154,10 +158,7 @@ describe('Http', () => {
         Http.post('_', '').subscribe(
             (_) => null,
             (err) => {
-                expect(err).toEqual({
-                    status: 400,
-                    message: 'Bad Request',
-                });
+                expect(err.status).toBe(400);
                 done();
             }
         );
@@ -184,10 +185,7 @@ describe('Http', () => {
         Http.put('_', '').subscribe(
             (_) => null,
             (err) => {
-                expect(err).toEqual({
-                    status: 400,
-                    message: 'Bad Request',
-                });
+                expect(err.status).toBe(400);
                 done();
             }
         );
@@ -214,10 +212,7 @@ describe('Http', () => {
         Http.patch('_', '').subscribe(
             (_: any) => null,
             (err: HttpError) => {
-                expect(err).toEqual({
-                    status: 400,
-                    message: 'Bad Request',
-                });
+                expect(err.status).toBe(400);
                 done();
             }
         );
@@ -265,10 +260,7 @@ describe('Http', () => {
         Http.del('_').subscribe(
             (_: any) => null,
             (err: HttpError) => {
-                expect(err).toEqual({
-                    status: 400,
-                    message: 'Bad Request',
-                });
+                expect(err.status).toBe(400);
                 done();
             }
         );

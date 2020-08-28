@@ -483,8 +483,8 @@ export function createWebsocket() {
     }`;
     if (!needsTokenHeader()) {
         document.cookie = `bearer_token=${token()};max-age=120;path=${httpRoute()};${
-            secure ? 'Secure;' : ''
-        }SameSite=Strict`;
+            secure ? 'secure;' : ''
+        }samesite=strict`;
     } else {
         url += `${url.indexOf('?') >= 0 ? '&' : '?'}bearer_token=${token()}`;
     }
