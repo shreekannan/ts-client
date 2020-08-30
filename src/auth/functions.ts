@@ -19,7 +19,7 @@ import { map } from 'rxjs/operators';
 let _options: PlaceAuthOptions = {} as any;
 /**
  * @private
- * Browser key store to use for authentication credentials. Defaults to localStorage
+ * Browser key store to use for authentication credentials. Defaults to `localStorage`
  */
 let _storage: Storage = localStorage;
 /**
@@ -49,7 +49,7 @@ let _code: string = '';
 let _access_token = new BehaviorSubject('');
 /**
  * @private
- * In memory store for expiry time of access token
+ * In memory store for refresh token
  */
 let _refresh_token = new BehaviorSubject('');
 /**
@@ -59,16 +59,16 @@ let _refresh_token = new BehaviorSubject('');
 let _route: string = `/api/engine/v2`;
 /**
  * @private
- * Whether engine is online
+ * Whether PlaceOS is online
  */
 const _online = new BehaviorSubject(false);
 /**
  * @private
- * Observer for the online state of engine
+ * Observer for the online state of PlaceOS
  */
 const _online_observer = _online.asObservable();
 
-/** API Endpoint for the retrieved version of engine */
+/** API Endpoint for the retrieved version of PlaceOS */
 export function apiEndpoint(): string {
     const secure = _options.secure || location.protocol.indexOf('https') >= 0;
     const api_host = `${secure ? 'https:' : 'http:'}//${_options.host || location.host}`;
@@ -82,6 +82,7 @@ export function httpRoute() {
 
 /**
  * @hidden
+ * Whether requests need token in the request URL or as a header
  */
 export function needsTokenHeader(): boolean {
     return !!_options.token_header
@@ -97,7 +98,7 @@ export function redirectUri(): string {
     return _options.redirect_uri;
 }
 
-/** Bearer token for authenticating requests to engine */
+/** Bearer token for authenticating requests to PlaceOS */
 export function token(): string {
     if (_options.mock) {
         return 'mock-token';
@@ -137,22 +138,22 @@ export function authority(): PlaceAuthority | undefined {
     return _authority;
 }
 
-/** Whether engine is online */
+/** Whether PlaceOS is online */
 export function isOnline(): boolean {
     return _online.getValue();
 }
 
-/** Whether engine is online */
+/** Whether requests should use mock handlers */
 export function isMock(): boolean {
     return !!_options.mock;
 }
 
-/** Whether engine connection is secure */
+/** Whether PlaceOS connection is secure */
 export function isSecure(): boolean {
     return !!_options.secure;
 }
 
-/** Observable for the online state of engine */
+/** Observable for the online state of PlaceOS */
 export function onlineState(): Observable<boolean> {
     return _online_observer;
 }
@@ -255,7 +256,7 @@ export function authorise(
                 return reject('Authority is not loaded');
             }
             log('Auth', 'Authorising user...');
-            const check_token = () => {
+            const after_check = () => {
                 if (token()) {
                     log('Auth', 'Valid token found.');
                     delete _promises.authorise;
@@ -287,7 +288,7 @@ export function authorise(
                     }
                 }
             };
-            checkToken().then(check_token, check_token);
+            checkToken().then(after_check, after_check);
         });
     }
     return _promises.authorise as Promise<string>;
