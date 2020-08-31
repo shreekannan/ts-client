@@ -159,7 +159,7 @@ export async function transform(
     if (resp.headers) {
         const map: HashMap<string> = {};
         if (resp.headers.forEach) {
-            resp.headers.forEach((v, k) => (map[k] = v));
+            resp.headers.forEach((v, k) => (map[k.toLowerCase()] = v));
         } else {
             Object.keys(resp.headers).forEach((k) => (map[k] = (resp as any).headers[k]));
         }
