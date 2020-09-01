@@ -35,8 +35,9 @@ The setup method takes a `config` object with the following properties
 | `token_uri`    | URI for generating new auth tokens                      | No       | `string`               | `"/auth/token"`           |
 | `redirect_uri` | URI to redirect user to after authorising session       | No       | `string`               | `"/oauth-resp.html"`      |
 | `scope`        | Scope of the user permissions needed by the application | No       | `string`               | `"admin"`                 |
-| `storage`      | Browser storage to use for storing user credentials     | Yes      | `"local" | "session"` |                           |
+| `storage`      | Browser storage to use for storing user credentials     | Yes      | `"local" | "session"`  |                           |
 | `handle_login` | Whether PlaceOS should handle user login                | Yes      | `boolean`              | `true`                    |
+| `use_iframe`   | Use iFrame for authorization of application             | Yes      | `boolean`              | `false`                   |
 
 
 ### Websocket API
@@ -247,3 +248,12 @@ Query parameters are also available on the callback input.
 `GET`, `POST`, `PUT`, `PATCH` and `DELETE` requests can be mocked out.
 
 If a request is made and there are no handlers it will attempt to make the live request.
+
+### Authentication
+
+Authentication is handled automatically by the library but can be configured with the `setup` configuration.
+
+If you wish to handle login within your application you can set `handle_login` to `false` to prevent redirecting to the login URL set in the `authority`.  
+If you wish to prevent redirecting the application to handle application authentication you can set `use_iframe` to `true` to have that handled in the background.
+
+![Authentication Flowchart](https://aca.im/cdn/images/auth-flowchart.png)
