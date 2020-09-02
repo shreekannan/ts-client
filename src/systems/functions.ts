@@ -89,8 +89,8 @@ export function addSystemModule(
     id: string,
     module_id: string,
     data: HashMap = {}
-): Observable<void> {
-    return task<void>(id, `module/${module_id}`, data, 'put', undefined, PATH);
+): Observable<PlaceSystem> {
+    return task(id, `module/${module_id}`, data, 'put', (d) => process(d), PATH);
 }
 
 /**
@@ -101,8 +101,8 @@ export function addSystemModule(
 export function removeSystemModule(
     id: string,
     module_id: string
-): Observable<void> {
-    return task<void>(id, `module/${module_id}`, {}, 'del', undefined, PATH);
+): Observable<PlaceSystem> {
+    return task(id, `module/${module_id}`, {}, 'del', (d) => process(d), PATH);
 }
 
 /**
