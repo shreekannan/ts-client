@@ -15,6 +15,10 @@ export class PlaceRepository extends PlaceResource {
     public readonly commit_hash: string;
     /** Repository type */
     public readonly repo_type: PlaceRepositoryType;
+    /** Username to connect to repository with */
+    public readonly username: string;
+    /** Password to connect to repository with */
+    public readonly password: string;
 
     /** Repository type */
     public get type(): PlaceRepositoryType {
@@ -32,5 +36,7 @@ export class PlaceRepository extends PlaceResource {
             typeof raw_data.repo_type === 'string'
                 ? (raw_data.repo_type as any)
                 : PlaceRepositoryType.Driver;
+        this.username = raw_data.username || '';
+        this.password = raw_data.password || '';
     }
 }
