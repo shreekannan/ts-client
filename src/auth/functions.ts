@@ -520,7 +520,7 @@ export function createLoginURL(state?: string): string {
         `&state=${encodeURIComponent(state)}` +
         `&redirect_uri=${encodeURIComponent(_options.redirect_uri)}` +
         `&scope=${encodeURIComponent(_options.scope)}`;
-    if (response_type === 'code') {
+    if (_options.auth_type === 'auth_code') {
         const { challenge, verify } = generateChallenge();
         sessionStorage.setItem(`${_client_id}_challenge`, challenge);
         url += `&code_challenge_method=S256`;
