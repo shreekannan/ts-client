@@ -427,6 +427,9 @@ export function connect(tries: number = 0): Promise<void> {
     if (!_connection_promise) {
         _connection_promise = new Promise<void>((resolve) => {
             _connection_attempts++;
+            if (_websocket) {
+                _websocket.complete();
+            }
             _websocket = isMock() ? createMockWebSocket() : createWebsocket();
             if (_websocket && (token() || isMock()) && isOnline()) {
                 _websocket.subscribe(
@@ -441,11 +444,15 @@ export function connect(tries: number = 0): Promise<void> {
                         onMessage(resp);
                     },
                     (err: SimpleNetworkError) => {
+                        _websocket = undefined;
                         _connection_promise = null;
                         clearHealthCheck();
                         onWebSocketError(err);
                     },
-                    () => _status.next(false)
+                    () => {
+                        _websocket = undefined;
+                        _status.next(false);
+                    }
                 );
                 if (_keep_alive) {
                     clearInterval(_keep_alive);
