@@ -470,6 +470,8 @@ export function connect(tries: number = 0): Promise<void> {
                 /* istanbul ignore else */
                 if (!_websocket) {
                     log('WS', `Failed to create websocket(${tries}). Retrying...`, undefined, 'error');
+                } else {
+                    log('WS', `Waiting on auth(${tries}). Retrying...`, undefined, 'warn');
                 }
                 _connection_promise = null;
                 setTimeout(async () => resolve(await connect(tries)), 300 * Math.min(20, ++tries));
