@@ -11,7 +11,7 @@ import * as ws from '../../src/realtime/functions';
 describe('MockEngineWebsocket', () => {
     beforeEach(() => {
         jest.spyOn(Auth, 'isMock').mockReturnValue(true);
-        jest.spyOn(Auth, 'isOnline').mockReturnValue(true);
+        jest.spyOn(Auth, 'authority').mockReturnValue({} as any);
         registerSystem('sys-A0', {
             Test: [
                 {

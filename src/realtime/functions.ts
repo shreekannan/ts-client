@@ -8,11 +8,11 @@ import {
     httpRoute,
     invalidateToken,
     isMock,
-    isOnline,
     isSecure,
     refreshAuthority,
     token,
     needsTokenHeader,
+    authority,
 } from '../auth/functions';
 import { log } from '../utilities/general';
 import { HashMap } from '../utilities/types';
@@ -102,6 +102,7 @@ _observers._place_os_debug_events = debug_events.asObservable();
  * @private
  */
 export function cleanupRealtime() {
+    _websocket?.complete();
     _websocket = undefined;
     REQUEST_COUNT = 0;
     for (const key in _binding) {
@@ -279,6 +280,14 @@ export function send<T = any>(request: PlaceCommandRequest, tries: number = 0): 
     if (!_requests[key]) {
         const req: PlaceCommandRequestMetadata = { ...request, key };
         req.promise = new Promise((resolve, reject) => {
+            const retry = () => {
+                delete _requests[key];
+                (_requests[key] as any) = null;
+                send(request, tries).then(
+                    (_) => resolve(_),
+                    (_) => reject(_)
+                );
+            }
             if (_websocket && isConnected()) {
                 if (isMock()) {
                     handleMockSend(request, _websocket, _listeners);
@@ -288,14 +297,10 @@ export function send<T = any>(request: PlaceCommandRequest, tries: number = 0): 
                 const binding = `${request.sys}, ${request.mod}_${request.index}, ${request.name}`;
                 log('WS', `[${request.cmd.toUpperCase()}](${request.id}) ${binding}`, request.args);
                 _websocket.next(request);
+            } else if (!_connection_promise) {
+                connect().then(() => retry());
             } else {
-                connect().then(() => {
-                    delete _requests[key];
-                    send(request, tries).then(
-                        (_) => resolve(_),
-                        (_) => reject(_)
-                    );
-                });
+                setTimeout(() => retry(), 1000);
             }
         });
         _requests[key] = req;
@@ -424,22 +429,20 @@ export function handleNotify<T = any>(
  * Connect to engine websocket
  */
 export function connect(tries: number = 0): Promise<void> {
-    if (!_connection_promise) {
+    if (_connection_promise == null) {
         _connection_promise = new Promise<void>((resolve) => {
             _connection_attempts++;
-            if (_websocket) {
-                _websocket.complete();
-            }
             _websocket = isMock() ? createMockWebSocket() : createWebsocket();
-            if (_websocket && (token() || isMock()) && isOnline()) {
+            if (_websocket && (token() || isMock()) && authority()) {
+                log('WS', `Connecting to websocket...`);
                 _websocket.subscribe(
                     (resp: PlaceResponse) => {
                         if (!_status.getValue()) {
+                            log('WS', `Connection established.`);
                             resolve();
-                            _status.next(true);
                         }
+                        _status.next(true);
                         _connection_attempts = 0;
-                        _connection_promise = null;
                         clearHealthCheck();
                         onMessage(resp);
                     },
@@ -451,6 +454,7 @@ export function connect(tries: number = 0): Promise<void> {
                     },
                     () => {
                         _websocket = undefined;
+                        _connection_promise = null;
                         _status.next(false);
                     }
                 );
@@ -469,16 +473,18 @@ export function connect(tries: number = 0): Promise<void> {
             } else {
                 /* istanbul ignore else */
                 if (!_websocket) {
-                    log('WS', `Failed to create websocket(${tries}). Retrying...`, undefined, 'error');
+                    log('WS', `Failed to create websocket(${tries}). Retrying in ${1000 * Math.min(10, tries + 1)}ms...`, undefined, 'error');
                 } else {
-                    log('WS', `Waiting on auth(${tries}). Retrying...`, undefined, 'warn');
+                    log('WS', `Waiting on auth(${tries}). Retrying in ${1000 * Math.min(10, tries + 1)}ms...`, undefined, 'warn');
                 }
-                _connection_promise = null;
-                setTimeout(async () => resolve(await connect(tries)), 300 * Math.min(20, ++tries));
+                setTimeout(() => {
+                    _connection_promise = null;
+                    connect(tries).then(_ => resolve(_));
+                }, 1000 * Math.min(10, ++tries));
             }
         });
     }
-    return _connection_promise
+    return _connection_promise;
 }
 
 /**
@@ -497,7 +503,7 @@ export function createWebsocket() {
     } else {
         url += `${url.indexOf('?') >= 0 ? '&' : '?'}bearer_token=${token()}`;
     }
-    log('WS', `Connecting to ws${secure ? 's' : ''}://${host()}${websocketRoute()}`);
+    log('WS', `Creating websocket connection to ws${secure ? 's' : ''}://${host()}${websocketRoute()}`);
     /* istanbul ignore next */
     return webSocket<any>({
         url,
@@ -521,7 +527,7 @@ export function createWebsocket() {
  */
 export function reconnect() {
     /* istanbul ignore else */
-    if (_websocket && isConnected) {
+    if (_websocket && isConnected()) {
         _websocket.complete();
         /* istanbul ignore else */
         if (_keep_alive) {
@@ -529,6 +535,7 @@ export function reconnect() {
             _keep_alive = undefined;
         }
     }
+    log('WS', `Reconnecting in ${Math.min(5000, _connection_attempts * 300 || 1000)}ms...`);
     setTimeout(() => connect(), Math.min(5000, _connection_attempts * 300 || 1000));
 }
 

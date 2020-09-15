@@ -26,7 +26,7 @@ describe('Realtime API', () => {
         log_spy = jest.spyOn(Utils, 'log');
         (Auth as any).token = jest.fn().mockReturnValue('test');
         (Auth as any).apiEndpoint = jest.fn().mockReturnValue('/api/engine/v2');
-        (Auth as any).isOnline = jest.fn().mockReturnValue(true);
+        (Auth as any).authority = jest.fn().mockReturnValue({});
         (Auth as any).isMock = jest.fn().mockReturnValue(false);
         (Auth as any).refreshAuthority = jest.fn().mockImplementation(async () => null);
         (Auth as any).invalidateToken = jest.fn().mockImplementation(async () => null);
@@ -148,55 +148,59 @@ describe('Realtime API', () => {
         } as PlaceResponse);
     });
 
-    // it('should reconnect the websocket', done => {
-    //     let actions = 0;
-    //     ws.status().subscribe((connected: boolean) => {
-    //         actions++;
-    //         if (actions === 1) {
-    //             // Websocket connected
-    //             expect(connected).toBe(true);
-    //             fake_socket.error({
-    //                 status: 401,
-    //                 message: 'Invalid auth token'
-    //             });
-    //             jest.runOnlyPendingTimers();
-    //             jest.runOnlyPendingTimers();
-    //         } else if (actions === 2) {
-    //             // Websocket disconnected
-    //             expect(connected).toBe(false);
-    //             jest.runOnlyPendingTimers();
-    //         } else if (actions === 3) {
-    //             // Setup websocket
-    //             expect(connected).toBe(true);
-    //             done();
-    //         }
-    //     });
-    // });
+    it('should reconnect the websocket', done => {
+        jest.useRealTimers();
+        let actions = 0;
+        window.debug = true;
+        ws.status().subscribe((connected: boolean) => {
+            if (actions === 0) {
+                actions++;
+                // Websocket connected
+                expect(connected).toBe(true);
+                fake_socket.error({
+                    status: 401,
+                    message: 'Invalid auth token'
+                });
+                // jest.runOnlyPendingTimers();
+            } else if (actions === 1) {
+                actions++;
+                // Websocket disconnected
+                expect(connected).toBe(false);
+                // jest.runOnlyPendingTimers();
+            } else if (actions === 2) {
+                actions++;
+                // Setup websocket
+                expect(connected).toBe(true);
+                done();
+            }
+            // jest.runOnlyPendingTimers();
+        });
+    });
 
-    // it('should allow to grab the current value of a binding', done => {
-    //     const metadata = { sys: 'sys-A0', mod: 'mod', index: 1, name: 'power' };
-    //     const post = jest.fn().mockImplementation(async () => null);
-    //     expect(ws.value(metadata)).toBeUndefined();
-    //     const promise = (ws as any).bind(metadata, post);
-    //     promise.then(() => {
-    //         fake_socket.next({
-    //             type: 'notify',
-    //             value: 'Yeah',
-    //             meta: metadata
-    //         } as PlaceResponse);
-    //         expect(ws.value(metadata)).toBe('Yeah');
-    //         done();
-    //     });
-    //     fake_socket.next({ id: 1, type: 'success' } as PlaceResponse);
-    // });
+    it('should allow to grab the current value of a binding', done => {
+        const metadata = { sys: 'sys-A0', mod: 'mod', index: 1, name: 'power' };
+        const post = jest.fn().mockImplementation(async () => null);
+        expect(ws.value(metadata)).toBeUndefined();
+        const promise = (ws as any).bind(metadata, post);
+        promise.then(() => {
+            fake_socket.next({
+                type: 'notify',
+                value: 'Yeah',
+                meta: metadata
+            } as PlaceResponse);
+            expect(ws.value(metadata)).toBe('Yeah');
+            done();
+        });
+        fake_socket.next({ id: 1, type: 'success' } as PlaceResponse);
+    });
 
-    // it('should ping the websocket every X seconds', done => {
-    //     fake_socket.subscribe((message: any) => {
-    //         expect(message).toBe('ping');
-    //         done();
-    //     });
-    //     jest.runOnlyPendingTimers();
-    // });
+    it('should ping the websocket every X seconds', done => {
+        fake_socket.subscribe((message: any) => {
+            expect(message).toBe('ping');
+            done();
+        });
+        jest.runOnlyPendingTimers();
+    });
 
     it('should handle engine errors', () => {
         fake_socket.next({
@@ -243,7 +247,7 @@ describe('Realtime API', () => {
             msg: 'test error'
         } as PlaceResponse);
         jest.advanceTimersByTime(10000);
-        expect(log_spy).toBeCalledTimes(9);
+        expect(log_spy).toBeCalledTimes(11);
     });
 
     it('should log error when engine message is invalid', () => {

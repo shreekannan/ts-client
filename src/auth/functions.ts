@@ -673,7 +673,7 @@ export function generateTokenWithUrl(url: string): Promise<void> {
  * @param details
  */
 export function _storeTokenDetails(details: PlaceTokenResponse) {
-    const expires_at = addSeconds(new Date(), parseInt(details.expires_in, 10) - 300);
+    const expires_at = addSeconds(new Date(), Math.max(60, parseInt(details.expires_in, 10) - 300));
     if (isTrusted()) {
         // Store access token
         if (details.access_token) {
