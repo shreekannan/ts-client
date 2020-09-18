@@ -1,11 +1,4 @@
-import {
-    create,
-    query,
-    remove,
-    show,
-    task,
-    update,
-} from '../resources/functions';
+import { create, query, remove, show, task, update } from '../resources/functions';
 
 import { Observable } from 'rxjs';
 import { HashMap } from '../utilities/types';
@@ -16,7 +9,7 @@ import { PlaceSystem } from './system';
 import {
     PlaceModuleFunctionMap,
     PlaceSystemShowOptions,
-    PlaceSystemsQueryOptions,
+    PlaceSystemsQueryOptions
 } from './interfaces';
 
 /**
@@ -25,7 +18,7 @@ import {
 const PATH = 'systems';
 
 /** Convert raw server data to an system object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceSystem>) {
     return new PlaceSystem(item);
 }
 
@@ -55,7 +48,7 @@ export function showSystem(id: string, query_params: HashMap = {}) {
  */
 export function updateSystem(
     id: string,
-    form_data: HashMap | PlaceSystem,
+    form_data: Partial<PlaceSystem>,
     query_params: PlaceSystemShowOptions = {},
     method: 'put' | 'patch' = 'patch'
 ) {
@@ -67,7 +60,7 @@ export function updateSystem(
  * @param form_data System data
  * @param query_params Query parameters to add the to request URL
  */
-export function addSystem(form_data: HashMap, query_params: HashMap = {}) {
+export function addSystem(form_data: Partial<PlaceSystem>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 
@@ -90,7 +83,7 @@ export function addSystemModule(
     module_id: string,
     data: HashMap = {}
 ): Observable<PlaceSystem> {
-    return task(id, `module/${module_id}`, data, 'put', (d) => process(d), PATH);
+    return task(id, `module/${module_id}`, data, 'put', d => process(d), PATH);
 }
 
 /**
@@ -98,11 +91,8 @@ export function addSystemModule(
  * @param id System ID
  * @param module_id ID of the module to remove
  */
-export function removeSystemModule(
-    id: string,
-    module_id: string
-): Observable<PlaceSystem> {
-    return task(id, `module/${module_id}`, {}, 'del', (d) => process(d), PATH);
+export function removeSystemModule(id: string, module_id: string): Observable<PlaceSystem> {
+    return task(id, `module/${module_id}`, {}, 'del', d => process(d), PATH);
 }
 
 /**
@@ -136,14 +126,7 @@ export function executeOnSystem(
     index: number = 1,
     args: any[] = []
 ): Observable<HashMap> {
-    return task(
-        id,
-        `${module}_${index}/${method}`,
-        args,
-        undefined,
-        undefined,
-        PATH
-    );
+    return task(id, `${module}_${index}/${method}`, args, undefined, undefined, PATH);
 }
 
 /**
@@ -174,14 +157,7 @@ export function lookupSystemModuleState(
     index: number = 1,
     lookup: string
 ): Observable<HashMap> {
-    return task(
-        id,
-        `${module}_${index}/${lookup}`,
-        undefined,
-        'get',
-        undefined,
-        PATH
-    );
+    return task(id, `${module}_${index}/${lookup}`, undefined, 'get', undefined, PATH);
 }
 
 /**
@@ -203,10 +179,7 @@ export function functionList(
  * @param id System ID
  * @param module Class name of the Module e.g. `Display`, `Lighting` etc.
  */
-export function moduleCount(
-    id: string,
-    module: string
-): Observable<{ count: number }> {
+export function moduleCount(id: string, module: string): Observable<{ count: number }> {
     return task(id, 'count', { module }, 'get', undefined, PATH);
 }
 
@@ -222,12 +195,8 @@ export function moduleTypes(id: string): Observable<HashMap<number>> {
  * Get list of Zones for system
  * @param id System ID
  */
-export function listSystemZones(id: string){
-    return query(
-        {},
-        (i: HashMap) => new PlaceZone(i),
-        `${PATH}/${id}/zones`
-    );
+export function listSystemZones(id: string) {
+    return query({}, (i: HashMap) => new PlaceZone(i), `${PATH}/${id}/zones`);
 }
 
 /**
@@ -235,11 +204,7 @@ export function listSystemZones(id: string){
  * @param id System ID
  */
 export function listSystemTriggers(id: string) {
-    return query(
-        {},
-        (i: HashMap) => new PlaceTrigger(i),
-        `${PATH}/${id}/triggers`
-    );
+    return query({}, (i: HashMap) => new PlaceTrigger(i), `${PATH}/${id}/triggers`);
 }
 
 /**
@@ -247,18 +212,8 @@ export function listSystemTriggers(id: string) {
  * @param id System ID
  * @param data Values for trigger properties
  */
-export function addSystemTrigger(
-    id: string,
-    data: HashMap
-): Observable<PlaceTrigger> {
-    return task(
-        id,
-        'triggers',
-        data,
-        'post',
-        (item: any) => new PlaceTrigger(item),
-        PATH
-    );
+export function addSystemTrigger(id: string, data: HashMap): Observable<PlaceTrigger> {
+    return task(id, 'triggers', data, 'post', (item: any) => new PlaceTrigger(item), PATH);
 }
 
 /**
@@ -266,18 +221,8 @@ export function addSystemTrigger(
  * @param id System ID
  * @param trigger_id ID of the trigger
  */
-export function removeSystemTrigger(
-    id: string,
-    trigger_id: string
-): Observable<void> {
-    return task(
-        id,
-        `triggers/${trigger_id}`,
-        undefined,
-        'del',
-        undefined,
-        PATH
-    );
+export function removeSystemTrigger(id: string, trigger_id: string): Observable<void> {
+    return task(id, `triggers/${trigger_id}`, undefined, 'del', undefined, PATH);
 }
 
 /**
@@ -290,7 +235,7 @@ export function systemSettings(id: string): Observable<PlaceSettings[]> {
         'settings',
         undefined,
         'get',
-        list => list.map((item: HashMap) => new PlaceSettings(item)),
+        list => list.map((item: Partial<PlaceSettings>) => new PlaceSettings(item)),
         PATH
     );
 }

@@ -25,7 +25,7 @@ export function next(): string {
  * @private
  * Map of promises for Service
  */
-const _obserables: { [key: string]: Observable<any> } = {};
+const _observables: HashMap<Observable<any>> = {};
 /**
  * @private
  * Total number of items returned by the last basic index query
@@ -46,9 +46,9 @@ let _next: string = '';
  * @private
  */
 export function cleanupAPI() {
-    for (const key in _obserables) {
-        if (_obserables[key]) {
-            delete _obserables[key];
+    for (const key in _observables) {
+        if (_observables[key]) {
+            delete _observables[key];
         }
     }
     _total = {};
@@ -69,7 +69,7 @@ export type QueryResponse<T> = Observable<{
  */
 export function query<T>(
     query_params: HashMap = {},
-    fn: (data: HashMap) => T = process,
+    fn: (data: Partial<T>) => T = process,
     path: string = 'resource'
 ): QueryResponse<T> {
     const query_str = toQueryString(query_params);
@@ -100,12 +100,12 @@ export function query<T>(
 export function show<T>(
     id: string,
     query_params: HashMap = {},
-    fn: (data: HashMap) => T = process,
+    fn: (data:  Partial<T>) => T = process,
     path: string = 'resource'
 ): Observable<T> {
     const query_str = toQueryString(query_params);
     const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
-    return get(url).pipe(map((resp: HashMap) => fn(resp)));
+    return get(url).pipe(map((resp: any) => fn(resp)));
 }
 
 /**
@@ -115,14 +115,14 @@ export function show<T>(
  * @param query_params Map of query paramaters to add to the request URL
  */
 export function create<T>(
-    form_data: HashMap,
+    form_data:  Partial<T>,
     query_params: HashMap = {},
-    fn: (data: HashMap) => T = process,
+    fn: (data:  Partial<T>) => T = process,
     path: string = 'resource'
 ): Observable<T> {
     const query_str = toQueryString(query_params);
     const url = `${apiEndpoint()}/${path}${query_str ? '?' + query_str : ''}`;
-    const observable = post(url, form_data).pipe(map((resp: HashMap) => fn(resp)));
+    const observable = post(url, form_data).pipe(map((resp: any) => fn(resp)));
     return observable;
 }
 

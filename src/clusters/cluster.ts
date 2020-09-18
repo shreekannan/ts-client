@@ -1,5 +1,4 @@
 import { humanReadableByteCount } from '../utilities/general';
-import { HashMap } from '../utilities/types';
 
 export class PlaceCluster {
     /** Unique identifier of the application */
@@ -37,7 +36,7 @@ export class PlaceCluster {
     /** Display string for the memory total */
     public readonly total_memory: string;
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: Partial<PlaceCluster> = {}) {
         this.id = raw_data.id || '';
         this.compiled_drivers = raw_data.compiled_drivers || [];
         this.available_repositories = raw_data.available_repositories || [];

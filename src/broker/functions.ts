@@ -1,11 +1,5 @@
 import { HashMap } from '../utilities/types';
-import {
-    create,
-    query,
-    remove,
-    show,
-    update,
-} from '../resources/functions';
+import { create, query, remove, show, update } from '../resources/functions';
 import { PlaceMQTTBroker } from './broker';
 
 /**
@@ -14,7 +8,7 @@ import { PlaceMQTTBroker } from './broker';
 const PATH = 'brokers';
 
 /** Convert raw server data to a broker object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceMQTTBroker>) {
     return new PlaceMQTTBroker(item);
 }
 
@@ -35,7 +29,6 @@ export function showBroker(id: string, query_params: HashMap = {}) {
     return show(id, query_params, process, PATH);
 }
 
-
 /**
  * Update the MQTT broker data
  * @param id ID of the broker
@@ -45,7 +38,7 @@ export function showBroker(id: string, query_params: HashMap = {}) {
  */
 export function updateBroker(
     id: string,
-    form_data: HashMap | PlaceMQTTBroker,
+    form_data: Partial<PlaceMQTTBroker>,
     query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
@@ -57,7 +50,7 @@ export function updateBroker(
  * @param form_data Broker data
  * @param query_params Query parameters to add the to request URL
  */
-export function addBroker(form_data: HashMap, query_params: HashMap = {}) {
+export function addBroker(form_data: Partial<PlaceMQTTBroker>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 

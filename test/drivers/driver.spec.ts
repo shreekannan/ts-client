@@ -16,7 +16,7 @@ describe('PlaceDriver', () => {
             ignore_connected: false,
             settings: [
                 { settings_string: "{ today: false, future: 'Yeah!' }" },
-            ],
+            ] as any,
             class_name: '::ACA::SolveProblem',
             created_at: 999,
             repository_id: 'my-repo',

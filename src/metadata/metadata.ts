@@ -1,5 +1,12 @@
 import { HashMap } from '../utilities/types';
 
+/**
+ * @hidden
+ */
+export interface PlaceMetadataComplete extends Partial<PlaceMetadata> {
+    parent_id?: string;
+}
+
 export class PlaceMetadata {
     /** ID of the parent resource associated with the metadata */
     public readonly id: string;
@@ -10,7 +17,7 @@ export class PlaceMetadata {
     /** Metadata associated with this key. */
     public readonly details: HashMap | any[];
 
-    constructor(data: HashMap = {}) {
+    constructor(data: PlaceMetadataComplete = {}) {
         this.id = data.id || data.parent_id || '';
         this.name = data.name || '';
         this.description = data.description || '';

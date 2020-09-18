@@ -1,4 +1,3 @@
-import { HashMap } from '../utilities/types';
 import { PlaceResource } from '../resources/resource';
 
 export enum AuthType {
@@ -28,7 +27,7 @@ export class PlaceMQTTBroker extends PlaceResource {
     /**  */
     public readonly filters: string[];
 
-    constructor(data: HashMap = {}) {
+    constructor(data: Partial<PlaceMQTTBroker> = {}) {
         super();
         this.auth_type = data.auth_type || AuthType.UserPassword;
         this.description = data.description || '';

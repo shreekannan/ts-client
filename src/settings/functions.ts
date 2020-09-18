@@ -9,7 +9,7 @@ import { PlaceSettingsQueryOptions } from './interfaces';
 const PATH = 'settings';
 
 /** Convert raw server data to an settings object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceSettings>) {
     return new PlaceSettings(item);
 }
 
@@ -39,7 +39,7 @@ export function showSettings(id: string, query_params: HashMap = {}) {
  */
 export function updateSettings(
     id: string,
-    form_data: HashMap | PlaceSettings,
+    form_data: Partial<PlaceSettings>,
     query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
@@ -51,7 +51,7 @@ export function updateSettings(
  * @param form_data Settings data
  * @param query_params Query parameters to add the to request URL
  */
-export function addSettings(form_data: HashMap, query_params: HashMap = {}) {
+export function addSettings(form_data: Partial<PlaceSettings>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 

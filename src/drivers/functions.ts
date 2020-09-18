@@ -1,12 +1,5 @@
 import { HashMap } from '../utilities/types';
-import {
-    create,
-    query,
-    remove,
-    show,
-    task,
-    update,
-} from '../resources/functions';
+import { create, query, remove, show, task, update } from '../resources/functions';
 import { PlaceDriver } from './driver';
 import { PlaceDriverQueryOptions } from './interfaces';
 
@@ -16,7 +9,7 @@ import { PlaceDriverQueryOptions } from './interfaces';
 const PATH = 'drivers';
 
 /** Convert raw server data to a driver object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceDriver>) {
     return new PlaceDriver(item);
 }
 
@@ -46,7 +39,7 @@ export function showDriver(id: string, query_params: HashMap = {}) {
  */
 export function updateDriver(
     id: string,
-    form_data: HashMap | PlaceDriver,
+    form_data: Partial<PlaceDriver>,
     query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
@@ -58,7 +51,7 @@ export function updateDriver(
  * @param form_data Driver data
  * @param query_params Query parameters to add the to request URL
  */
-export function addDriver(form_data: HashMap, query_params: HashMap = {}) {
+export function addDriver(form_data: Partial<PlaceDriver>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 

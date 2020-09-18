@@ -1,13 +1,22 @@
-import { HashMap } from '../utilities/types';
+
 import { HttpVerb } from '../http/interfaces';
 import { PlaceResource } from '../resources/resource';
 import { TriggerActions, TriggerConditions } from './interfaces';
+import { PlaceSystem } from 'src/systems/system';
+
+/**
+ * @hidden
+ */
+export interface PlaceTriggerComplete extends Partial<PlaceTrigger> {
+    trigger_count?: number;
+    control_system?: PlaceSystem;
+};
 
 export class PlaceTrigger extends PlaceResource {
     /** Name of the system assocaited with the trigger */
     public readonly system_name: string;
     /** Number of times the trigger has been activated/triggered */
-    public readonly activated_count: string;
+    public readonly activated_count: number;
     /** Description of the trigger */
     public readonly description: string;
     /** Duration with which to ignore sequential activations of the trigger */
@@ -66,7 +75,7 @@ export class PlaceTrigger extends PlaceResource {
     /** Conditions for activating the trigger */
     private _conditions: TriggerConditions;
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: PlaceTriggerComplete = {}) {
         super(raw_data);
         this.description = raw_data.description || '';
         this._actions = raw_data.actions || { functions: [], mailers: [] };

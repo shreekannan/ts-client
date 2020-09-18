@@ -1,4 +1,3 @@
-import { HashMap } from '../utilities/types';
 import { PlaceResource } from '../resources/resource';
 
 export class PlaceApplication extends PlaceResource {
@@ -15,7 +14,7 @@ export class PlaceApplication extends PlaceResource {
     /** Skip authorization checks for the application */
     public readonly skip_authorization: boolean;
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: Partial<PlaceApplication> = {}) {
         super(raw_data);
         this.uid = raw_data.uid || '';
         this.secret = raw_data.secret || '';

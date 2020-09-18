@@ -40,8 +40,7 @@ describe('PlaceTrigger', () => {
             important: true,
             enabled: true,
             activated_count: 22,
-            settings: { today: false, future: 'Yeah!' },
-            control_system: { name: 'John' },
+            control_system: { name: 'John' } as any,
             created_at: 999,
             actions,
             conditions,
@@ -70,7 +69,7 @@ describe('PlaceTrigger', () => {
         trigger = new PlaceTrigger({});
         expect(trigger.actions).toBeInstanceOf(Object);
         expect(trigger.conditions).toBeInstanceOf(Object);
-        trigger = new PlaceTrigger({ actions: {}, conditions: {} });
+        trigger = new PlaceTrigger({ actions: {}, conditions: {} } as any);
         expect(trigger.actions).toBeInstanceOf(Object);
         expect(trigger.conditions).toBeInstanceOf(Object);
     });

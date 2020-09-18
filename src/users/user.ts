@@ -1,4 +1,3 @@
-import { HashMap } from '../utilities/types';
 import { PlaceResource } from '../resources/resource';
 
 /**
@@ -38,7 +37,7 @@ export class PlaceUser extends PlaceResource {
     /** Password */
     protected confirm_password = '';
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: Partial<PlaceUser> = {}) {
         super(raw_data);
         this.authority_id = raw_data.authority_id || '';
         this.email = raw_data.email || '';

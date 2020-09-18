@@ -1,5 +1,12 @@
 import { humanReadableByteCount } from '../utilities/general';
-import { HashMap } from '../utilities/types';
+
+/**
+ * @hidden
+ */
+export interface PlaceProcessComplete extends Partial<PlaceProcess> {
+    driver?: string;
+    percentage_cpu?: number;
+}
 
 export class PlaceProcess {
     /** ID of the cluster associated with the process */
@@ -29,7 +36,7 @@ export class PlaceProcess {
     /** Display string for the memory total */
     public readonly total_memory: string;
 
-    constructor(_cluster_id: string, raw_data: HashMap = {}) {
+    constructor(_cluster_id: string, raw_data: PlaceProcessComplete = {}) {
         this.cluster_id = _cluster_id;
         this.id = raw_data.id || raw_data.driver || '';
         this.modules = raw_data.modules || [];

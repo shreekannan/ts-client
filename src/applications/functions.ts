@@ -15,7 +15,7 @@ import { PlaceApplicationQueryOptions } from './interfaces';
 const PATH = 'oauth_apps';
 
 /** Convert raw server data to an application object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceApplication>) {
     return new PlaceApplication(item);
 }
 
@@ -45,7 +45,7 @@ export function showApplication(id: string, query_params: HashMap = {}) {
  */
 export function updateApplication(
     id: string,
-    form_data: HashMap | PlaceApplication,
+    form_data: Partial<PlaceApplication>,
     query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
@@ -57,7 +57,7 @@ export function updateApplication(
  * @param form_data Application data
  * @param query_params Query parameters to add the to request URL
  */
-export function addApplication(form_data: HashMap, query_params: HashMap = {}) {
+export function addApplication(form_data: Partial<PlaceApplication>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 

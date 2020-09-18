@@ -1,12 +1,6 @@
 import { HashMap } from '../utilities/types';
 import { PlaceResourceQueryOptions } from '../resources/interface';
-import {
-    create,
-    query,
-    remove,
-    show,
-    update,
-} from '../resources/functions';
+import { create, query, remove, show, update } from '../resources/functions';
 import { PlaceDomain } from './domain';
 
 /**
@@ -15,7 +9,7 @@ import { PlaceDomain } from './domain';
 const PATH = 'domains';
 
 /** Convert raw server data to a domain object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceDomain>) {
     return new PlaceDomain(item);
 }
 
@@ -45,7 +39,7 @@ export function showDomain(id: string, query_params: HashMap = {}) {
  */
 export function updateDomain(
     id: string,
-    form_data: HashMap | PlaceDomain,
+    form_data: Partial<PlaceDomain>,
     query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
@@ -57,7 +51,7 @@ export function updateDomain(
  * @param form_data Domain data
  * @param query_params Query parameters to add the to request URL
  */
-export function addDomain(form_data: HashMap, query_params: HashMap = {}) {
+export function addDomain(form_data: Partial<PlaceDomain>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 

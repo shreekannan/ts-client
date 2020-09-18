@@ -6,6 +6,15 @@ import { PlaceSettings } from '../settings/settings';
 import { EncryptionLevel } from '../settings/interfaces';
 import { PlaceSystem } from '../systems/system';
 
+/**
+ * @hidden
+ */
+export interface PlaceModuleComplete extends Partial<PlaceModule> {
+    dependency_id?: string;
+    dependency?: PlaceDriver;
+    control_system?: PlaceSystem;
+};
+
 /** Function to request the server to stop emitting debug events */
 export type EndDebugFn = () => void;
 
@@ -56,7 +65,7 @@ export class PlaceModule extends PlaceResource {
         return this.control_system_id;
     }
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: PlaceModuleComplete = {}) {
         super(raw_data);
         this.driver_id = raw_data.driver_id || raw_data.dependency_id || '';
         this.control_system_id = raw_data.control_system_id || '';

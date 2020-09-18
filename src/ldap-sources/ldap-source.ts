@@ -1,4 +1,4 @@
-import { HashMap } from '../utilities/types';
+
 import { PlaceResource } from '../resources/resource';
 
 export class PlaceLDAPSource extends PlaceResource {
@@ -24,7 +24,7 @@ export class PlaceLDAPSource extends PlaceResource {
      */
     public readonly filter: string;
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: Partial<PlaceLDAPSource> = {}) {
         super(raw_data);
         this.authority_id = raw_data.authority_id || '';
         this.host = raw_data.host || '';

@@ -1,15 +1,6 @@
-import {
-    create,
-    remove,
-    show,
-    task,
-    update,
-} from '../resources/functions';
+import { create, remove, show, task, update } from '../resources/functions';
 import { PlaceMetadata } from './metadata';
-import {
-    PlaceMetadataOptions,
-    PlaceZoneMetadataOptions,
-} from './interfaces';
+import { PlaceMetadataOptions, PlaceZoneMetadataOptions } from './interfaces';
 import { PlaceZoneMetadata } from './zone-metadata';
 
 import { Observable } from 'rxjs';
@@ -21,7 +12,7 @@ import { HashMap } from '../utilities/types';
 const PATH = 'metadata';
 
 /** Convert raw server data to a metadata object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceMetadata>) {
     return new PlaceMetadata(item);
 }
 
@@ -31,14 +22,8 @@ function process(item: HashMap) {
  * @param query_params Query parameters to add the to request URL.
  *  Use key `name` to retrieve specific metadata
  */
-export function showMetadata(
-    id: string,
-    query_params?: {}
-): Observable<PlaceMetadata[]>;
-export function showMetadata(
-    id: string,
-    query_params: { name: string }
-): Observable<PlaceMetadata>;
+export function showMetadata(id: string, query_params?: {}): Observable<PlaceMetadata[]>;
+export function showMetadata(id: string, query_params: { name: string }): Observable<PlaceMetadata>;
 export function showMetadata(
     id: string,
     query_params: HashMap = {}
@@ -62,14 +47,14 @@ export function showMetadata(
  */
 export function updateMetadata(
     id: string,
-    form_data: HashMap | PlaceMetadata,
+    form_data: Partial<PlaceMetadata>,
     query_params: PlaceMetadataOptions = {},
     method: 'put' | 'patch' = 'patch'
 ) {
     return update(id, form_data, query_params, method, process, PATH);
 }
 
-export function addMetadata(form_data: HashMap, query_params: HashMap = {}) {
+export function addMetadata(form_data: Partial<PlaceMetadata>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 
@@ -87,10 +72,7 @@ export function removeMetadata(id: string, query_params: HashMap = {}) {
  * @param id ID of the item to get associated child metadata
  * @param query_params Query parameters to add the to request URL
  */
-export function listChildMetadata(
-    id: string,
-    query_params: PlaceZoneMetadataOptions
-) {
+export function listChildMetadata(id: string, query_params: PlaceZoneMetadataOptions) {
     return task(
         id,
         'children',
@@ -101,7 +83,7 @@ export function listChildMetadata(
                 item =>
                     new PlaceZoneMetadata({
                         ...item,
-                        keys: Object.keys(item.metadata),
+                        keys: Object.keys(item.metadata)
                     })
             ),
         PATH

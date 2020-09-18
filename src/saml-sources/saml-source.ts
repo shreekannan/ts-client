@@ -40,7 +40,7 @@ export class PlaceSAMLSource extends PlaceResource {
     /** Value to use as default RelayState for single log outs */
     public readonly slo_default_relay_state: string;
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: Partial<PlaceSAMLSource> = {}) {
         super(raw_data);
         this.authority_id = raw_data.authority_id || '';
         this.issuer = raw_data.issuer || '';

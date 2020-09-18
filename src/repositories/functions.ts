@@ -23,7 +23,7 @@ import {
 const PATH = 'repositories';
 
 /** Convert raw server data to a repository object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceRepository>) {
     return new PlaceRepository(item);
 }
 
@@ -53,7 +53,7 @@ export function showRepository(id: string, query_params: HashMap = {}) {
  */
 export function updateRepository(
     id: string,
-    form_data: HashMap | PlaceRepository,
+    form_data: Partial<PlaceRepository>,
     query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
@@ -65,7 +65,7 @@ export function updateRepository(
  * @param form_data Repository data
  * @param query_params Query parameters to add the to request URL
  */
-export function addRepository(form_data: HashMap, query_params: HashMap = {}) {
+export function addRepository(form_data: Partial<PlaceRepository>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 

@@ -10,7 +10,7 @@ import { PlaceProcess } from './process';
 const PATH = 'cluster';
 
 /** Convert raw server data to a cluster object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceCluster>) {
     return new PlaceCluster(item);
 }
 
@@ -31,11 +31,10 @@ export function queryProcesses(id: string, query_params: HashMap = {}) {
     return show(
         id,
         query_params,
-        (list: any) => list.map((item: HashMap) => new PlaceProcess(id, item)),
+        (list: any) => list.map((item: Partial<PlaceProcess>) => new PlaceProcess(id, item)),
         PATH
     );
 }
-
 
 /**
  * Terminal a process in a cluster

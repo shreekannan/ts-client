@@ -1,8 +1,14 @@
-import { HashMap } from '../utilities/types';
 import { PlaceResource } from '../resources/resource';
 import { PlaceSettings } from '../settings/settings';
 import { EncryptionLevel } from '../settings/interfaces';
 import { PlaceTrigger } from '../triggers/trigger';
+
+/**
+ * @hidden
+ */
+export interface PlaceZoneComplete extends Partial<PlaceZone> {
+    trigger_data?: PlaceTrigger[];
+}
 
 export class PlaceZone extends PlaceResource {
     /** Tuple of user settings of differring encryption levels for the zone */
@@ -40,7 +46,7 @@ export class PlaceZone extends PlaceResource {
      */
     public readonly trigger_list: readonly PlaceTrigger[] = [];
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: PlaceZoneComplete = {}) {
         super(raw_data);
         this.description = raw_data.description || '';
         this.tags = raw_data.tags || [];
@@ -61,14 +67,12 @@ export class PlaceZone extends PlaceResource {
             if (!isNaN(Number(level)) && !this.settings[level]) {
                 this.settings[level] = new PlaceSettings({
                     parent_id: this.id,
-                    encryption_level: +level,
+                    encryption_level: +level
                 });
             }
         }
         if (raw_data.trigger_data && raw_data.trigger_data instanceof Array) {
-            this.trigger_list = raw_data.trigger_data.map(
-                trigger => new PlaceTrigger(trigger)
-            );
+            this.trigger_list = raw_data.trigger_data.map(trigger => new PlaceTrigger(trigger));
         }
     }
 }

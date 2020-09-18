@@ -1,4 +1,4 @@
-import { HashMap } from '../utilities/types';
+
 import { PlaceResource } from '../resources/resource';
 import { PlaceRepositoryType } from './interfaces';
 
@@ -19,23 +19,17 @@ export class PlaceRepository extends PlaceResource {
     public readonly username: string;
     /** Password to connect to repository with */
     public readonly password: string;
-
     /** Repository type */
-    public get type(): PlaceRepositoryType {
-        return this.repo_type;
-    }
+    public get type () { return this.repo_type };
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: Partial<PlaceRepository> = {}) {
         super(raw_data);
         this.folder_name = raw_data.folder_name || '';
         this.description = raw_data.description || '';
         this.uri = raw_data.uri || '';
         this.branch = raw_data.branch || 'master';
         this.commit_hash = raw_data.commit_hash || '';
-        this.repo_type =
-            typeof raw_data.repo_type === 'string'
-                ? (raw_data.repo_type as any)
-                : PlaceRepositoryType.Driver;
+        this.repo_type = raw_data.repo_type || PlaceRepositoryType.Driver;
         this.username = raw_data.username || '';
         this.password = raw_data.password || '';
     }

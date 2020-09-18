@@ -1,4 +1,3 @@
-import { HashMap } from '../utilities/types';
 import { PlaceResource } from '../resources/resource';
 import { PlaceSettings } from '../settings/settings';
 import { EncryptionLevel } from '../settings/interfaces';
@@ -33,7 +32,7 @@ export class PlaceDriver extends PlaceResource {
         PlaceSettings | null
     ];
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: Partial<PlaceDriver> = {}) {
         super(raw_data);
         this.description = raw_data.description || '';
         this.module_name = raw_data.module_name || '';

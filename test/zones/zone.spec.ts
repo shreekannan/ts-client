@@ -7,10 +7,10 @@ describe('PlaceZone', () => {
         zone = new PlaceZone({
             id: 'dep-test',
             description: 'In a galaxy far far away...',
-            settings: { settings_string: "{ today: false, future: 'Yeah!' }" },
+            settings: { settings_string: "{ today: false, future: 'Yeah!' }" } as any,
             triggers: ['trig-001'],
             created_at: 999,
-            trigger_data: [{ id: 'trig-01', name: 'A trigger' }],
+            trigger_data: [{ id: 'trig-01', name: 'A trigger' } as any],
         });
     });
 

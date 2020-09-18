@@ -10,8 +10,8 @@ describe('PlaceDomain', () => {
             login_url: 'somewhere.today',
             logout_url: 'no-where.today',
             description: 'In a galaxy far far away...',
-            config: JSON.stringify({ today: false, future: 'Yeah!' }),
-            internals: JSON.stringify({ today: true, future: 'Nope!' }),
+            config: { today: false, future: 'Yeah!' },
+            internals: { today: true, future: 'Nope!' },
             created_at: 999,
         });
     });
@@ -39,13 +39,13 @@ describe('PlaceDomain', () => {
 
     it('should expose config', () => {
         expect(domain.config).toEqual(
-            JSON.stringify({ today: false, future: 'Yeah!' })
+            { today: false, future: 'Yeah!' }
         );
     });
 
     it('should expose internals', () => {
         expect(domain.internals).toEqual(
-            JSON.stringify({ today: true, future: 'Nope!' })
+            { today: true, future: 'Nope!' }
         );
     });
 

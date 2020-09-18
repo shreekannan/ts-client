@@ -18,8 +18,8 @@ describe('PlaceSystem', () => {
             support_url: '/support/test',
             modules,
             zones,
-            module_data: [{ id: 'mod-001', name: 'A Module' }],
-            settings: { settings_string: '{ test: 1 }' },
+            module_data: [{ id: 'mod-001', name: 'A Module' } as any],
+            settings: { settings_string: '{ test: 1 }' } as any,
         });
     });
 

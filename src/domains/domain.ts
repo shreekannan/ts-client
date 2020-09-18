@@ -15,7 +15,7 @@ export class PlaceDomain extends PlaceResource {
     /** Internal settings for the domain */
     public readonly internals: HashMap;
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: Partial<PlaceDomain> = {}) {
         super(raw_data);
         this.description = raw_data.description || '';
         this.domain = raw_data.domain || '';

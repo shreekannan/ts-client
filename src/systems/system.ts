@@ -1,8 +1,15 @@
-import { HashMap } from '../utilities/types';
+
 import { PlaceModule } from '../modules/module';
 import { PlaceResource } from '../resources/resource';
 import { PlaceSettings } from '../settings/settings';
 import { EncryptionLevel } from '../settings/interfaces';
+
+/**
+ * @hidden
+ */
+export interface PlaceSystemComplete extends Partial<PlaceSystem> {
+    module_data?: PlaceModule[];
+};
 
 export class PlaceSystem extends PlaceResource {
     /** Tuple of user settings of differring encryption levels for the system */
@@ -40,7 +47,7 @@ export class PlaceSystem extends PlaceResource {
      */
     public module_list: readonly PlaceModule[] = [];
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: PlaceSystemComplete = {}) {
         super(raw_data);
         this.display_name = raw_data.display_name || '';
         this.description = raw_data.description || '';

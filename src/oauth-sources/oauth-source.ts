@@ -29,7 +29,7 @@ export class PlaceOAuthSource extends PlaceResource {
     /** Security checks to be made on the returned data */
     public readonly ensure_matching: HashMap<string[]>;
 
-    constructor(raw_data: HashMap) {
+    constructor(raw_data: Partial<PlaceOAuthSource> = {}) {
         super(raw_data);
         this.authority_id = raw_data.authority_id || '';
         this.client_id = raw_data.client_id || '';

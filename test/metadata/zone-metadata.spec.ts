@@ -6,8 +6,8 @@ describe('PlaceMetadata', () => {
 
     beforeEach(() => {
         metadata = new PlaceZoneMetadata({
-            zone: {},
-            metadata: { test: {} },
+            zone: {} as any,
+            metadata: { test: {} } as any,
             keys: ['test'],
         });
     });

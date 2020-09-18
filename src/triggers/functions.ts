@@ -1,14 +1,7 @@
 import { Observable } from 'rxjs';
 import { HashMap } from '../utilities/types';
 import { PlaceResourceQueryOptions } from '../resources/interface';
-import {
-    create,
-    query,
-    remove,
-    show,
-    task,
-    update,
-} from '../resources/functions';
+import { create, query, remove, show, task, update } from '../resources/functions';
 import { PlaceSystem } from '../systems/system';
 import { PlaceTrigger } from './trigger';
 
@@ -18,7 +11,7 @@ import { PlaceTrigger } from './trigger';
 const PATH = 'triggers';
 
 /** Convert raw server data to a trigger object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceTrigger>) {
     return new PlaceTrigger(item);
 }
 
@@ -48,7 +41,7 @@ export function showTrigger(id: string, query_params: HashMap = {}) {
  */
 export function updateTrigger(
     id: string,
-    form_data: HashMap | PlaceTrigger,
+    form_data: Partial<PlaceTrigger>,
     query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
@@ -60,7 +53,7 @@ export function updateTrigger(
  * @param form_data Trigger data
  * @param query_params Query parameters to add the to request URL
  */
-export function addTrigger(form_data: HashMap, query_params: HashMap = {}) {
+export function addTrigger(form_data: Partial<PlaceTrigger>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 
@@ -83,7 +76,7 @@ export function listTriggerSystems(id: string): Observable<PlaceSystem[]> {
         `instances`,
         undefined,
         'get',
-        (data: HashMap[]) => data.map(sys => new PlaceSystem(sys)),
+        (data: Partial<PlaceSystem>[]) => data.map(sys => new PlaceSystem(sys)),
         PATH
     );
 }

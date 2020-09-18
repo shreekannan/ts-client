@@ -21,7 +21,7 @@ import {
 const PATH = 'modules';
 
 /** Convert raw server data to a module object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceModule>) {
     return new PlaceModule(item);
 }
 
@@ -51,7 +51,7 @@ export function showModule(id: string, query_params: HashMap = {}) {
  */
 export function updateModule(
     id: string,
-    form_data: HashMap | PlaceModule,
+    form_data: Partial<PlaceModule>,
     query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
@@ -63,7 +63,7 @@ export function updateModule(
  * @param form_data Module data
  * @param query_params Query parameters to add the to request URL
  */
-export function addModule(form_data: HashMap, query_params: HashMap = {}) {
+export function addModule(form_data: Partial<PlaceModule>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 
@@ -139,7 +139,7 @@ export function moduleSettings(id: string) {
         'settings',
         undefined,
         'get',
-        list => list.map((item: HashMap) => new PlaceSettings(item)),
+        list => list.map((item: Partial<PlaceSettings>) => new PlaceSettings(item)),
         PATH
     );
 }

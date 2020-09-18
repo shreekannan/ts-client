@@ -1,4 +1,4 @@
-import { HashMap } from '../utilities/types';
+
 import { PlaceResource } from '../resources/resource';
 import { EncryptionLevel } from './interfaces';
 
@@ -19,7 +19,7 @@ export class PlaceSettings extends PlaceResource {
         return this.settings_string;
     }
 
-    constructor(raw_data: HashMap = {}) {
+    constructor(raw_data: Partial<PlaceSettings> = {}) {
         super(raw_data);
         this.parent_id = raw_data.parent_id || '';
         this.updated_at =

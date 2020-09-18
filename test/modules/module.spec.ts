@@ -16,12 +16,12 @@ describe('PlaceModule', () => {
             makebreak: false,
             uri: 'test.com',
             custom_name: 'mi-name',
-            settings: { settings_string: "{ star: 'death' }" },
+            settings: { settings_string: "{ star: 'death' }" } as any,
             role: PlaceDriverRole.Device,
             notes: 'Clone wars',
             ignore_connected: false,
-            control_system: { id: 'sys-001', name: 'A System' },
-            driver: { id: 'dep-001', name: 'A Driver' },
+            control_system: { id: 'sys-001', name: 'A System' } as any,
+            driver: { id: 'dep-001', name: 'A Driver' } as any,
         });
     });
 
@@ -72,7 +72,6 @@ describe('PlaceModule', () => {
         module = new PlaceModule({
             control_system_id: 'sys-test',
             role: PlaceDriverRole.SSH,
-            settings: '1',
         });
         expect(module.toJSON().control_system_id).toBeFalsy();
         expect(module.toJSON(true).control_system_id).toBe('sys-test');

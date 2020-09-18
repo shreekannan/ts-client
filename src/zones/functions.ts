@@ -1,12 +1,5 @@
-
 import { HashMap } from '../utilities/types';
-import {
-    create,
-    query,
-    remove,
-    show,
-    update,
-} from '../resources/functions';
+import { create, query, remove, show, update } from '../resources/functions';
 import { PlaceTrigger } from '../triggers/trigger';
 import { PlaceZone } from './zone';
 import { PlaceZoneQueryOptions, PlaceZoneShowOptions } from './interfaces';
@@ -17,7 +10,7 @@ import { PlaceZoneQueryOptions, PlaceZoneShowOptions } from './interfaces';
 const PATH = 'zones';
 
 /** Convert raw server data to an application object */
-function process(item: HashMap) {
+function process(item: Partial<PlaceZone>) {
     return new PlaceZone(item);
 }
 
@@ -47,7 +40,7 @@ export function showZone(id: string, query_params: PlaceZoneShowOptions = {}) {
  */
 export function updateZone(
     id: string,
-    form_data: HashMap | PlaceZone,
+    form_data: Partial<PlaceZone>,
     query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
@@ -59,7 +52,7 @@ export function updateZone(
  * @param form_data Application data
  * @param query_params Query parameters to add the to request URL
  */
-export function addZone(form_data: HashMap, query_params: HashMap = {}) {
+export function addZone(form_data: Partial<PlaceZone>, query_params: HashMap = {}) {
     return create(form_data, query_params, process, PATH);
 }
 
@@ -77,13 +70,10 @@ export function removeZone(id: string, query_params: HashMap = {}) {
  * @param id ID of the zone
  * @param query_params Query parameters to add the to request URL
  */
-export function listZoneTriggers(
-    id: string,
-    query_params: HashMap = {}
-) {
+export function listZoneTriggers(id: string, query_params: HashMap = {}) {
     return query(
         query_params,
-        (i: HashMap) => new PlaceTrigger(i),
+        (i: Partial<PlaceTrigger>) => new PlaceTrigger(i),
         `${PATH}/${id}/triggers`
     );
 }
