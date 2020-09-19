@@ -151,7 +151,6 @@ describe('Realtime API', () => {
     it('should reconnect the websocket', done => {
         jest.useRealTimers();
         let actions = 0;
-        window.debug = true;
         ws.status().subscribe((connected: boolean) => {
             if (actions === 0) {
                 actions++;
