@@ -1,9 +1,7 @@
-import { Md5 } from 'ts-md5';
-
-import { PlaceAuthority } from '../../src/auth/interfaces';
-
 import { Observable } from 'rxjs';
+import { Md5 } from 'ts-md5';
 import * as Auth from '../../src/auth/functions';
+import { PlaceAuthority } from '../../src/auth/interfaces';
 
 describe('Auth', () => {
     beforeEach(() => {
@@ -19,6 +17,7 @@ describe('Auth', () => {
             },
         });
         window.fetch = jest.fn().mockImplementation(async () => ({
+            ok: true,
             json: async () =>
                 ({
                     version: '1.0.0',
@@ -34,12 +33,14 @@ describe('Auth', () => {
     });
 
     it('should allow setting up auth', async () => {
+        window.debug = true;
         await Auth.setup({
             auth_uri: '',
             token_uri: '',
             redirect_uri: '1',
             scope: 'public',
         });
+        console.log('Setup');
         expect(Auth.authority).toBeTruthy();
         const client_id = Auth.clientId();
         await Auth.setup(undefined as any);
@@ -146,6 +147,7 @@ describe('Auth', () => {
         };
         (window.fetch as any)
             .mockImplementationOnce(async () => ({
+                ok: true,
                 json: async () =>
                     ({
                         version: '1.0.0',
@@ -154,6 +156,7 @@ describe('Auth', () => {
                     } as PlaceAuthority),
             }))
             .mockImplementationOnce(async () => ({
+                ok: true,
                 json: async () => ({
                     access_token: 'today',
                     refresh_token: 'tomorrow',
@@ -193,7 +196,8 @@ describe('Auth', () => {
     });
 
     it('should handle refresh token in URL', async () => {
-        window.location.search = '?access_token=test&refresh_token=hehe&expires_in=3600&state=;^_^&&trust=true';
+        window.location.search =
+            '?access_token=test&refresh_token=hehe&expires_in=3600&state=;^_^&&trust=true';
         await Auth.setup({
             auth_uri: '',
             token_uri: '',
@@ -214,6 +218,7 @@ describe('Auth', () => {
 
     it('should redirect to login when user has no session', async (done) => {
         window.fetch = jest.fn().mockImplementation(async () => ({
+            ok: true,
             json: async () =>
                 ({
                     version: '1.0.0',
@@ -262,6 +267,7 @@ describe('Auth', () => {
         });
         expect(Auth.authority()).toBeTruthy();
         window.fetch = jest.fn().mockImplementation(async () => ({
+            ok: true,
             json: async () =>
                 ({
                     version: '2.0.0',
@@ -278,8 +284,13 @@ describe('Auth', () => {
     it('should handle error when loading authority', async () => {
         window.fetch = jest
             .fn()
-            .mockImplementationOnce(async () => ({ status: 500, ok: false, text: async () => '' }))
+            .mockImplementationOnce(async () => ({
+                status: 500,
+                ok: false,
+                json: async () => ({}),
+            }))
             .mockImplementation(async () => ({
+                ok: true,
                 json: async () =>
                     ({
                         version: '2.0.0',

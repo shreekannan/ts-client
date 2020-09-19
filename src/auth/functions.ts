@@ -1,10 +1,10 @@
-import { addSeconds } from 'date-fns';
-import { isBefore } from 'date-fns';
-
+import * as base64 from 'byte-base64';
+import { addSeconds, isBefore } from 'date-fns';
+import * as sha256 from 'fast-sha256';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
 import { map } from 'rxjs/operators';
 import { Md5 } from 'ts-md5/dist/md5';
-
 import { toQueryString } from '../utilities/api';
 import { clearAsyncTimeout, destroyWaitingAsync, timeout } from '../utilities/async';
 import { generateNonce, getFragments, log, removeFragment } from '../utilities/general';
@@ -14,12 +14,8 @@ import {
     MOCK_AUTHORITY,
     PlaceAuthOptions,
     PlaceAuthority,
-    PlaceTokenResponse,
+    PlaceTokenResponse
 } from './interfaces';
-
-import * as base64 from 'byte-base64';
-import * as sha256 from 'fast-sha256';
-import { fromFetch } from 'rxjs/fetch';
 
 /**
  * @private
@@ -336,8 +332,18 @@ export function loadAuthority(tries: number = 0): Promise<void> {
             log('Auth', `Fixed: ${isFixedDevice()} | Trusted: ${isTrusted()}`);
             log('Auth', `Loading authority...`);
             const secure = _options.secure || location.protocol.indexOf('https') >= 0;
+            const on_error = (err: any) => {
+                log('Auth', `Failed to load authority(${err})`);
+                _online.next(false);
+                // Retry if authority fails to load
+                setTimeout(() => {
+                    delete _promises.load_authority;
+                    loadAuthority(tries).then((_) => resolve());
+                }, 300 * Math.min(20, ++tries));
+            };
             fromFetch(`${secure ? 'https:' : 'http:'}//${host()}/auth/authority`).subscribe(
                 async (resp) => {
+                    if (!resp.ok) return on_error(await resp.json());
                     _authority = (await resp.json()) as PlaceAuthority;
                     _route = !/[2-9]\.[0-9]+\.[0-9]+/g.test(_authority.version || '')
                         ? `/control/api`
@@ -349,15 +355,7 @@ export function loadAuthority(tries: number = 0): Promise<void> {
                     };
                     authorise('').then(response, response);
                 },
-                (err) => {
-                    log('Auth', `Failed to load authority(${err})`);
-                    _online.next(false);
-                    // Retry if authority fails to load
-                    setTimeout(() => {
-                        delete _promises.load_authority;
-                        loadAuthority(tries).then((_) => resolve());
-                    }, 300 * Math.min(20, ++tries));
-                }
+                on_error
             );
         });
     }
@@ -611,19 +609,22 @@ export function revokeToken(): Promise<void> {
     if (!_promises.revoke_token) {
         _promises.revoke_token = new Promise<void>((resolve, reject) => {
             const token_uri = _options.token_uri || '/auth/token';
-            fetch(`${token_uri}?token=${token()}`, { method: 'POST' })
-                .then((_) => {
+            const on_error = (err: any) => {
+                reject(err);
+                delete _promises.revoke_token;
+            };
+            fromFetch(`${token_uri}?token=${token()}`, { method: 'POST' }).subscribe(
+                (r: Response) => {
+                    if (!r.ok) return on_error(r);
                     _access_token.next('');
                     _refresh_token.next('');
                     _storage.removeItem(`${_client_id}_access_token`);
                     _storage.removeItem(`${_client_id}_refresh_token`);
                     resolve();
                     delete _promises.revoke_token;
-                })
-                .catch((err) => {
-                    reject(err);
-                    delete _promises.revoke_token;
-                });
+                },
+                on_error
+            );
         });
     }
     return _promises.revoke_token;
@@ -654,23 +655,23 @@ export function generateTokenWithUrl(url: string): Promise<void> {
     if (!_promises.generate_tokens) {
         _promises.generate_tokens = new Promise<void>((resolve, reject) => {
             log('Auth', 'Generating new token...');
-            fetch(url, { method: 'POST' })
-                .then((r) => {
-                    if (r.ok) return r.json();
-                    throw r;
-                })
-                .then((tokens: PlaceTokenResponse) => {
+            const on_error = (err: any) => {
+                log('Auth', 'Error generating new tokens.', err);
+                _storage.removeItem(`${_client_id}_refresh_token`);
+                _refresh_token.next('');
+                reject();
+                delete _promises.generate_tokens;
+            };
+            fromFetch(url, { method: 'POST' }).subscribe(
+                async (r: Response) => {
+                    if (!r.ok) return on_error(r);
+                    const tokens = await r.json();
                     _storeTokenDetails(tokens);
                     resolve();
                     delete _promises.generate_tokens;
-                })
-                .catch((err) => {
-                    log('Auth', 'Error generating new tokens.', err);
-                    _storage.removeItem(`${_client_id}_refresh_token`);
-                    _refresh_token.next('');
-                    reject();
-                    delete _promises.generate_tokens;
-                });
+                },
+                on_error
+            );
         });
     }
     return _promises.generate_tokens as Promise<void>;
