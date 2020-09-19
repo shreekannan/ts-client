@@ -16,8 +16,8 @@ function process(item: Partial<PlaceMQTTBroker>) {
  * Query the available MQTT brokers
  * @param query_params Query parameters to add the to request URL
  */
-export function queryBrokers(query_params?: HashMap) {
-    return query(query_params, process, PATH);
+export function queryBrokers(query_params: HashMap = {}) {
+    return query({ query_params, fn: process, path: PATH });
 }
 
 /**
@@ -26,7 +26,7 @@ export function queryBrokers(query_params?: HashMap) {
  * @param query_params Query parameters to add the to request URL
  */
 export function showBroker(id: string, query_params: HashMap = {}) {
-    return show(id, query_params, process, PATH);
+    return show({ id, query_params, fn: process, path: PATH });
 }
 
 /**
@@ -39,10 +39,9 @@ export function showBroker(id: string, query_params: HashMap = {}) {
 export function updateBroker(
     id: string,
     form_data: Partial<PlaceMQTTBroker>,
-    query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
-    return update(id, form_data, query_params, method, process, PATH);
+    return update({ id, form_data, query_params: {}, method, fn: process, path: PATH });
 }
 
 /**
@@ -50,8 +49,8 @@ export function updateBroker(
  * @param form_data Broker data
  * @param query_params Query parameters to add the to request URL
  */
-export function addBroker(form_data: Partial<PlaceMQTTBroker>, query_params: HashMap = {}) {
-    return create(form_data, query_params, process, PATH);
+export function addBroker(form_data: Partial<PlaceMQTTBroker>) {
+    return create({form_data, query_params: {}, fn: process, path: PATH});
 }
 
 /**
@@ -60,5 +59,5 @@ export function addBroker(form_data: Partial<PlaceMQTTBroker>, query_params: Has
  * @param query_params Query parameters to add the to request URL
  */
 export function removeBroker(id: string, query_params: HashMap = {}) {
-    return remove(id, query_params, PATH);
+    return remove({ id, query_params, path: PATH });
 }

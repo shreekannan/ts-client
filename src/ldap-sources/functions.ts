@@ -4,7 +4,7 @@ import {
     query,
     remove,
     show,
-    update,
+    update
 } from '../resources/functions';
 import { HashMap } from '../utilities/types';
 import { PlaceLDAPSource } from './ldap-source';
@@ -23,8 +23,8 @@ function process(item: Partial<PlaceLDAPSource>) {
  * Query the available LDAP sources
  * @param query_params Query parameters to add the to request URL
  */
-export function queryLDAPSources(query_params?: PlaceAuthSourceQueryOptions) {
-    return query(query_params, process, PATH);
+export function queryLDAPSources(query_params: PlaceAuthSourceQueryOptions = {}) {
+    return query({ query_params, fn: process, path: PATH });
 }
 
 /**
@@ -33,7 +33,7 @@ export function queryLDAPSources(query_params?: PlaceAuthSourceQueryOptions) {
  * @param query_params Query parameters to add the to request URL
  */
 export function showLDAPSource(id: string, query_params: HashMap = {}) {
-    return show(id, query_params, process, PATH);
+    return show({ id, query_params, fn: process, path: PATH });
 }
 
 /**
@@ -46,10 +46,9 @@ export function showLDAPSource(id: string, query_params: HashMap = {}) {
 export function updateLDAPSource(
     id: string,
     form_data: Partial<PlaceLDAPSource>,
-    query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
-    return update(id, form_data, query_params, method, process, PATH);
+    return update({ id, form_data, query_params: {}, method, fn: process, path: PATH });
 }
 
 /**
@@ -57,8 +56,8 @@ export function updateLDAPSource(
  * @param form_data LDAP source data
  * @param query_params Query parameters to add the to request URL
  */
-export function addLDAPSource(form_data: Partial<PlaceLDAPSource>, query_params: HashMap = {}) {
-    return create(form_data, query_params, process, PATH);
+export function addLDAPSource(form_data: Partial<PlaceLDAPSource>) {
+    return create({form_data, query_params: {}, fn: process, path: PATH});
 }
 
 /**
@@ -67,5 +66,5 @@ export function addLDAPSource(form_data: Partial<PlaceLDAPSource>, query_params:
  * @param query_params Query parameters to add the to request URL
  */
 export function removeLDAPSource(id: string, query_params: HashMap = {}) {
-    return remove(id, query_params, PATH);
+    return remove({ id, query_params, path: PATH });
 }

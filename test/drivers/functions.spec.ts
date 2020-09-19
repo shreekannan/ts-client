@@ -1,13 +1,12 @@
 import { of } from 'rxjs';
 import { PlaceDriver } from '../../src/drivers/driver';
-
 import * as SERVICE from '../../src/drivers/functions';
 import * as Resources from '../../src/resources/functions';
 
 describe('Drivers API', () => {
     it('should allow querying drivers', async () => {
         const spy = jest.spyOn(Resources, 'query');
-        spy.mockImplementation((_, process: any, __) => of({ data: [process({})] } as any));
+        spy.mockImplementation((_) => of({ data: [_.fn({})] } as any));
         let list = await SERVICE.queryDrivers().toPromise();
         expect(list).toBeTruthy();
         expect(list.data.length).toBe(1);
@@ -17,7 +16,7 @@ describe('Drivers API', () => {
 
     it('should allow showing driver details', async () => {
         const spy = jest.spyOn(Resources, 'show');
-        spy.mockImplementation((_, _1, process: any, _2) => of(process({})));
+        spy.mockImplementation((_) => of(_.fn({})));
         let item = await SERVICE.showDriver('1').toPromise();
         expect(item).toBeInstanceOf(PlaceDriver);
         item = await SERVICE.showDriver('1', {}).toPromise();
@@ -26,21 +25,19 @@ describe('Drivers API', () => {
 
     it('should allow creating new drivers', async () => {
         const spy = jest.spyOn(Resources, 'create');
-        spy.mockImplementation((_, _1, process: any, _2) => of(process({})));
+        spy.mockImplementation((_) => of(_.fn({})));
         let item = await SERVICE.addDriver({}).toPromise();
         expect(item).toBeInstanceOf(PlaceDriver);
-        item = await SERVICE.addDriver({}, {}).toPromise();
+        item = await SERVICE.addDriver({}).toPromise();
         expect(item).toBeInstanceOf(PlaceDriver);
     });
 
     it('should allow updating driver details', async () => {
         const spy = jest.spyOn(Resources, 'update');
-        spy.mockImplementation((_, _0, _1, _2, process: any, _3) =>
-            of(process({}) as any)
-        );
+        spy.mockImplementation((_) => of(_.fn({}) as any));
         let item = await SERVICE.updateDriver('1', {}).toPromise();
         expect(item).toBeInstanceOf(PlaceDriver);
-        item = await SERVICE.updateDriver('1', {}, {}, 'put').toPromise();
+        item = await SERVICE.updateDriver('1', {}, 'put').toPromise();
         expect(item).toBeInstanceOf(PlaceDriver);
     });
 

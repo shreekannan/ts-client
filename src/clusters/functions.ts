@@ -1,5 +1,4 @@
 import { query, remove, show } from '../resources/functions';
-import { HashMap } from '../utilities/types';
 import { PlaceCluster } from './cluster';
 import { PlaceClusterQueryOptions } from './interfaces';
 import { PlaceProcess } from './process';
@@ -18,8 +17,8 @@ function process(item: Partial<PlaceCluster>) {
  * Query the available clusters
  * @param query_params Query parameters to add the to request URL
  */
-export function queryClusters(query_params?: PlaceClusterQueryOptions) {
-    return query(query_params, process, PATH);
+export function queryClusters(query_params: PlaceClusterQueryOptions = {}) {
+    return query({ query_params, fn: process, path: PATH });
 }
 
 /**
@@ -27,13 +26,13 @@ export function queryClusters(query_params?: PlaceClusterQueryOptions) {
  * @param id ID of the cluster to query
  * @param query_params Query parameters to add the to request URL
  */
-export function queryProcesses(id: string, query_params: HashMap = {}) {
-    return show(
+export function queryProcesses(id: string) {
+    return show({
         id,
-        query_params,
-        (list: any) => list.map((item: Partial<PlaceProcess>) => new PlaceProcess(id, item)),
-        PATH
-    );
+        query_params: {},
+        fn: (list: any) => list.map((item: Partial<PlaceProcess>) => new PlaceProcess(id, item)),
+        path: PATH,
+    });
 }
 
 /**
@@ -42,5 +41,5 @@ export function queryProcesses(id: string, query_params: HashMap = {}) {
  * @param driver Name of the process to kill
  */
 export function terminateProcess(id: string, driver: string) {
-    return remove(id, { driver }, PATH);
+    return remove({ id, query_params: { driver }, path: PATH });
 }

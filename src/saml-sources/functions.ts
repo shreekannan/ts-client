@@ -1,11 +1,5 @@
 import { PlaceAuthSourceQueryOptions } from '../auth-sources/interfaces';
-import {
-    create,
-    query,
-    remove,
-    show,
-    update,
-} from '../resources/functions';
+import { create, query, remove, show, update } from '../resources/functions';
 import { HashMap } from '../utilities/types';
 import { PlaceSAMLSource } from './saml-source';
 
@@ -23,8 +17,8 @@ function process(item: Partial<PlaceSAMLSource>) {
  * Query the available SAML sources
  * @param query_params Query parameters to add the to request URL
  */
-export function querySAMLSources(query_params?: PlaceAuthSourceQueryOptions) {
-    return query(query_params, process, PATH);
+export function querySAMLSources(query_params: PlaceAuthSourceQueryOptions = {}) {
+    return query({ query_params, fn: process, path: PATH });
 }
 
 /**
@@ -33,7 +27,7 @@ export function querySAMLSources(query_params?: PlaceAuthSourceQueryOptions) {
  * @param query_params Query parameters to add the to request URL
  */
 export function showSAMLSource(id: string, query_params: HashMap = {}) {
-    return show(id, query_params, process, PATH);
+    return show({ id, query_params, fn: process, path: PATH });
 }
 
 /**
@@ -46,10 +40,9 @@ export function showSAMLSource(id: string, query_params: HashMap = {}) {
 export function updateSAMLSource(
     id: string,
     form_data: Partial<PlaceSAMLSource>,
-    query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
-    return update(id, form_data, query_params, method, process, PATH);
+    return update({ id, form_data, query_params: {}, method, fn: process, path: PATH });
 }
 
 /**
@@ -57,8 +50,8 @@ export function updateSAMLSource(
  * @param form_data SAML source data
  * @param query_params Query parameters to add the to request URL
  */
-export function addSAMLSource(form_data: Partial<PlaceSAMLSource>, query_params: HashMap = {}) {
-    return create(form_data, query_params, process, PATH);
+export function addSAMLSource(form_data: Partial<PlaceSAMLSource>) {
+    return create({ form_data, query_params: {}, fn: process, path: PATH });
 }
 
 /**
@@ -67,5 +60,5 @@ export function addSAMLSource(form_data: Partial<PlaceSAMLSource>, query_params:
  * @param query_params Query parameters to add the to request URL
  */
 export function removeSAMLSource(id: string, query_params: HashMap = {}) {
-    return remove(id, query_params, PATH);
+    return remove({ id, query_params, path: PATH });
 }

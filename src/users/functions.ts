@@ -17,8 +17,8 @@ function process(item: Partial<PlaceUser>) {
  * Query the available triggers
  * @param query_params Query parameters to add the to request URL
  */
-export function queryUsers(query_params?: PlaceUserQueryOptions) {
-    return query(query_params, process, PATH);
+export function queryUsers(query_params: PlaceUserQueryOptions = {}) {
+    return query({ query_params, fn: process, path: PATH });
 }
 
 /**
@@ -26,16 +26,16 @@ export function queryUsers(query_params?: PlaceUserQueryOptions) {
  * @param id ID of the trigger to retrieve
  * @param query_params Query parameters to add the to request URL
  */
-export function showUser(id: string, query_params: HashMap = {}) {
-    return show(id, query_params, process, PATH);
+export function showUser(id: string, query_params: PlaceUserQueryOptions = {}) {
+    return show({ id, query_params, fn: process, path: PATH });
 }
 
 /**
  * Get the data for the currently logged in user
  * @param query_params Query parameters to add the to request URL
  */
-export function currentUser(query_params: HashMap = {}) {
-    return show('current', query_params, process, PATH);
+export function currentUser(query_params: PlaceUserQueryOptions = {}) {
+    return show({ id: 'current', query_params, fn: process, path: PATH });
 }
 
 /**
@@ -48,10 +48,9 @@ export function currentUser(query_params: HashMap = {}) {
 export function updateUser(
     id: string,
     form_data: Partial<PlaceUser>,
-    query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
-    return update(id, form_data, query_params, method, process, PATH);
+    return update({ id, form_data, query_params: {}, method, fn: process, path: PATH });
 }
 
 /**
@@ -59,8 +58,8 @@ export function updateUser(
  * @param form_data Trigger data
  * @param query_params Query parameters to add the to request URL
  */
-export function addUser(form_data: Partial<PlaceUser>, query_params: HashMap = {}) {
-    return create(form_data, query_params, process, PATH);
+export function addUser(form_data: Partial<PlaceUser>) {
+    return create({ form_data, query_params: {}, fn: process, path: PATH });
 }
 
 /**
@@ -69,5 +68,5 @@ export function addUser(form_data: Partial<PlaceUser>, query_params: HashMap = {
  * @param query_params Query parameters to add the to request URL
  */
 export function removeUser(id: string, query_params: HashMap = {}) {
-    return remove(id, query_params, PATH);
+    return remove({ id, query_params, path: PATH });
 }

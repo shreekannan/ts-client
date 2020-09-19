@@ -1,14 +1,13 @@
 import { of } from 'rxjs';
-import { PlaceModule } from '../../src/modules/module';
-
 import * as SERVICE from '../../src/modules/functions';
+import { PlaceModule } from '../../src/modules/module';
 import * as Resources from '../../src/resources/functions';
 import { PlaceSettings } from '../../src/settings/settings';
 
 describe('Modules API', () => {
     it('should allow querying modules', async () => {
         const spy = jest.spyOn(Resources, 'query');
-        spy.mockImplementation((_, process: any, __) => of({ data: [process({})] } as any));
+        spy.mockImplementation((_) => of({ data: [_.fn({})] } as any));
         let list = await SERVICE.queryModules().toPromise();
         expect(list).toBeTruthy();
         expect(list.data.length).toBe(1);
@@ -18,9 +17,7 @@ describe('Modules API', () => {
 
     it('should allow showing module details', async () => {
         const spy = jest.spyOn(Resources, 'show');
-        spy.mockImplementation((_, _1, process: any, _2) =>
-            of(process({}) as any)
-        );
+        spy.mockImplementation((_) => of(_.fn({}) as any));
         let item = await SERVICE.showModule('1').toPromise();
         expect(item).toBeInstanceOf(PlaceModule);
         item = await SERVICE.showModule('1', {}).toPromise();
@@ -28,22 +25,18 @@ describe('Modules API', () => {
 
     it('should allow creating new modules', async () => {
         const spy = jest.spyOn(Resources, 'create');
-        spy.mockImplementation((_, _1, process: any, _2) =>
-            of(process({}) as any)
-        );
+        spy.mockImplementation((_) => of(_.fn({}) as any));
         let item = await SERVICE.addModule({}).toPromise();
         expect(item).toBeInstanceOf(PlaceModule);
-        item = await SERVICE.addModule({}, {}).toPromise();
+        item = await SERVICE.addModule({}).toPromise();
     });
 
     it('should allow updating module details', async () => {
         const spy = jest.spyOn(Resources, 'update');
-        spy.mockImplementation((_, _0, _1, _2, process: any, _3) =>
-            of(process({}) as any)
-        );
+        spy.mockImplementation((_) => of(_.fn({}) as any));
         let item = await SERVICE.updateModule('1', {}).toPromise();
         expect(item).toBeInstanceOf(PlaceModule);
-        item = await SERVICE.updateModule('1', {}, {}, 'patch').toPromise();
+        item = await SERVICE.updateModule('1', {}, 'patch').toPromise();
     });
 
     it('should allow removing modules', async () => {
@@ -85,10 +78,7 @@ describe('Modules API', () => {
     it('should allow lookup of module state', async () => {
         const spy = jest.spyOn(Resources, 'task');
         spy.mockImplementation(() => of({}));
-        const item = await SERVICE.lookupModuleState(
-            '1',
-            'connected'
-        ).toPromise();
+        const item = await SERVICE.lookupModuleState('1', 'connected').toPromise();
         expect(item).toBeTruthy();
     });
 
@@ -101,9 +91,7 @@ describe('Modules API', () => {
 
     it('should allow settings for a module', async () => {
         const spy = jest.spyOn(Resources, 'task');
-        spy.mockImplementation((_, _0, _1, _2, process: any, _3) =>
-            of(process([{}]) as any)
-        );
+        spy.mockImplementation((_: any) => of(_.callback([{}]) as any));
         const item = await SERVICE.moduleSettings('1').toPromise();
         expect(item).toBeTruthy();
         expect(item[0]).toBeInstanceOf(PlaceSettings);

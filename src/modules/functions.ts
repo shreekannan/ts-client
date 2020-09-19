@@ -1,18 +1,8 @@
 import { Observable } from 'rxjs';
-import {
-    create,
-    query,
-    remove,
-    show,
-    task,
-    update,
-} from '../resources/functions';
+import { create, query, remove, show, task, update } from '../resources/functions';
 import { PlaceSettings } from '../settings/settings';
 import { HashMap } from '../utilities/types';
-import {
-    PlaceModulePingOptions,
-    PlaceModuleQueryOptions,
-} from './interfaces';
+import { PlaceModulePingOptions, PlaceModuleQueryOptions } from './interfaces';
 import { PlaceModule } from './module';
 
 /**
@@ -29,8 +19,8 @@ function process(item: Partial<PlaceModule>) {
  * Query the available moduels
  * @param query_params Query parameters to add the to request URL
  */
-export function queryModules(query_params?: PlaceModuleQueryOptions) {
-    return query(query_params, process, PATH);
+export function queryModules(query_params: PlaceModuleQueryOptions = {}) {
+    return query({ query_params, fn: process, path: PATH });
 }
 
 /**
@@ -39,7 +29,7 @@ export function queryModules(query_params?: PlaceModuleQueryOptions) {
  * @param query_params Query parameters to add the to request URL
  */
 export function showModule(id: string, query_params: HashMap = {}) {
-    return show(id, query_params, process, PATH);
+    return show({ id, query_params, fn: process, path: PATH });
 }
 
 /**
@@ -52,10 +42,9 @@ export function showModule(id: string, query_params: HashMap = {}) {
 export function updateModule(
     id: string,
     form_data: Partial<PlaceModule>,
-    query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
-    return update(id, form_data, query_params, method, process, PATH);
+    return update({ id, form_data, query_params: {}, method, fn: process, path: PATH });
 }
 
 /**
@@ -63,8 +52,8 @@ export function updateModule(
  * @param form_data Module data
  * @param query_params Query parameters to add the to request URL
  */
-export function addModule(form_data: Partial<PlaceModule>, query_params: HashMap = {}) {
-    return create(form_data, query_params, process, PATH);
+export function addModule(form_data: Partial<PlaceModule>) {
+    return create({ form_data, query_params: {}, fn: process, path: PATH });
 }
 
 /**
@@ -73,7 +62,7 @@ export function addModule(form_data: Partial<PlaceModule>, query_params: HashMap
  * @param query_params Query parameters to add the to request URL
  */
 export function removeModule(id: string, query_params: HashMap = {}) {
-    return remove(id, query_params, PATH);
+    return remove({ id, query_params, path: PATH });
 }
 
 /**
@@ -81,7 +70,7 @@ export function removeModule(id: string, query_params: HashMap = {}) {
  * @param id Module ID
  */
 export function startModule(id: string) {
-    return task(id, 'start', undefined, undefined, undefined, PATH);
+    return task({ id, task_name: 'start', path: PATH });
 }
 
 /**
@@ -89,7 +78,7 @@ export function startModule(id: string) {
  * @param id Module ID
  */
 export function stopModule(id: string) {
-    return task(id, 'stop', undefined, undefined, undefined, PATH);
+    return task({ id, task_name: 'stop', path: PATH });
 }
 
 /**
@@ -97,7 +86,7 @@ export function stopModule(id: string) {
  * @param id Module ID
  */
 export function pingModule(id: string): Observable<PlaceModulePingOptions> {
-    return task(id, 'stop', undefined, undefined, undefined, PATH);
+    return task({ id, task_name: 'stop', path: PATH });
 }
 
 /**
@@ -106,7 +95,7 @@ export function pingModule(id: string): Observable<PlaceModulePingOptions> {
  * @param lookup Status variable of interest. If set it will return only the state of this variable
  */
 export function moduleState(id: string): Observable<HashMap> {
-    return task(id, 'state', undefined, 'get', undefined, PATH);
+    return task({ id, task_name: 'state', method: 'get', path: PATH });
 }
 
 /**
@@ -114,11 +103,8 @@ export function moduleState(id: string): Observable<HashMap> {
  * @param id Module ID
  * @param key Status variable of interest. If set it will return only the state of this variable
  */
-export function lookupModuleState(
-    id: string,
-    key: string
-): Observable<HashMap> {
-    return task(id, `state${key}`, undefined, 'get', undefined, PATH);
+export function lookupModuleState(id: string, key: string): Observable<HashMap> {
+    return task({ id, task_name: `state${key}`, method: 'get', path: PATH });
 }
 
 /**
@@ -126,7 +112,7 @@ export function lookupModuleState(
  * @param id Module ID
  */
 export function loadModule(id: string): Observable<HashMap> {
-    return task(id, 'load', undefined, 'post', undefined, PATH);
+    return task({ id, task_name: 'load', method: 'post', path: PATH });
 }
 
 /**
@@ -134,12 +120,11 @@ export function loadModule(id: string): Observable<HashMap> {
  * @param id Module ID
  */
 export function moduleSettings(id: string) {
-    return task(
+    return task({
         id,
-        'settings',
-        undefined,
-        'get',
-        list => list.map((item: Partial<PlaceSettings>) => new PlaceSettings(item)),
-        PATH
-    );
+        task_name: 'settings',
+        method: 'get',
+        callback: (list) => list.map((item: Partial<PlaceSettings>) => new PlaceSettings(item)),
+        path: PATH,
+    });
 }

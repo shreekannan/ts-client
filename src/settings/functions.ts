@@ -17,8 +17,8 @@ function process(item: Partial<PlaceSettings>) {
  * Query the available settings
  * @param query_params Query parameters to add the to request URL
  */
-export function querySettings(query_params?: PlaceSettingsQueryOptions) {
-    return query(query_params, process, PATH);
+export function querySettings(query_params: PlaceSettingsQueryOptions = {}) {
+    return query({ query_params, fn: process, path: PATH });
 }
 
 /**
@@ -27,7 +27,7 @@ export function querySettings(query_params?: PlaceSettingsQueryOptions) {
  * @param query_params Query parameters to add the to request URL
  */
 export function showSettings(id: string, query_params: HashMap = {}) {
-    return show(id, query_params, process, PATH);
+    return show({ id, query_params, fn: process, path: PATH });
 }
 
 /**
@@ -43,7 +43,7 @@ export function updateSettings(
     query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
-    return update(id, form_data, query_params, method, process, PATH);
+    return update({ id, form_data, query_params, method, fn: process, path: PATH });
 }
 
 /**
@@ -52,7 +52,7 @@ export function updateSettings(
  * @param query_params Query parameters to add the to request URL
  */
 export function addSettings(form_data: Partial<PlaceSettings>, query_params: HashMap = {}) {
-    return create(form_data, query_params, process, PATH);
+    return create({ form_data, query_params, fn: process, path: PATH });
 }
 
 /**
@@ -61,7 +61,7 @@ export function addSettings(form_data: Partial<PlaceSettings>, query_params: Has
  * @param query_params Query parameters to add the to request URL
  */
 export function removeSettings(id: string, query_params: HashMap = {}) {
-    return remove(id, query_params, PATH);
+    return remove({ id, query_params, path: PATH });
 }
 
 /**
@@ -70,12 +70,12 @@ export function removeSettings(id: string, query_params: HashMap = {}) {
  * @param query_params Query parameters to add the to request URL
  */
 export function settingsHistory(id: string, query_params: HashMap = {}) {
-    return task(
+    return task({
         id,
-        'history',
-        query_params,
-        'get',
-        (resp: HashMap[]) => resp.map(i => process(i)),
-        PATH
-    );
+        task_name: 'history',
+        form_data: query_params,
+        method: 'get',
+        callback: (resp: HashMap[]) => resp.map((i) => process(i)),
+        path: PATH,
+    });
 }

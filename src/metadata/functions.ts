@@ -1,10 +1,9 @@
+import { Observable } from 'rxjs';
 import { create, remove, show, task, update } from '../resources/functions';
-import { PlaceMetadataOptions, PlaceZoneMetadataOptions } from './interfaces';
+import { HashMap } from '../utilities/types';
+import { PlaceZoneMetadataOptions } from './interfaces';
 import { PlaceMetadata } from './metadata';
 import { PlaceZoneMetadata } from './zone-metadata';
-
-import { Observable } from 'rxjs';
-import { HashMap } from '../utilities/types';
 
 /**
  * @private
@@ -28,14 +27,14 @@ export function showMetadata(
     id: string,
     query_params: HashMap = {}
 ): Observable<PlaceMetadata[]> | Observable<PlaceMetadata> {
-    return show(
+    return show({
         id,
         query_params,
-        query_params.name
+        fn: query_params.name
             ? (data: HashMap) => process(data[query_params.name])
             : (list: HashMap) => Object.keys(list).map((key: string) => process(list[key])) as any,
-        PATH
-    );
+        path: PATH,
+    });
 }
 
 /**
@@ -48,14 +47,13 @@ export function showMetadata(
 export function updateMetadata(
     id: string,
     form_data: Partial<PlaceMetadata>,
-    query_params: PlaceMetadataOptions = {},
     method: 'put' | 'patch' = 'patch'
 ) {
-    return update(id, form_data, query_params, method, process, PATH);
+    return update({ id, form_data, query_params: {}, method, fn: process, path: PATH });
 }
 
-export function addMetadata(form_data: Partial<PlaceMetadata>, query_params: HashMap = {}) {
-    return create(form_data, query_params, process, PATH);
+export function addMetadata(form_data: Partial<PlaceMetadata>) {
+    return create({ form_data, query_params: {}, fn: process, path: PATH });
 }
 
 /**
@@ -64,7 +62,7 @@ export function addMetadata(form_data: Partial<PlaceMetadata>, query_params: Has
  * @param query_params Query parameters to add the to request URL
  */
 export function removeMetadata(id: string, query_params: HashMap = {}) {
-    return remove(id, query_params, PATH);
+    return remove({ id, query_params, path: PATH });
 }
 
 /**
@@ -73,19 +71,19 @@ export function removeMetadata(id: string, query_params: HashMap = {}) {
  * @param query_params Query parameters to add the to request URL
  */
 export function listChildMetadata(id: string, query_params: PlaceZoneMetadataOptions) {
-    return task(
+    return task({
         id,
-        'children',
-        query_params,
-        'get',
-        (list: HashMap[]) =>
+        task_name: 'children',
+        form_data: query_params,
+        method: 'get',
+        callback: (list: HashMap[]) =>
             list.map(
-                item =>
+                (item) =>
                     new PlaceZoneMetadata({
                         ...item,
-                        keys: Object.keys(item.metadata)
+                        keys: Object.keys(item.metadata),
                     })
             ),
-        PATH
-    );
+        path: PATH
+    });
 }

@@ -1,11 +1,18 @@
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
 import { apiEndpoint } from '../auth/functions';
 import { del, get, patch, post, put, responseHeaders } from '../http/functions';
 import { toQueryString } from '../utilities/api';
 import { convertPairStringToMap, parseLinkHeader } from '../utilities/general';
 import { HashMap } from '../utilities/types';
+import {
+    CreateParameters,
+    QueryParameters,
+    RemoveParameters,
+    ShowParameters,
+    TaskParameters,
+    UpdateParameters
+} from './interface';
 
 /** Total number of items returned by the last basic index query */
 export function requestTotal(name: string): number {
@@ -67,11 +74,8 @@ export type QueryResponse<T> = Observable<{
  * Query the index of the API route associated with this service
  * @param query_params Map of query paramaters to add to the request URL
  */
-export function query<T>(
-    query_params: HashMap = {},
-    fn: (data: Partial<T>) => T = process,
-    path: string = 'resource'
-): QueryResponse<T> {
+export function query<T>(q: QueryParameters<T>): QueryResponse<T> {
+    const { query_params, fn, path } = q;
     const query_str = toQueryString(query_params);
     const url = `${apiEndpoint()}/${path}${query_str ? '?' + query_str : ''}`;
     return get(url).pipe(
@@ -79,7 +83,9 @@ export function query<T>(
             const details = handleHeaders(url, query_str, path);
             return {
                 total: details.total || resp?.total,
-                next: details.next ? () => query(details.next as HashMap, fn, path) : null,
+                next: details.next
+                    ? () => query({ query_params: details.next as HashMap, fn, path })
+                    : null,
                 data:
                     resp && resp instanceof Array
                         ? resp.map((i) => fn(i))
@@ -97,14 +103,10 @@ export function query<T>(
  * @param id ID of the item
  * @param query_params Map of query paramaters to add to the request URL
  */
-export function show<T>(
-    id: string,
-    query_params: HashMap = {},
-    fn: (data:  Partial<T>) => T = process,
-    path: string = 'resource'
-): Observable<T> {
+export function show<T>(details: ShowParameters<T>): Observable<T> {
+    const { query_params, id, path, fn } = details;
     const query_str = toQueryString(query_params);
-    const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
+    const url = `${apiEndpoint()}/${path || 'resource'}/${id}${query_str ? '?' + query_str : ''}`;
     return get(url).pipe(map((resp: any) => fn(resp)));
 }
 
@@ -114,14 +116,10 @@ export function show<T>(
  * @param form_data Data to post to the server
  * @param query_params Map of query paramaters to add to the request URL
  */
-export function create<T>(
-    form_data:  Partial<T>,
-    query_params: HashMap = {},
-    fn: (data:  Partial<T>) => T = process,
-    path: string = 'resource'
-): Observable<T> {
+export function create<T>(details: CreateParameters<T>): Observable<T> {
+    const { query_params, form_data, path, fn } = details;
     const query_str = toQueryString(query_params);
-    const url = `${apiEndpoint()}/${path}${query_str ? '?' + query_str : ''}`;
+    const url = `${apiEndpoint()}/${path || 'resource'}${query_str ? '?' + query_str : ''}`;
     const observable = post(url, form_data).pipe(map((resp: any) => fn(resp)));
     return observable;
 }
@@ -134,21 +132,15 @@ export function create<T>(
  * @param form_data Map of data to pass to the API
  * @param method Verb to use for request
  */
-export function task<U = any>(
-    id: string,
-    task_name: string,
-    form_data: any = {},
-    method: 'post' | 'get' | 'del' | 'put' = 'post',
-    callback: (_: any) => U = (_) => _,
-    path: string = 'resource'
-): Observable<U> {
+export function task<T = any>(details: TaskParameters<T>): Observable<T> {
+    const { id, task_name, form_data, method, path, callback } = details;
     const query_str = toQueryString(form_data);
-    const url = `${apiEndpoint()}/${path}/${id}/${task_name}`;
+    const url = `${apiEndpoint()}/${path || 'resource'}/${id}/${task_name}`;
     const request =
-        method === 'post' || method === 'put'
-            ? (method === 'post' ? post : put)(url, form_data)
-            : (method === 'get' ? get : del)(`${url}${query_str ? '?' + query_str : ''}`);
-    return request.pipe(map((resp: HashMap) => callback(resp)));
+        method === 'post' || method === 'put' || !method
+            ? (method === 'put' ? put : post)(url, form_data)
+            : (method === 'del' ? del : get)(`${url}${query_str ? '?' + query_str : ''}`);
+    return request.pipe(map((resp: HashMap) => (callback || ((_: any) => _))(resp)));
 }
 
 /**
@@ -158,17 +150,11 @@ export function task<U = any>(
  * @param form_data New values for the item
  * @param query_params Map of query paramaters to add to the request URL
  */
-export function update<T>(
-    id: string,
-    form_data: HashMap,
-    query_params: HashMap = {},
-    type: 'put' | 'patch' = 'patch',
-    fn: (data: HashMap) => T = process,
-    path: string = 'resource'
-): Observable<T> {
+export function update<T>(details: UpdateParameters<T>): Observable<T> {
+    const { id, query_params, form_data, method, path, fn } = details;
     const query_str = toQueryString({ ...query_params, version: form_data.version || 0 });
-    const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
-    return (type === 'put' ? put : patch)(url, form_data).pipe(map((resp: HashMap) => fn(resp)));
+    const url = `${apiEndpoint()}/${path || 'resource'}/${id}${query_str ? '?' + query_str : ''}`;
+    return (method === 'put' ? put : patch)(url, form_data).pipe(map((resp: any) => fn(resp)));
 }
 
 /**
@@ -176,13 +162,10 @@ export function update<T>(
  * Make delete request for the given item
  * @param id ID of item
  */
-export function remove(
-    id: string,
-    query_params: HashMap = {},
-    path: string = 'resource'
-): Observable<any> {
+export function remove(details: RemoveParameters): Observable<HashMap> {
+    const { id, query_params, path } = details;
     const query_str = toQueryString(query_params);
-    const url = `${apiEndpoint()}/${path}/${id}${query_str ? '?' + query_str : ''}`;
+    const url = `${apiEndpoint()}/${path || 'resource'}/${id}${query_str ? '?' + query_str : ''}`;
     return del(url);
 }
 

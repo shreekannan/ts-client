@@ -18,8 +18,8 @@ function process(item: Partial<PlaceZone>) {
  * Query the available applications
  * @param query_params Query parameters to add the to request URL
  */
-export function queryZones(query_params?: PlaceZoneQueryOptions) {
-    return query(query_params, process, PATH);
+export function queryZones(query_params: PlaceZoneQueryOptions = {}) {
+    return query({ query_params, fn: process, path: PATH });
 }
 
 /**
@@ -28,7 +28,7 @@ export function queryZones(query_params?: PlaceZoneQueryOptions) {
  * @param query_params Query parameters to add the to request URL
  */
 export function showZone(id: string, query_params: PlaceZoneShowOptions = {}) {
-    return show(id, query_params, process, PATH);
+    return show({ id, query_params, fn: process, path: PATH });
 }
 
 /**
@@ -41,10 +41,9 @@ export function showZone(id: string, query_params: PlaceZoneShowOptions = {}) {
 export function updateZone(
     id: string,
     form_data: Partial<PlaceZone>,
-    query_params: HashMap = {},
     method: 'put' | 'patch' = 'patch'
 ) {
-    return update(id, form_data, query_params, method, process, PATH);
+    return update({ id, form_data, query_params: {}, method, fn: process, path: PATH });
 }
 
 /**
@@ -52,8 +51,8 @@ export function updateZone(
  * @param form_data Application data
  * @param query_params Query parameters to add the to request URL
  */
-export function addZone(form_data: Partial<PlaceZone>, query_params: HashMap = {}) {
-    return create(form_data, query_params, process, PATH);
+export function addZone(form_data: Partial<PlaceZone>) {
+    return create({form_data, query_params: {}, fn: process, path: PATH});
 }
 
 /**
@@ -62,7 +61,7 @@ export function addZone(form_data: Partial<PlaceZone>, query_params: HashMap = {
  * @param query_params Query parameters to add the to request URL
  */
 export function removeZone(id: string, query_params: HashMap = {}) {
-    return remove(id, query_params, PATH);
+    return remove({ id, query_params, path: PATH });
 }
 
 /**
@@ -71,9 +70,9 @@ export function removeZone(id: string, query_params: HashMap = {}) {
  * @param query_params Query parameters to add the to request URL
  */
 export function listZoneTriggers(id: string, query_params: HashMap = {}) {
-    return query(
+    return query({
         query_params,
-        (i: Partial<PlaceTrigger>) => new PlaceTrigger(i),
-        `${PATH}/${id}/triggers`
-    );
+        fn: (i: Partial<PlaceTrigger>) => new PlaceTrigger(i),
+        path: `${PATH}/${id}/triggers`
+    });
 }

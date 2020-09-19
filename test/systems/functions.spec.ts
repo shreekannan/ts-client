@@ -1,19 +1,16 @@
+import { of } from 'rxjs';
+import * as Resources from '../../src/resources/functions';
 import { PlaceSettings } from '../../src/settings/settings';
+import * as SERVICE from '../../src/systems/functions';
 import { PlaceSystem } from '../../src/systems/system';
 import { PlaceTrigger } from '../../src/triggers/trigger';
 import { PlaceZone } from '../../src/zones/zone';
-
-import { of } from 'rxjs';
-import * as Resources from '../../src/resources/functions';
-import * as SERVICE from '../../src/systems/functions';
 
 jest.mock('../../src/resources/functions');
 
 describe('Systems API', () => {
     it('should allow querying systems', async () => {
-        (Resources.query as any) = jest
-            .fn()
-            .mockImplementation((_, process: any, __) => of({data: [process({})]}));
+        (Resources.query as any) = jest.fn().mockImplementation((_) => of({ data: [_.fn({})] }));
         let list = await SERVICE.querySystems().toPromise();
         expect(list).toBeTruthy();
         expect(list.data.length).toBe(1);
@@ -22,34 +19,24 @@ describe('Systems API', () => {
     });
 
     it('should allow showing system details', async () => {
-        (Resources.show as any) = jest
-            .fn()
-            .mockImplementation((_, _1, process: any, _2) => of(process({})));
+        (Resources.show as any) = jest.fn().mockImplementation((_) => of(_.fn({})));
         let item = await SERVICE.showSystem('1').toPromise();
         expect(item).toBeInstanceOf(PlaceSystem);
         item = await SERVICE.showSystem('1', {}).toPromise();
     });
 
     it('should allow creating new systems', async () => {
-        (Resources.create as any) = jest
-            .fn()
-            .mockImplementation((_, _1, process: any, _2) =>
-                of(process({}) as any)
-            );
+        (Resources.create as any) = jest.fn().mockImplementation((_) => of(_.fn({}) as any));
         let item = await SERVICE.addSystem({}).toPromise();
         expect(item).toBeInstanceOf(PlaceSystem);
-        item = await SERVICE.addSystem({}, {}).toPromise();
+        item = await SERVICE.addSystem({}).toPromise();
     });
 
     it('should allow updating system details', async () => {
-        (Resources.update as any) = jest
-            .fn()
-            .mockImplementation((_, _0, _1, _2, process: any, _3) =>
-                of(process({}))
-            );
+        (Resources.update as any) = jest.fn().mockImplementation((_) => of(_.fn({})));
         let item = await SERVICE.updateSystem('1', {}).toPromise();
         expect(item).toBeInstanceOf(PlaceSystem);
-        item = await SERVICE.updateSystem('1', {}, {}, 'patch').toPromise();
+        item = await SERVICE.updateSystem('1', {}, 'patch').toPromise();
     });
 
     it('should allow removing systems', async () => {
@@ -86,15 +73,9 @@ describe('Systems API', () => {
 
     it('should allow excuting a method on a system', async () => {
         (Resources.task as any) = jest.fn().mockImplementation(() => of({}));
-        let item = await SERVICE.executeOnSystem(
-            '1',
-            'test',
-            'mod'
-        ).toPromise();
+        let item = await SERVICE.executeOnSystem('1', 'test', 'mod').toPromise();
         expect(item).toEqual({});
-        item = await SERVICE.executeOnSystem('1', 'test', 'mod', 2, [
-            'Yeah',
-        ]).toPromise();
+        item = await SERVICE.executeOnSystem('1', 'test', 'mod', 2, ['Yeah']).toPromise();
     });
 
     it('should allow gettings state of a system module', async () => {
@@ -106,12 +87,7 @@ describe('Systems API', () => {
 
     it('should allow lookup state of a system module', async () => {
         (Resources.task as any) = jest.fn().mockImplementation(() => of({}));
-        let item = await SERVICE.lookupSystemModuleState(
-            '1',
-            'mod',
-            1,
-            'connected'
-        ).toPromise();
+        let item = await SERVICE.lookupSystemModuleState('1', 'mod', 1, 'connected').toPromise();
         expect(item).toEqual({});
         item = await SERVICE.lookupSystemModuleState(
             '1',
@@ -141,27 +117,21 @@ describe('Systems API', () => {
     });
 
     it("should allow listing system's zones", async () => {
-        (Resources.task as any) = jest
-            .fn()
-            .mockImplementation((_, _1, _2, _3, cb) => of(cb([{}])));
+        (Resources.task as any) = jest.fn().mockImplementation((_) => of(_.callback([{}])));
         const item = await SERVICE.listSystemZones('1').toPromise();
         expect(item).toBeTruthy();
         expect(item.data[0]).toBeInstanceOf(PlaceZone);
     });
 
     it("should allow listing system's triggers", async () => {
-        (Resources.task as any) = jest
-            .fn()
-            .mockImplementation((_, _1, _2, _3, cb) => of(cb([{}])));
+        (Resources.task as any) = jest.fn().mockImplementation((_) => of(_.callback([{}])));
         const item = await SERVICE.listSystemTriggers('1').toPromise();
         expect(item).toBeTruthy();
         expect(item.data[0]).toBeInstanceOf(PlaceTrigger);
     });
 
     it('should allow adding a trigger to a system', async () => {
-        (Resources.task as any) = jest
-            .fn()
-            .mockImplementation((_, _1, _2, _3, cb) => of(cb({})));
+        (Resources.task as any) = jest.fn().mockImplementation((_) => of(_.callback({})));
         const item = await SERVICE.addSystemTrigger('1', {}).toPromise();
         expect(item).toBeTruthy();
         expect(item).toBeInstanceOf(PlaceTrigger);
@@ -169,17 +139,12 @@ describe('Systems API', () => {
 
     it('should allow removing a trigger from a system', async () => {
         (Resources.task as any) = jest.fn().mockImplementation(() => of());
-        const item = await SERVICE.removeSystemTrigger(
-            '1',
-            'trig-1'
-        ).toPromise();
+        const item = await SERVICE.removeSystemTrigger('1', 'trig-1').toPromise();
         expect(item).toBeFalsy();
     });
 
     it('should allow listing settings for a system', async () => {
-        (Resources.task as any) = jest
-            .fn()
-            .mockImplementation((_, _1, _2, _3, cb) => of(cb([{}])));
+        (Resources.task as any) = jest.fn().mockImplementation((_) => of(_.callback([{}])));
         const item = await SERVICE.systemSettings('1').toPromise();
         expect(item).toBeTruthy();
         expect(item[0]).toBeInstanceOf(PlaceSettings);
