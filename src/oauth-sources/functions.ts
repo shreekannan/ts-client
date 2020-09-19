@@ -1,6 +1,6 @@
-import { HashMap } from '../utilities/types';
 import { PlaceAuthSourceQueryOptions } from '../auth-sources/interfaces';
 import { create, query, remove, show, update } from '../resources/functions';
+import { HashMap } from '../utilities/types';
 import { PlaceOAuthSource } from './oauth-source';
 
 /**

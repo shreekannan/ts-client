@@ -1,5 +1,5 @@
-import { HashMap } from '../utilities/types';
 import { create, query, remove, show, update } from '../resources/functions';
+import { HashMap } from '../utilities/types';
 import { PlaceMQTTBroker } from './broker';
 
 /**

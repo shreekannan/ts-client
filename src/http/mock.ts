@@ -5,9 +5,9 @@ import { convertPairStringToMap, log } from '../utilities/general';
 import { HashMap } from '../utilities/types';
 import { HttpVerb } from './interfaces';
 import {
+    MockHttpRequest,
     MockHttpRequestHandler,
     MockHttpRequestHandlerOptions,
-    MockHttpRequest,
 } from './interfaces';
 
 /**

@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
-import { HashMap } from '../utilities/types';
-import { PlaceResourceQueryOptions } from '../resources/interface';
 import { create, query, remove, show, task, update } from '../resources/functions';
+import { PlaceResourceQueryOptions } from '../resources/interface';
 import { PlaceSystem } from '../systems/system';
+import { HashMap } from '../utilities/types';
 import { PlaceTrigger } from './trigger';
 
 /**

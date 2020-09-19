@@ -1,5 +1,5 @@
-import { HashMap } from '../utilities/types';
 import { PlaceResourceQueryOptions } from '../resources/interface';
+import { HashMap } from '../utilities/types';
 
 export interface PlaceModuleFunctionMap extends HashMap<PlaceModuleFunction> {}
 

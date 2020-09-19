@@ -1,4 +1,3 @@
-import { HashMap } from '../utilities/types';
 import {
     create,
     query,
@@ -6,6 +5,7 @@ import {
     show,
     update,
 } from '../resources/functions';
+import { HashMap } from '../utilities/types';
 import { PlaceApplication } from './application';
 import { PlaceApplicationQueryOptions } from './interfaces';
 

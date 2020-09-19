@@ -1,5 +1,5 @@
-import { HashMap } from '../utilities/types';
 import { query, remove, show } from '../resources/functions';
+import { HashMap } from '../utilities/types';
 import { PlaceCluster } from './cluster';
 import { PlaceClusterQueryOptions } from './interfaces';
 import { PlaceProcess } from './process';

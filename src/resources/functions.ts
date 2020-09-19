@@ -2,10 +2,10 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { apiEndpoint } from '../auth/functions';
-import { toQueryString } from '../utilities/api';
-import { parseLinkHeader, convertPairStringToMap } from '../utilities/general';
-import { HashMap } from '../utilities/types';
 import { del, get, patch, post, put, responseHeaders } from '../http/functions';
+import { toQueryString } from '../utilities/api';
+import { convertPairStringToMap, parseLinkHeader } from '../utilities/general';
+import { HashMap } from '../utilities/types';
 
 /** Total number of items returned by the last basic index query */
 export function requestTotal(name: string): number {
@@ -79,7 +79,7 @@ export function query<T>(
             const details = handleHeaders(url, query_str, path);
             return {
                 total: details.total || resp?.total,
-                next: details.next ? () => query(details.next as Object, fn, path) : null,
+                next: details.next ? () => query(details.next as HashMap, fn, path) : null,
                 data:
                     resp && resp instanceof Array
                         ? resp.map((i) => fn(i))

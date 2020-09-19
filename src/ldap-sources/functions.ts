@@ -1,4 +1,3 @@
-import { HashMap } from '../utilities/types';
 import { PlaceAuthSourceQueryOptions } from '../auth-sources/interfaces';
 import {
     create,
@@ -7,6 +6,7 @@ import {
     show,
     update,
 } from '../resources/functions';
+import { HashMap } from '../utilities/types';
 import { PlaceLDAPSource } from './ldap-source';
 
 /**

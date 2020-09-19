@@ -1,8 +1,8 @@
-import { HashMap } from '../utilities/types';
 import { create, query, remove, show, update } from '../resources/functions';
 import { PlaceTrigger } from '../triggers/trigger';
-import { PlaceZone } from './zone';
+import { HashMap } from '../utilities/types';
 import { PlaceZoneQueryOptions, PlaceZoneShowOptions } from './interfaces';
+import { PlaceZone } from './zone';
 
 /**
  * @private

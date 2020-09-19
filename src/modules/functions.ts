@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs';
-import { HashMap } from '../utilities/types';
 import {
     create,
     query,
@@ -9,11 +8,12 @@ import {
     update,
 } from '../resources/functions';
 import { PlaceSettings } from '../settings/settings';
-import { PlaceModule } from './module';
+import { HashMap } from '../utilities/types';
 import {
     PlaceModulePingOptions,
     PlaceModuleQueryOptions,
 } from './interfaces';
+import { PlaceModule } from './module';
 
 /**
  * @private

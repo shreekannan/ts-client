@@ -19,7 +19,7 @@ export interface AuthorizeDetails {
     /** Token generation code */
     code?: string;
     /** TTL of access token */
-    expires_in?: string
+    expires_in?: string;
 }
 
 export interface PlaceAuthority {

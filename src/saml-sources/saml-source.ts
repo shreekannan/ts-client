@@ -1,5 +1,5 @@
-import { HashMap } from '../utilities/types';
 import { PlaceResource } from '../resources/resource';
+import { HashMap } from '../utilities/types';
 
 export interface PlaceSamlRequestAttribute {
     name: string;

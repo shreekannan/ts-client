@@ -1,7 +1,7 @@
-import { HashMap } from '../utilities/types';
 import { create, query, remove, show, update } from '../resources/functions';
-import { PlaceUser } from './user';
+import { HashMap } from '../utilities/types';
 import { PlaceUserQueryOptions } from './interfaces';
+import { PlaceUser } from './user';
 
 /**
  * @private

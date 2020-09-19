@@ -3,22 +3,19 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 import {
     apiEndpoint,
-    isFixedDevice,
+    authority,
     host,
     httpRoute,
     invalidateToken,
+    isFixedDevice,
     isMock,
     isSecure,
+    needsTokenHeader,
     refreshAuthority,
     token,
-    needsTokenHeader,
-    authority,
 } from '../auth/functions';
 import { log } from '../utilities/general';
 import { HashMap } from '../utilities/types';
-import { MockPlaceWebsocketModule } from './mock-module';
-import { MockPlaceWebsocketSystem } from './mock-system';
-import { mockSystem } from './mock';
 import {
     PlaceCommandRequest,
     PlaceCommandRequestMetadata,
@@ -30,6 +27,9 @@ import {
     PlaceResponse,
     SimpleNetworkError,
 } from './interfaces';
+import { mockSystem } from './mock';
+import { MockPlaceWebsocketModule } from './mock-module';
+import { MockPlaceWebsocketSystem } from './mock-system';
 
 /**
  * @private
@@ -44,17 +44,17 @@ let REQUEST_COUNT = 0;
 /**
  * @private
  * Websocket for connecting to engine
- * */
+ */
 let _websocket: WebSocketSubject<any> | Subject<any> | undefined;
 /**
  * @private
  * Request promises
- * */
+ */
 const _requests: { [id: string]: PlaceCommandRequestMetadata } = {};
 /**
  * @private
  * Subjects for listening to values of bindings
- * */
+ */
 const _binding: { [id: string]: BehaviorSubject<any> } = {};
 /**
  * @private
@@ -287,7 +287,7 @@ export function send<T = any>(request: PlaceCommandRequest, tries: number = 0): 
                     (_) => resolve(_),
                     (_) => reject(_)
                 );
-            }
+            };
             if (_websocket && isConnected()) {
                 if (isMock()) {
                     handleMockSend(request, _websocket, _listeners);

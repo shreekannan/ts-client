@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 /**
  * @private
  * Store for named timers
- * */
+ */
 const _timers: { [name: string]: number } = {};
 /**
  * @private

@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs';
-import { HashMap } from '../utilities/types';
 import { PlaceDriverDetails } from '../drivers/interfaces';
 import {
     create,
@@ -9,13 +8,14 @@ import {
     task,
     update,
 } from '../resources/functions';
-import { PlaceRepository } from './repository';
+import { HashMap } from '../utilities/types';
 import {
     GitCommitDetails,
     PlaceRepositoryCommitQuery,
     PlaceRepositoryDetailsQuery,
     PlaceRepositoryPullQuery,
 } from './interfaces';
+import { PlaceRepository } from './repository';
 
 /**
  * @private

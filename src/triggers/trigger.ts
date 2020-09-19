@@ -1,8 +1,8 @@
 
+import { PlaceSystem } from 'src/systems/system';
 import { HttpVerb } from '../http/interfaces';
 import { PlaceResource } from '../resources/resource';
 import { TriggerActions, TriggerConditions } from './interfaces';
-import { PlaceSystem } from 'src/systems/system';
 
 /**
  * @hidden
@@ -10,7 +10,7 @@ import { PlaceSystem } from 'src/systems/system';
 export interface PlaceTriggerComplete extends Partial<PlaceTrigger> {
     trigger_count?: number;
     control_system?: PlaceSystem;
-};
+}
 
 export class PlaceTrigger extends PlaceResource {
     /** Name of the system assocaited with the trigger */

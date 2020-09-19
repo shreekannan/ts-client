@@ -1,13 +1,13 @@
-import { Observable, throwError, of } from 'rxjs';
-import { switchMap, retryWhen, mergeMap, filter, take } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
+import { filter, mergeMap, retryWhen, switchMap, take } from 'rxjs/operators';
 
 import {
     invalidateToken,
     isMock,
+    listenForToken,
     refreshAuthority,
     token,
-    listenForToken,
 } from '../auth/functions';
 import { log } from '../utilities/general';
 import { HashMap } from '../utilities/types';

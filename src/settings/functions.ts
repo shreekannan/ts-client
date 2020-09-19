@@ -1,7 +1,7 @@
-import { HashMap } from '../utilities/types';
 import { create, query, remove, show, task, update } from '../resources/functions';
-import { PlaceSettings } from './settings';
+import { HashMap } from '../utilities/types';
 import { PlaceSettingsQueryOptions } from './interfaces';
+import { PlaceSettings } from './settings';
 
 /**
  * @private

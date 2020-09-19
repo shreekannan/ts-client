@@ -1,6 +1,6 @@
 import { create, remove, show, task, update } from '../resources/functions';
-import { PlaceMetadata } from './metadata';
 import { PlaceMetadataOptions, PlaceZoneMetadataOptions } from './interfaces';
+import { PlaceMetadata } from './metadata';
 import { PlaceZoneMetadata } from './zone-metadata';
 
 import { Observable } from 'rxjs';

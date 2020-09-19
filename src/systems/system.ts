@@ -1,15 +1,15 @@
 
 import { PlaceModule } from '../modules/module';
 import { PlaceResource } from '../resources/resource';
-import { PlaceSettings } from '../settings/settings';
 import { EncryptionLevel } from '../settings/interfaces';
+import { PlaceSettings } from '../settings/settings';
 
 /**
  * @hidden
  */
 export interface PlaceSystemComplete extends Partial<PlaceSystem> {
     module_data?: PlaceModule[];
-};
+}
 
 export class PlaceSystem extends PlaceResource {
     /** Tuple of user settings of differring encryption levels for the system */

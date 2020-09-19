@@ -1,5 +1,5 @@
-import { HashMap } from '../utilities/types';
 import { create, query, remove, show, task, update } from '../resources/functions';
+import { HashMap } from '../utilities/types';
 import { PlaceDriver } from './driver';
 import { PlaceDriverQueryOptions } from './interfaces';
 

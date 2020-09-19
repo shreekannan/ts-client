@@ -1,10 +1,10 @@
-import { HashMap } from '../utilities/types';
 import { PlaceDriver } from '../drivers/driver';
 import { PlaceDriverRole } from '../drivers/enums';
 import { PlaceResource } from '../resources/resource';
-import { PlaceSettings } from '../settings/settings';
 import { EncryptionLevel } from '../settings/interfaces';
+import { PlaceSettings } from '../settings/settings';
 import { PlaceSystem } from '../systems/system';
+import { HashMap } from '../utilities/types';
 
 /**
  * @hidden
@@ -13,7 +13,7 @@ export interface PlaceModuleComplete extends Partial<PlaceModule> {
     dependency_id?: string;
     dependency?: PlaceDriver;
     control_system?: PlaceSystem;
-};
+}
 
 /** Function to request the server to stop emitting debug events */
 export type EndDebugFn = () => void;

@@ -20,7 +20,7 @@ export class PlaceRepository extends PlaceResource {
     /** Password to connect to repository with */
     public readonly password: string;
     /** Repository type */
-    public get type () { return this.repo_type };
+    public get type () { return this.repo_type; }
 
     constructor(raw_data: Partial<PlaceRepository> = {}) {
         super(raw_data);

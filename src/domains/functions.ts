@@ -1,6 +1,6 @@
-import { HashMap } from '../utilities/types';
-import { PlaceResourceQueryOptions } from '../resources/interface';
 import { create, query, remove, show, update } from '../resources/functions';
+import { PlaceResourceQueryOptions } from '../resources/interface';
+import { HashMap } from '../utilities/types';
 import { PlaceDomain } from './domain';
 
 /**

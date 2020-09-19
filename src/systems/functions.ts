@@ -1,16 +1,16 @@
 import { create, query, remove, show, task, update } from '../resources/functions';
 
 import { Observable } from 'rxjs';
-import { HashMap } from '../utilities/types';
 import { PlaceSettings } from '../settings/settings';
 import { PlaceTrigger } from '../triggers/trigger';
+import { HashMap } from '../utilities/types';
 import { PlaceZone } from '../zones/zone';
-import { PlaceSystem } from './system';
 import {
     PlaceModuleFunctionMap,
     PlaceSystemShowOptions,
     PlaceSystemsQueryOptions
 } from './interfaces';
+import { PlaceSystem } from './system';
 
 /**
  * @private

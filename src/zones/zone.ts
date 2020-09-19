@@ -1,6 +1,6 @@
 import { PlaceResource } from '../resources/resource';
-import { PlaceSettings } from '../settings/settings';
 import { EncryptionLevel } from '../settings/interfaces';
+import { PlaceSettings } from '../settings/settings';
 import { PlaceTrigger } from '../triggers/trigger';
 
 /**

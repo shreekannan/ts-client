@@ -2,16 +2,24 @@ import { addSeconds } from 'date-fns';
 import { isBefore } from 'date-fns';
 
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Md5 } from 'ts-md5/dist/md5';
 
-import { destroyWaitingAsync, timeout, clearAsyncTimeout } from '../utilities/async';
+import { toQueryString } from '../utilities/api';
+import { clearAsyncTimeout, destroyWaitingAsync, timeout } from '../utilities/async';
 import { generateNonce, getFragments, log, removeFragment } from '../utilities/general';
 import { HashMap } from '../utilities/types';
-import { MOCK_AUTHORITY, PlaceAuthOptions, PlaceAuthority, PlaceTokenResponse, AuthorizeDetails } from './interfaces';
+import {
+    AuthorizeDetails,
+    MOCK_AUTHORITY,
+    PlaceAuthOptions,
+    PlaceAuthority,
+    PlaceTokenResponse,
+} from './interfaces';
 
-import * as sha256 from 'fast-sha256';
 import * as base64 from 'byte-base64';
-import { map } from 'rxjs/operators';
+import * as sha256 from 'fast-sha256';
+import { fromFetch } from 'rxjs/fetch';
 
 /**
  * @private
@@ -46,12 +54,12 @@ let _code: string = '';
  * @private
  * In memory store for access token
  */
-let _access_token = new BehaviorSubject('');
+const _access_token = new BehaviorSubject('');
 /**
  * @private
  * In memory store for refresh token
  */
-let _refresh_token = new BehaviorSubject('');
+const _refresh_token = new BehaviorSubject('');
 /**
  * @private
  * Current API route
@@ -85,7 +93,7 @@ export function httpRoute() {
  * Whether requests need token in the request URL or as a header
  */
 export function needsTokenHeader(): boolean {
-    return !!_options.token_header
+    return !!_options.token_header;
 }
 
 /** OAuth 2 client ID for the application */
@@ -130,7 +138,7 @@ export function hasToken(): boolean {
 
 /** Observable for token state */
 export function listenForToken(): Observable<boolean> {
-    return _access_token.pipe(map(_ => !!hasToken()))
+    return _access_token.pipe(map((_) => !!hasToken()));
 }
 
 /** Place Authority details */
