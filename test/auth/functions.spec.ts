@@ -33,14 +33,12 @@ describe('Auth', () => {
     });
 
     it('should allow setting up auth', async () => {
-        window.debug = true;
         await Auth.setup({
             auth_uri: '',
             token_uri: '',
             redirect_uri: '1',
             scope: 'public',
         });
-        console.log('Setup');
         expect(Auth.authority).toBeTruthy();
         const client_id = Auth.clientId();
         await Auth.setup(undefined as any);
@@ -304,5 +302,29 @@ describe('Auth', () => {
             scope: 'public',
         });
         expect(Auth.authority()).toBeTruthy();
+    });
+
+    it('should allow listening to changes to token', async (done) => {
+        window.location.search = '?access_token=test&expires_in=3600';
+        Auth.listenForToken().subscribe((token) => {
+            if (token) {
+                done();
+            }
+        });
+        await Auth.setup({
+            auth_uri: '',
+            token_uri: '',
+            redirect_uri: '',
+            secure: true,
+            scope: 'public',
+        });
+    });
+
+    it('should allow generating challenge pairs', () => {
+        (window as any).TextEncoder = jest.fn(() => ({ encode: jest.fn((_: any) => _) }));
+        const { challenge, verify } = Auth.generateChallenge();
+        expect(challenge).toBeTruthy();
+        expect(challenge).toHaveLength(43);
+        expect(verify).toBeTruthy();
     });
 });
