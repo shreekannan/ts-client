@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SimpleNetworkError | @placeos/ts-client</title>
+	<title>TaskParameters | @placeos/ts-client</title>
 	<meta name="description" content="Documentation for @placeos/ts-client">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -2722,14 +2722,26 @@ img {
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
-		<li class="current tsd-kind-interface">
-			<a href="simplenetworkerror.html" class="tsd-kind-icon">Simple<wbr>Network<wbr>Error</a>
+		<li class="current tsd-kind-interface tsd-has-type-parameter">
+			<a href="taskparameters.html" class="tsd-kind-icon">Task<wbr>Parameters</a>
 			<ul>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="simplenetworkerror.html#message" class="tsd-kind-icon">message</a>
+					<a href="taskparameters.html#callback" class="tsd-kind-icon">callback</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="simplenetworkerror.html#status" class="tsd-kind-icon">status</a>
+					<a href="taskparameters.html#form_data" class="tsd-kind-icon">form_<wbr>data</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="taskparameters.html#id" class="tsd-kind-icon">id</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="taskparameters.html#method" class="tsd-kind-icon">method</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="taskparameters.html#path" class="tsd-kind-icon">path</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="taskparameters.html#task_name" class="tsd-kind-icon">task_<wbr>name</a>
 				</li>
 			</ul>
 		</li>
@@ -2737,18 +2749,19 @@ img {
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
-		<section class="tsd-panel tsd-comment">
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>Simple interface for a network error response</p>
-				</div>
-			</div>
+		<section class="tsd-panel tsd-type-parameters">
+			<h3>Type parameters</h3>
+			<ul class="tsd-type-parameters">
+				<li>
+					<h4>T</h4>
+				</li>
+			</ul>
 		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">SimpleNetworkError</span>
+					<span class="target">TaskParameters</span>
 				</li>
 			</ul>
 		</section>
@@ -2759,8 +2772,12 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="simplenetworkerror.html#message" class="tsd-kind-icon">message</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="simplenetworkerror.html#status" class="tsd-kind-icon">status</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="taskparameters.html#callback" class="tsd-kind-icon">callback</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="taskparameters.html#form_data" class="tsd-kind-icon">form_<wbr>data</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="taskparameters.html#id" class="tsd-kind-icon">id</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="taskparameters.html#method" class="tsd-kind-icon">method</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="taskparameters.html#path" class="tsd-kind-icon">path</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="taskparameters.html#task_name" class="tsd-kind-icon">task_<wbr>name</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2769,34 +2786,64 @@ img {
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="message" class="tsd-anchor"></a>
-				<h3>message</h3>
-				<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<a name="callback" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> callback</h3>
+				<div class="tsd-signature tsd-kind-icon">callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>_<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/realtime/interfaces.ts#L100">src/realtime/interfaces.ts:100</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/interface.ts#L70">src/resources/interface.ts:70</a></li>
 					</ul>
 				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Details aboun the error</p>
-					</div>
-				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="status" class="tsd-anchor"></a>
-				<h3>status</h3>
-				<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<a name="form_data" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> form_<wbr>data</h3>
+				<div class="tsd-signature tsd-kind-icon">form_<wbr>data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/realtime/interfaces.ts#L98">src/realtime/interfaces.ts:98</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/interface.ts#L68">src/resources/interface.ts:68</a></li>
 					</ul>
 				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Status code of the error</p>
-					</div>
-				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="id" class="tsd-anchor"></a>
+				<h3>id</h3>
+				<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/interface.ts#L66">src/resources/interface.ts:66</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="method" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> method</h3>
+				<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"post"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"get"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"del"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"put"</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/interface.ts#L69">src/resources/interface.ts:69</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="path" class="tsd-anchor"></a>
+				<h3>path</h3>
+				<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/interface.ts#L71">src/resources/interface.ts:71</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="task_name" class="tsd-anchor"></a>
+				<h3>task_<wbr>name</h3>
+				<div class="tsd-signature tsd-kind-icon">task_<wbr>name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/interface.ts#L67">src/resources/interface.ts:67</a></li>
+					</ul>
+				</aside>
 			</section>
 		</section>
 		<footer class="with-border-bottom">

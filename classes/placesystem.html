@@ -2728,9 +2728,6 @@ img {
 				<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 					<a href="placesystem.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-					<a href="placesystem.html#_version" class="tsd-kind-icon">_version</a>
-				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
 					<a href="placesystem.html#bookable" class="tsd-kind-icon">bookable</a>
 				</li>
@@ -2779,6 +2776,9 @@ img {
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a href="placesystem.html#updated_at" class="tsd-kind-icon">updated_<wbr>at</a>
 				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+					<a href="placesystem.html#version" class="tsd-kind-icon">version</a>
+				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
 					<a href="placesystem.html#zones" class="tsd-kind-icon">zones</a>
 				</li>
@@ -2817,7 +2817,6 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="placesystem.html#_version" class="tsd-kind-icon">_version</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placesystem.html#bookable" class="tsd-kind-icon">bookable</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placesystem.html#capacity" class="tsd-kind-icon">capacity</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="placesystem.html#created_at" class="tsd-kind-icon">created_<wbr>at</a></li>
@@ -2834,6 +2833,7 @@ img {
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placesystem.html#settings" class="tsd-kind-icon">settings</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placesystem.html#support_url" class="tsd-kind-icon">support_<wbr>url</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="placesystem.html#updated_at" class="tsd-kind-icon">updated_<wbr>at</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="placesystem.html#version" class="tsd-kind-icon">version</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placesystem.html#zones" class="tsd-kind-icon">zones</a></li>
 						</ul>
 					</section>
@@ -2852,20 +2852,20 @@ img {
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Place<wbr>System<span class="tsd-signature-symbol">(</span>raw_data<span class="tsd-signature-symbol">?: </span><a href="../interfaces/hashmap.html" class="tsd-signature-type">HashMap</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="placesystem.html" class="tsd-signature-type">PlaceSystem</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Place<wbr>System<span class="tsd-signature-symbol">(</span>raw_data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">PlaceSystemComplete</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="placesystem.html" class="tsd-signature-type">PlaceSystem</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides <a href="placeresource.html">PlaceResource</a>.<a href="placeresource.html#constructor">constructor</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L41">src/systems/system.ts:41</a></li>
+								<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L48">src/systems/system.ts:48</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> raw_data: <a href="../interfaces/hashmap.html" class="tsd-signature-type">HashMap</a><span class="tsd-signature-symbol"> = {}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> raw_data: <span class="tsd-signature-type">PlaceSystemComplete</span><span class="tsd-signature-symbol"> = {}</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="placesystem.html" class="tsd-signature-type">PlaceSystem</a></h4>
@@ -2875,29 +2875,13 @@ img {
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-				<a name="_version" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> _version</h3>
-				<div class="tsd-signature tsd-kind-icon">_version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-				<aside class="tsd-sources">
-					<p>Inherited from <a href="placeresource.html">PlaceResource</a>.<a href="placeresource.html#_version">_version</a></p>
-					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/resources/resource.ts#L14">src/resources/resource.ts:14</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Version of the data</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 				<a name="bookable" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> bookable</h3>
 				<div class="tsd-signature tsd-kind-icon">bookable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L26">src/systems/system.ts:26</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L33">src/systems/system.ts:33</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2912,7 +2896,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">capacity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L22">src/systems/system.ts:22</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L29">src/systems/system.ts:29</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2928,7 +2912,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="placeresource.html">PlaceResource</a>.<a href="placeresource.html#created_at">created_at</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/resources/resource.ts#L10">src/resources/resource.ts:10</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/resource.ts#L10">src/resources/resource.ts:10</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2943,7 +2927,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L18">src/systems/system.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L25">src/systems/system.ts:25</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2958,7 +2942,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">display_<wbr>name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L16">src/systems/system.ts:16</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L23">src/systems/system.ts:23</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2973,7 +2957,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">email<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L20">src/systems/system.ts:20</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L27">src/systems/system.ts:27</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2988,7 +2972,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">features<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L24">src/systems/system.ts:24</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L31">src/systems/system.ts:31</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3004,7 +2988,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="placeresource.html">PlaceResource</a>.<a href="placeresource.html#id">id</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/resources/resource.ts#L6">src/resources/resource.ts:6</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/resource.ts#L6">src/resources/resource.ts:6</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3019,7 +3003,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">installed_<wbr>ui_<wbr>devices<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L28">src/systems/system.ts:28</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L35">src/systems/system.ts:35</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3034,7 +3018,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">map_<wbr>id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L32">src/systems/system.ts:32</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L39">src/systems/system.ts:39</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3049,7 +3033,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">module_<wbr>list<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">keyof </span><a href="placemodule.html" class="tsd-signature-type">PlaceModule</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L41">src/systems/system.ts:41</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L48">src/systems/system.ts:48</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3065,7 +3049,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">modules<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L34">src/systems/system.ts:34</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L41">src/systems/system.ts:41</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3081,7 +3065,7 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="placeresource.html">PlaceResource</a>.<a href="placeresource.html#name">name</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/resources/resource.ts#L8">src/resources/resource.ts:8</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/resource.ts#L8">src/resources/resource.ts:8</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3096,7 +3080,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">settings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">[</span><a href="placesettings.html" class="tsd-signature-type">PlaceSettings</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">, </span><a href="placesettings.html" class="tsd-signature-type">PlaceSettings</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">, </span><a href="placesettings.html" class="tsd-signature-type">PlaceSettings</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">, </span><a href="placesettings.html" class="tsd-signature-type">PlaceSettings</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol"> = [null, null, null, null]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L9">src/systems/system.ts:9</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L16">src/systems/system.ts:16</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3111,7 +3095,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">support_<wbr>url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L30">src/systems/system.ts:30</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L37">src/systems/system.ts:37</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3127,12 +3111,28 @@ img {
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="placeresource.html">PlaceResource</a>.<a href="placeresource.html#updated_at">updated_at</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/resources/resource.ts#L12">src/resources/resource.ts:12</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/resource.ts#L12">src/resources/resource.ts:12</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<p>Unix epoch in seconds of the creation time of the object</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+				<a name="version" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> version</h3>
+				<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<aside class="tsd-sources">
+					<p>Inherited from <a href="placeresource.html">PlaceResource</a>.<a href="placeresource.html#version">version</a></p>
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/resource.ts#L14">src/resources/resource.ts:14</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Version of the data</p>
 					</div>
 				</div>
 			</section>
@@ -3142,7 +3142,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">zones<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/systems/system.ts#L36">src/systems/system.ts:36</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/systems/system.ts#L43">src/systems/system.ts:43</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3165,7 +3165,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="placeresource.html">PlaceResource</a>.<a href="placeresource.html#tojson">toJSON</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/d955ee7/src/resources/resource.ts#L27">src/resources/resource.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/89ad103/src/resources/resource.ts#L27">src/resources/resource.ts:27</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
