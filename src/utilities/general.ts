@@ -106,17 +106,20 @@ export function convertPairStringToMap(str: string): HashMap<string> {
 }
 
 /**
+ * @hidden
+ */
+const NONCE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+/**
  * @private
  * Create a nonce with the given length
  * @param length Length of the nonce string. Defaults to 40 characters
  */
 export function generateNonce(length: number = 40): string {
-    const allowed_characters =
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let nonce = '';
     for (let i = 0; i < length; i++) {
-        nonce += allowed_characters.charAt(
-            Math.floor(Math.random() * allowed_characters.length)
+        nonce += NONCE_CHARS.charAt(
+            Math.floor(Math.random() * NONCE_CHARS.length)
         );
     }
     return nonce;

@@ -168,38 +168,33 @@ export function onlineState(): Observable<boolean> {
 
 /** Whether this application is trusted */
 export function isTrusted(): boolean {
-    const fragments = getFragments();
-    let is_trusted = fragments.trust === 'true';
-    /* istanbul ignore else */
-    if (localStorage) {
-        const key = `${clientId()}_trusted`;
-        is_trusted =
-            is_trusted ||
-            localStorage.getItem(key) === 'true' ||
-            localStorage.getItem('trusted') === 'true';
-        localStorage.setItem(key, `${is_trusted}`);
-    }
-    return is_trusted;
+    return checkStoreForAuthParam('trust') === 'true';
 }
 
 /** Whether this application is on a fixed location device */
 export function isFixedDevice(): boolean {
+    return checkStoreForAuthParam('fixed_device') === 'true';
+}
+
+/**
+ * @hidden
+ * Check for an auth related param in the URL or storage
+ * @param name Name of the paramater to look for
+ */
+export function checkStoreForAuthParam(name: string): string {
     const fragments = getFragments();
-    let fixed_device = fragments.fixed_device === 'true';
+    let param = fragments[name];
     /* istanbul ignore else */
-    if (localStorage) {
-        const key = `${clientId()}_fixed_device`;
-        fixed_device =
-            fixed_device ||
-            localStorage.getItem(key) === 'true' ||
-            localStorage.getItem('fixed_device') === 'true';
-        localStorage.setItem(key, `${fixed_device}`);
+    if (_storage) {
+        const key = `${clientId()}_${name}`;
+        param = param || _storage.getItem(key) || _storage.getItem(name) || '';
+        _storage.setItem(key, `${param}`);
     }
-    return fixed_device;
+    return param;
 }
 
 /** Initialise authentication for the http and realtime APIs */
-export function setup(options: PlaceAuthOptions) {
+export function setup(options: PlaceAuthOptions): Promise<void> {
     _options = options || _options;
     // Intialise storage
     _storage = _options.storage === 'session' ? sessionStorage : localStorage;
@@ -255,7 +250,7 @@ export function invalidateToken(): void {
 export function authorise(state?: string): Promise<string>;
 export function authorise(
     state?: string,
-    api_authority: PlaceAuthority = _authority as any
+    api_authority: PlaceAuthority = _authority as PlaceAuthority
 ): Promise<string> {
     /* istanbul ignore else */
     if (!_promises.authorise) {
@@ -271,13 +266,13 @@ export function authorise(
                     resolve(token());
                 } else {
                     const token_handlers = [
-                        (_: any) => {
+                        () => {
                             delete _promises.authorise;
                             resolve(token());
                         },
-                        (_: any) => {
+                        () => {
                             delete _promises.authorise;
-                            reject(_);
+                            reject();
                         },
                     ];
                     if (_options && _options.auth_type === 'password') {
@@ -341,28 +336,29 @@ export function loadAuthority(tries: number = 0): Promise<void> {
             log('Auth', `Fixed: ${isFixedDevice()} | Trusted: ${isTrusted()}`);
             log('Auth', `Loading authority...`);
             const secure = _options.secure || location.protocol.indexOf('https') >= 0;
-            fetch(`${secure ? 'https:' : 'http:'}//${host()}/auth/authority`)
-                .then((resp) => resp.json())
-                .then((api_authority: PlaceAuthority) => {
-                    _authority = api_authority;
-                    _route = !/[2-9]\.[0-9]+\.[0-9]+/g.test(_authority.version || '') ? `/control/api` : `/api/engine/v2`;
+            fromFetch(`${secure ? 'https:' : 'http:'}//${host()}/auth/authority`).subscribe(
+                async (resp) => {
+                    _authority = (await resp.json()) as PlaceAuthority;
+                    _route = !/[2-9]\.[0-9]+\.[0-9]+/g.test(_authority.version || '')
+                        ? `/control/api`
+                        : `/api/engine/v2`;
                     const response = () => {
                         _online.next(true);
                         setTimeout(() => delete _promises.load_authority, 500);
                         resolve();
                     };
                     authorise('').then(response, response);
-                })
-                .catch((err) => {
+                },
+                (err) => {
                     log('Auth', `Failed to load authority(${err})`);
                     _online.next(false);
-                    delete _promises.load_authority;
                     // Retry if authority fails to load
-                    setTimeout(
-                        () => loadAuthority(tries).then((_) => resolve()),
-                        300 * Math.min(20, ++tries)
-                    );
-                });
+                    setTimeout(() => {
+                        delete _promises.load_authority;
+                        loadAuthority(tries).then((_) => resolve());
+                    }, 300 * Math.min(20, ++tries));
+                }
+            );
         });
     }
     return _promises.load_authority;
@@ -372,7 +368,7 @@ export function loadAuthority(tries: number = 0): Promise<void> {
  * @private
  * @param state
  */
-export async function sendToAuthorize(state?: string) {
+export async function sendToAuthorize(state?: string): Promise<void> {
     const auth_url = createLoginURL(state);
     if (_options.use_iframe) {
         return authorizeWithIFrame(auth_url);
@@ -385,7 +381,7 @@ export async function sendToAuthorize(state?: string) {
  * @private
  * @param url Authorization URL
  */
-export function authorizeWithIFrame(url: string) {
+export function authorizeWithIFrame(url: string): Promise<void> {
     if (!_promises.iframe_auth) {
         _promises.iframe_auth = new Promise((resolve, reject) => {
             const iframe = document.createElement('iframe');
@@ -406,17 +402,20 @@ export function authorizeWithIFrame(url: string) {
                     delete _promises.iframe_auth;
                     if (data.token) {
                         resolve();
-                        return _storeTokenDetails({ access_token: data.token, ...data }  as any);
+                        return _storeTokenDetails({ access_token: data.token, ...data } as any);
                     }
                     _code = data.code || '';
-                    generateToken().then(_ => resolve(_), _ => reject(_));
+                    generateToken().then(
+                        (_) => resolve(_),
+                        (_) => reject(_)
+                    );
                 }
             };
             timeout('iframe_auth', () => reject(), 15 * 1000);
             window.addEventListener('message', callback);
-            iframe.onerror = _ => {
+            iframe.onerror = (_) => {
                 delete _promises.iframe_auth;
-                reject()
+                reject();
             };
             document.body.appendChild(iframe);
         });
@@ -428,7 +427,7 @@ export function authorizeWithIFrame(url: string) {
  * @private
  * @param api_authority
  */
-export function sendToLogin(api_authority: PlaceAuthority) {
+export function sendToLogin(api_authority: PlaceAuthority): void {
     /* istanbul ignore else */
     if (_options.handle_login !== false) {
         log('Auth', 'Redirecting to login page...');
@@ -550,8 +549,8 @@ export function generateChallenge(length: number = 43) {
         .fill(0)
         .map(() => AVAILABLE_CHARS[Math.floor(Math.random() * AVAILABLE_CHARS.length)])
         .join('');
-    var uint8array = base64.base64ToBytes(base64.base64encode(challenge));
-    var verify = base64
+    const uint8array = base64.base64ToBytes(base64.base64encode(challenge));
+    const verify = base64
         .bytesToBase64(sha256.hash(uint8array))
         .split('=')[0]
         .replace(/\//g, '_')
@@ -590,15 +589,17 @@ export function createRefreshURL(): string {
  */
 export function createCredentialsURL(options: PlaceAuthOptions) {
     const refresh_uri = options.token_uri || '/auth/token';
-    let url = refresh_uri + `?client_id=${encodeURIComponent(_client_id)}`;
-    url += `&client_secret=${encodeURIComponent(options.client_secret || '')}`;
-    url += `&grant_type=password`;
-    url += `&redirect_uri=${encodeURIComponent(options.redirect_uri)}`;
-    url += `&authority=${encodeURIComponent(_authority ? _authority.id : '')}`;
-    url += `&username=${encodeURIComponent(options.username || '')}`;
-    url += `&password=${encodeURIComponent(options.password || '')}`;
-    url += `&scope=${encodeURIComponent(options.scope || '')}`;
-    return url;
+    const url = toQueryString({
+        grant_type: 'password',
+        client_id: _client_id,
+        client_secret: options.client_secret,
+        redirect_uri: options.redirect_uri,
+        authority: _authority?.id,
+        scope: options.scope,
+        username: options.username,
+        password: options.password,
+    });
+    return `${refresh_uri}?${url}`;
 }
 
 /**
@@ -655,7 +656,7 @@ export function generateTokenWithUrl(url: string): Promise<void> {
             log('Auth', 'Generating new token...');
             fetch(url, { method: 'POST' })
                 .then((r) => {
-                    if (r.ok) return r.json()
+                    if (r.ok) return r.json();
                     throw r;
                 })
                 .then((tokens: PlaceTokenResponse) => {
