@@ -18,6 +18,7 @@ export abstract class PlaceResource {
         this.name = raw_data.name || '';
         this.created_at = raw_data.created_at || 0;
         this.updated_at = raw_data.updated_at || 0;
+
         this.version = raw_data.version || 0;
     }
 
