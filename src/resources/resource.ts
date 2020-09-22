@@ -26,6 +26,7 @@ export abstract class PlaceResource {
      */
     public toJSON(): HashMap {
         const obj: any = { ...this };
+        obj.version += 1;
         /** Remove unneeded public members */
         delete obj.created_at;
         return cleanObject(obj, [undefined, null, '']);
