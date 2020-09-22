@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { PlaceResourceQueryOptions } from 'src/resources/interface';
+import { PlaceResourceQueryOptions } from '../resources/interface';
 import { PlaceDriverDetails } from '../drivers/interfaces';
 import { create, query, remove, show, task, update } from '../resources/functions';
 import { HashMap } from '../utilities/types';

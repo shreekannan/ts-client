@@ -1,3 +1,4 @@
+import { HashMap } from '../utilities/types';
 import { query, remove, show } from '../resources/functions';
 import { PlaceCluster } from './cluster';
 import { PlaceClusterQueryOptions } from './interfaces';
@@ -26,10 +27,10 @@ export function queryClusters(query_params: PlaceClusterQueryOptions = {}) {
  * @param id ID of the cluster to query
  * @param query_params Query parameters to add the to request URL
  */
-export function queryProcesses(id: string) {
+export function queryProcesses(id: string, query_params: HashMap = {}) {
     return show({
         id,
-        query_params: {},
+        query_params,
         fn: (list: any) => list.map((item: Partial<PlaceProcess>) => new PlaceProcess(id, item)),
         path: PATH,
     });

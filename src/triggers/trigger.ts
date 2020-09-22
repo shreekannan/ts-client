@@ -1,5 +1,5 @@
 
-import { PlaceSystem } from 'src/systems/system';
+import { PlaceSystem } from '../systems/system';
 import { HttpVerb } from '../http/interfaces';
 import { PlaceResource } from '../resources/resource';
 import { TriggerActions, TriggerConditions } from './interfaces';
