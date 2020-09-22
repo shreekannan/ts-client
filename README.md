@@ -19,7 +19,7 @@ You can install the PlaceOS Typescript client with the npm command
 Before using PlaceOS it will need to be initialised.
 
 ```typescript
-import { setup } from '@placeos/ts-client/auth';
+import { setup } from '@placeos/ts-client';
 
 setup(config).then(() => doAfterAuthInitialised());
 ```
@@ -49,7 +49,7 @@ The `realtime` entrypoint to provides methods for real-time interaction with mod
 Once PlaceOS has initialised you can listen to values on modules
 
 ```typescript
-import { getModule } from '@placeos/ts-client/realtime';
+import { getModule } from '@placeos/ts-client';
 
 const my_mod = getModule('sys-death-star', 'TestModule', 3);
 const my_variable = my_mod.binding('power');
@@ -171,7 +171,7 @@ To use the mock services you can pass `mock: true` into the initialisation objec
 To write mocks for the the realtime(websocket) API you'll need to register your systems with the `registerSystem` before attempting to bind to the modules it contains.
 
 ```typescript
-import { registerSystem } from '@placeos/ts-client/realtime';
+import { registerSystem } from '@placeos/ts-client';
 
 registerSystem('my-system', {
     MyModule: [
@@ -222,7 +222,7 @@ registerSystem('my-system', {
 HTTP API Requests can be mocked in a similar way to the realtime API by registering handlers with `registerMockEndpoint`
 
 ```typescript
-import { registerMockEndpoint } from '@placeos/ts-client/api';
+import { registerMockEndpoint } from '@placeos/ts-client';
 
 registerMockEndpoint({
     path: '/api/engine/v2/systems',

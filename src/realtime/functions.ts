@@ -475,7 +475,7 @@ export function connect(tries: number = 0): Promise<void> {
                 if (!_websocket) {
                     log('WS', `Failed to create websocket(${tries}). Retrying in ${1000 * Math.min(10, tries + 1)}ms...`, undefined, 'error');
                 } else {
-                    log('WS', `Waiting on auth(${tries}). Retrying in ${1000 * Math.min(10, tries + 1)}ms...`, undefined, 'warn');
+                    log('WS', `Waiting on auth(${tries}). Retrying in ${1000 * Math.min(10, tries + 1)}ms...`, [!!token(), !!authority()], 'warn');
                 }
                 setTimeout(() => {
                     _connection_promise = null;
