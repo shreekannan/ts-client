@@ -145,7 +145,7 @@ export function executeOnSystem(
 ): Observable<HashMap> {
     return task({
         id,
-        task_name: `${module}_${index}/${method}`,
+        task_name: `${module}_${index}/${encodeURIComponent(method)}`,
         form_data: args,
         path: PATH,
     });
