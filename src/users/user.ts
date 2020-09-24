@@ -14,6 +14,8 @@ export class PlaceUser extends PlaceResource {
     public readonly phone: string;
     /** Country that the user resides in */
     public readonly country: string;
+    /** Office building the user is associated */
+    public readonly building: string;
     /** Access control groups that user is associated */
     public readonly groups: string[];
     /** Avatar image for the user */
@@ -46,6 +48,7 @@ export class PlaceUser extends PlaceResource {
         this.email_digest = raw_data.email_digest || '';
         this.phone = raw_data.phone || '';
         this.country = raw_data.country || '';
+        this.building = raw_data.building || '';
         this.image = raw_data.image || '';
         this.metadata = raw_data.metadata || '';
         this.login_name = raw_data.login_name || '';
