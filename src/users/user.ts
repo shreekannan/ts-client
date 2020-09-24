@@ -59,5 +59,6 @@ export class PlaceUser extends PlaceResource {
         this.sys_admin = !!raw_data.sys_admin;
         this.ui_theme = raw_data.ui_theme || '';
         this.groups = raw_data.groups || [];
+
     }
 }
