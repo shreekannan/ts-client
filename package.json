@@ -72,7 +72,7 @@
         "jest": "^26.2.2",
         "jest-config": "^26.2.2",
         "rxjs": "^6.6.2",
-        "semantic-release": "^17.1.1",
+        "semantic-release": "^17.1.2",
         "ts-jest": "^26.1.4",
         "ts-md5": "^1.2.7",
         "tslib": "^2.0.1",
