@@ -252,6 +252,7 @@ export function authorise(
     if (!_promises.authorise) {
         _promises.authorise = new Promise<string>((resolve, reject) => {
             if (!api_authority) {
+                delete _promises.authorise;
                 return reject('Authority is not loaded');
             }
             log('Auth', 'Authorising user...');
@@ -282,6 +283,7 @@ export function authorise(
                         } else {
                             log('Auth', 'No user session');
                             sendToLogin(api_authority);
+                            delete _promises.authorise;
                             reject();
                         }
                     }
@@ -348,6 +350,8 @@ export function loadAuthority(tries: number = 0): Promise<void> {
                     _route = !/[2-9]\.[0-9]+\.[0-9]+/g.test(_authority.version || '')
                         ? `/control/api`
                         : `/api/engine/v2`;
+
+                    log('Auth', `Loaded authority.`, _authority);
                     const response = () => {
                         _online.next(true);
                         setTimeout(() => delete _promises.load_authority, 500);
@@ -443,18 +447,16 @@ export function sendToLogin(api_authority: PlaceAuthority): void {
 export function checkToken(): Promise<boolean> {
     /* istanbul ignore else */
     if (!_promises.check_token) {
-        _promises.check_token = new Promise((resolve, reject) => {
+        _promises.check_token = new Promise(async (resolve, reject) => {
             if (token()) {
                 log('Auth', 'Valid token found.');
                 resolve(token());
             } else {
                 log('Auth', 'No token. Checking URL for auth credentials...');
-                checkForAuthParameters().then(
-                    (_) => resolve(_),
-                    (_) => reject(_)
-                );
+                const success = await checkForAuthParameters();
+                success ? resolve(true) : reject();
             }
-            _promises.check_token = undefined;
+            delete _promises.check_token;
         });
     }
     return _promises.check_token as Promise<boolean>;
@@ -467,7 +469,7 @@ export function checkToken(): Promise<boolean> {
 export function checkForAuthParameters(): Promise<boolean> {
     /* istanbul ignore else */
     if (!_promises.check_params) {
-        _promises.check_params = new Promise((resolve, reject) => {
+        _promises.check_params = new Promise((resolve) => {
             let fragments = getFragments();
             if ((!fragments || Object.keys(fragments).length <= 0) && sessionStorage) {
                 fragments = JSON.parse(sessionStorage.getItem('ENGINE.auth.params') || '{}');
@@ -496,12 +498,12 @@ export function checkForAuthParameters(): Promise<boolean> {
                     _storeTokenDetails(fragments as any);
                     resolve(!!fragments.access_token);
                 } else {
-                    reject();
+                    resolve(false);
                 }
             } else {
-                reject();
+                resolve(false);
             }
-            delete _promises.check_params;
+            timeout('check_params_promise', () => delete _promises.check_params, 50);
         });
     }
     return _promises.check_params as Promise<boolean>;
