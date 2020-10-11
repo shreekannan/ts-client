@@ -103,7 +103,7 @@ export function redirectUri(): string {
 }
 
 /** Bearer token for authenticating requests to PlaceOS */
-export function token(): string {
+export function token(return_expired: boolean = true): string {
     if (_options.mock) {
         return 'mock-token';
     }
@@ -113,6 +113,9 @@ export function token(): string {
         log('Auth', 'Token expired. Requesting new token...');
         invalidateToken();
         authorise();
+        if (!return_expired) {
+            return '';
+        }
     }
     return access_token || _storage.getItem(`${_client_id}_access_token`) || '';
 }
@@ -248,6 +251,7 @@ export function authorise(
     state?: string,
     api_authority: PlaceAuthority = _authority as PlaceAuthority
 ): Promise<string> {
+    console.log('Promises:', _promises);
     /* istanbul ignore else */
     if (!_promises.authorise) {
         _promises.authorise = new Promise<string>((resolve, reject) => {
@@ -257,7 +261,7 @@ export function authorise(
             }
             log('Auth', 'Authorising user...');
             const after_check = () => {
-                if (token()) {
+                if (token(false)) {
                     log('Auth', 'Valid token found.');
                     delete _promises.authorise;
                     resolve(token());
@@ -386,6 +390,7 @@ export async function sendToAuthorize(state?: string): Promise<void> {
 export function authorizeWithIFrame(url: string): Promise<void> {
     if (!_promises.iframe_auth) {
         _promises.iframe_auth = new Promise((resolve, reject) => {
+            log('Auth', 'Authorizing in an iFrame...');
             const iframe = document.createElement('iframe');
             iframe.style.position = 'absolute';
             iframe.style.top = '0';
@@ -398,6 +403,7 @@ export function authorizeWithIFrame(url: string): Promise<void> {
             const callback = (event: MessageEvent) => {
                 if (event.origin === location.origin && event.data.type === 'place-os') {
                     const data: AuthorizeDetails = event.data;
+                    log('Auth', 'Received credentials from iFrame...');
                     document.body.removeChild(iframe);
                     clearAsyncTimeout('iframe_auth');
                     window.removeEventListener('message', callback);
@@ -416,6 +422,7 @@ export function authorizeWithIFrame(url: string): Promise<void> {
             timeout('iframe_auth', () => reject(), 15 * 1000);
             window.addEventListener('message', callback);
             iframe.onerror = (_) => {
+                log('Auth', 'iFrame error.', _);
                 delete _promises.iframe_auth;
                 reject();
             };
@@ -470,6 +477,7 @@ export function checkForAuthParameters(): Promise<boolean> {
     /* istanbul ignore else */
     if (!_promises.check_params) {
         _promises.check_params = new Promise((resolve) => {
+            log('Auth', 'Checking for auth parameters...');
             let fragments = getFragments();
             if ((!fragments || Object.keys(fragments).length <= 0) && sessionStorage) {
                 fragments = JSON.parse(sessionStorage.getItem('ENGINE.auth.params') || '{}');
@@ -610,14 +618,17 @@ export function revokeToken(): Promise<void> {
     /* istanbul ignore else */
     if (!_promises.revoke_token) {
         _promises.revoke_token = new Promise<void>((resolve, reject) => {
+            log('Auth', 'Revoking token...');
             const token_uri = _options.token_uri || '/auth/token';
             const on_error = (err: any) => {
+                log('Auth', 'Error revoking token.', err);
                 reject(err);
                 delete _promises.revoke_token;
             };
             fromFetch(`${token_uri}?token=${token()}`, { method: 'POST' }).subscribe(
                 (r: Response) => {
                     if (!r.ok) return on_error(r);
+                    log('Auth', 'Successfully revoked token.');
                     _access_token.next('');
                     _refresh_token.next('');
                     _storage.removeItem(`${_client_id}_access_token`);
@@ -686,6 +697,7 @@ export function generateTokenWithUrl(url: string): Promise<void> {
  */
 export function _storeTokenDetails(details: PlaceTokenResponse) {
     const expires_at = addSeconds(new Date(), Math.max(60, parseInt(details.expires_in, 10) - 300));
+    log('Auth', 'Tokens generated storing...');
     if (isTrusted()) {
         // Store access token
         if (details.access_token) {
