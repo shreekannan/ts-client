@@ -5,3 +5,5 @@ export * from './auth';
 export * from './realtime';
 
 export * from './utilities/general';
+
+import './utilities/abort-controller';
