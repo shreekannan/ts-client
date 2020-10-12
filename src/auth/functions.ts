@@ -14,7 +14,7 @@ import {
     MOCK_AUTHORITY,
     PlaceAuthOptions,
     PlaceAuthority,
-    PlaceTokenResponse
+    PlaceTokenResponse,
 } from './interfaces';
 
 /**
@@ -347,24 +347,23 @@ export function loadAuthority(tries: number = 0): Promise<void> {
                     loadAuthority(tries).then((_) => resolve());
                 }, 300 * Math.min(20, ++tries));
             };
-            fromFetch(`${secure ? 'https:' : 'http:'}//${host()}/auth/authority`).subscribe(
-                async (resp) => {
-                    if (!resp.ok) return on_error(await resp.json());
-                    _authority = (await resp.json()) as PlaceAuthority;
-                    _route = !/[2-9]\.[0-9]+\.[0-9]+/g.test(_authority.version || '')
-                        ? `/control/api`
-                        : `/api/engine/v2`;
+            fromFetch(`${secure ? 'https:' : 'http:'}//${host()}/auth/authority`, {
+                credentials: 'same-origin',
+            }).subscribe(async (resp) => {
+                if (!resp.ok) return on_error(await resp.json());
+                _authority = (await resp.json()) as PlaceAuthority;
+                _route = !/[2-9]\.[0-9]+\.[0-9]+/g.test(_authority.version || '')
+                    ? `/control/api`
+                    : `/api/engine/v2`;
 
-                    log('Auth', `Loaded authority.`, _authority);
-                    const response = () => {
-                        _online.next(true);
-                        setTimeout(() => delete _promises.load_authority, 500);
-                        resolve();
-                    };
-                    authorise('').then(response, response);
-                },
-                on_error
-            );
+                log('Auth', `Loaded authority.`, _authority);
+                const response = () => {
+                    _online.next(true);
+                    setTimeout(() => delete _promises.load_authority, 500);
+                    resolve();
+                };
+                authorise('').then(response, response);
+            }, on_error);
         });
     }
     return _promises.load_authority;
@@ -675,16 +674,13 @@ export function generateTokenWithUrl(url: string): Promise<void> {
                 reject();
                 delete _promises.generate_tokens;
             };
-            fromFetch(url, { method: 'POST' }).subscribe(
-                async (r: Response) => {
-                    if (!r.ok) return on_error(r);
-                    const tokens = await r.json();
-                    _storeTokenDetails(tokens);
-                    resolve();
-                    delete _promises.generate_tokens;
-                },
-                on_error
-            );
+            fromFetch(url, { method: 'POST' }).subscribe(async (r: Response) => {
+                if (!r.ok) return on_error(r);
+                const tokens = await r.json();
+                _storeTokenDetails(tokens);
+                resolve();
+                delete _promises.generate_tokens;
+            }, on_error);
         });
     }
     return _promises.generate_tokens as Promise<void>;
