@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { log } from '../utilities/general';
 
 import { bind, listen, status, unbind, value } from './functions';
 import { PlaceRequestOptions } from './interfaces';
@@ -17,8 +18,10 @@ export class PlaceVariableBinding<T = any> {
         // Listen for state changes in the websocket connection
         status().subscribe((connected: boolean) => {
             if (connected && this._stale_bindings) {
+                log('VAR', 'Re-binding to status variable', this.binding());
                 this.rebind();
-            } else {
+            } else if (!connected) {
+                log('VAR', 'Setting binding as stale', this.binding());
                 this._stale_bindings =
                     this._binding_count || this._stale_bindings;
                 this._binding_count = 0;
