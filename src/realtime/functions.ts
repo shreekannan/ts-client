@@ -14,7 +14,7 @@ import {
     refreshAuthority,
     token,
 } from '../auth/functions';
-import { log } from '../utilities/general';
+import { is_iOS, log } from '../utilities/general';
 import { HashMap } from '../utilities/types';
 import {
     PlaceCommandRequest,
@@ -499,7 +499,7 @@ export function createWebsocket() {
     let url = `ws${secure ? 's' : ''}://${host()}${websocketRoute()}${
         isFixedDevice() ? '?fixed_device=true' : ''
     }`;
-    if (!needsTokenHeader()) {
+    if (!needsTokenHeader() && !is_iOS()) {
         log('WS', `Authenticating through cookie...`);
         const cookie = `bearer_token=${token()};max-age=120;path=${httpRoute()};${
             secure ? 'secure;' : ''
