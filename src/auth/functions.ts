@@ -227,6 +227,7 @@ export function cleanupAuth() {
  * Refresh authentication
  */
 export function refreshAuthority(): Promise<void> {
+    log('Auth', 'Refreshing authorty.');
     _authority = undefined;
     return loadAuthority();
 }
@@ -235,6 +236,7 @@ export function refreshAuthority(): Promise<void> {
  * Invalidate the current access token
  */
 export function invalidateToken(): void {
+    log('Auth', 'Invalidating tokens.');
     _storage.removeItem(`${_client_id}_access_token`);
     _storage.removeItem(`${_client_id}_expires_at`);
     _access_token.next('');
@@ -269,10 +271,12 @@ export function authorise(
                     const token_handlers = [
                         () => {
                             delete _promises.authorise;
+                            log('Auth', 'Successfully generated token.');
                             resolve(token());
                         },
                         () => {
                             delete _promises.authorise;
+                            log('Auth', 'Failed to generate token.');
                             reject();
                         },
                     ];
@@ -342,7 +346,7 @@ export function loadAuthority(tries: number = 0): Promise<void> {
                 log('Auth', `Failed to load authority(${err})`);
                 _online.next(false);
                 // Retry if authority fails to load
-                setTimeout(() => {
+                timeout('load_authority', () => {
                     delete _promises.load_authority;
                     loadAuthority(tries).then((_) => resolve());
                 }, 300 * Math.min(20, ++tries));
@@ -359,6 +363,7 @@ export function loadAuthority(tries: number = 0): Promise<void> {
                 log('Auth', `Loaded authority.`, _authority);
                 const response = () => {
                     _online.next(true);
+                    log('Auth', 'Application set online.');
                     setTimeout(() => delete _promises.load_authority, 500);
                     resolve();
                 };
@@ -418,7 +423,10 @@ export function authorizeWithIFrame(url: string): Promise<void> {
                     );
                 }
             };
-            timeout('iframe_auth', () => reject(), 15 * 1000);
+            timeout('iframe_auth', () => {
+                log('Auth', 'Unable to resolve iFrame after 15 seconds...');
+                reject();
+            }, 15 * 1000);
             window.addEventListener('message', callback);
             iframe.onerror = (_) => {
                 log('Auth', 'iFrame error.', _);
@@ -442,6 +450,8 @@ export function sendToLogin(api_authority: PlaceAuthority): void {
         // Redirect to login form
         const url = api_authority!.login_url?.replace('{{url}}', encodeURIComponent(location.href));
         setTimeout(() => window.location.assign(url), 300);
+    } else {
+        log('Auth', 'Login being handled locally.');
     }
     delete _promises.authorise;
 }

@@ -150,7 +150,7 @@ export function status(): Observable<boolean> {
 }
 
 /**
- * Listen to binding changes on the given status variable
+ * Listen to binding changes on the given status variable. DOES NOT BIND TO VARIABLE
  * @param binding_details Binding details
  */
 export function listen<T = any>(binding_details: PlaceRequestOptions): Observable<T>;
@@ -497,10 +497,14 @@ export function createWebsocket() {
         isFixedDevice() ? '?fixed_device=true' : ''
     }`;
     if (!needsTokenHeader()) {
-        document.cookie = `bearer_token=${token()};max-age=120;path=${httpRoute()};${
+        log('WS', `Authenticating through cookie...`);
+        const cookie = `bearer_token=${token()};max-age=120;path=${httpRoute()};${
             secure ? 'secure;' : ''
         }samesite=strict`;
+        document.cookie = cookie;
+        log('WS', `Cookies:`, [document.cookie, cookie]);
     } else {
+        log('WS', `Authenticating through URL query parameter...`);
         url += `${url.indexOf('?') >= 0 ? '&' : '?'}bearer_token=${token()}`;
     }
     log('WS', `Creating websocket connection to ws${secure ? 's' : ''}://${host()}${websocketRoute()}`);
