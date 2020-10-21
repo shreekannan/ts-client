@@ -431,6 +431,9 @@ export function handleNotify<T = any>(
 export function connect(tries: number = 0): Promise<void> {
     if (_connection_promise == null) {
         _connection_promise = new Promise<void>((resolve) => {
+            if (tries > 40) {
+                return location.reload();
+            }
             _connection_attempts++;
             _websocket = isMock() ? createMockWebSocket() : createWebsocket();
             if (_websocket && (token() || isMock()) && authority()) {
