@@ -246,7 +246,7 @@ describe('Realtime API', () => {
             msg: 'test error'
         } as PlaceResponse);
         jest.advanceTimersByTime(10000);
-        expect(log_spy).toBeCalledTimes(11);
+        expect(log_spy).toBeCalledTimes(13);
     });
 
     it('should log error when engine message is invalid', () => {
