@@ -270,12 +270,10 @@ export function authorise(
                 } else {
                     const token_handlers = [
                         () => {
-                            delete _promises.authorise;
                             log('Auth', 'Successfully generated token.');
                             resolve(token());
                         },
                         () => {
-                            delete _promises.authorise;
                             log('Auth', 'Failed to generate token.');
                             reject();
                         },
@@ -291,10 +289,10 @@ export function authorise(
                         } else {
                             log('Auth', 'No user session');
                             sendToLogin(api_authority);
-                            delete _promises.authorise;
                             reject();
                         }
                     }
+                    delete _promises.authorise;
                 }
             };
             checkToken().then(after_check, after_check);
@@ -347,7 +345,6 @@ export function loadAuthority(tries: number = 0): Promise<void> {
                 _online.next(false);
                 // Retry if authority fails to load
                 timeout('load_authority', () => {
-                    delete _promises.load_authority;
                     loadAuthority(tries).then((_) => resolve());
                 }, 300 * Math.min(20, ++tries));
             };
@@ -364,10 +361,10 @@ export function loadAuthority(tries: number = 0): Promise<void> {
                 const response = () => {
                     _online.next(true);
                     log('Auth', 'Application set online.');
-                    setTimeout(() => delete _promises.load_authority, 500);
                     resolve();
                 };
                 authorise('').then(response, response);
+                delete _promises.load_authority;
             }, on_error);
         });
     }
