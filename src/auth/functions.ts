@@ -345,6 +345,7 @@ export function loadAuthority(tries: number = 0): Promise<void> {
                 _online.next(false);
                 // Retry if authority fails to load
                 timeout('load_authority', () => {
+                    delete _promises.load_authority;
                     loadAuthority(tries).then((_) => resolve());
                 }, 300 * Math.min(20, ++tries));
             };
@@ -363,8 +364,8 @@ export function loadAuthority(tries: number = 0): Promise<void> {
                     log('Auth', 'Application set online.');
                     resolve();
                 };
-                authorise('').then(response, response);
                 delete _promises.load_authority;
+                authorise('').then(response, response);
             }, on_error);
         });
     }
