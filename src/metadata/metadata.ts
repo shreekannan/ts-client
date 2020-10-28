@@ -16,11 +16,14 @@ export class PlaceMetadata {
     public readonly description: string;
     /** Metadata associated with this key. */
     public readonly details: HashMap | any[];
+    /** List user groups allowed to edit the metadata */
+    public readonly editors: readonly string [];
 
     constructor(data: PlaceMetadataComplete = {}) {
         this.id = data.id || data.parent_id || '';
         this.name = data.name || '';
         this.description = data.description || '';
         this.details = data.details || {};
+        this.editors = data.editors || [];
     }
 }
