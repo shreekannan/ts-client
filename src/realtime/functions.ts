@@ -275,7 +275,7 @@ export function ignore(
  * @param request New request to post to the server
  */
 export function send<T = any>(request: PlaceCommandRequest, tries: number = 0): Promise<T> {
-    const key = `${request.cmd}|${request.sys}|${request.mod}${request.index}|${request.name}`;
+    const key = `${request.cmd}|${request.sys}|${request.mod}${request.index}|${request.name}|${request.args}`;
     /* istanbul ignore else */
     if (!_requests[key]) {
         const req: PlaceCommandRequestMetadata = { ...request, key };
