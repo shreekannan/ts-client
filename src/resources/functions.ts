@@ -11,7 +11,7 @@ import {
     RemoveParameters,
     ShowParameters,
     TaskParameters,
-    UpdateParameters
+    UpdateParameters,
 } from './interface';
 
 /** Total number of items returned by the last basic index query */
@@ -139,7 +139,9 @@ export function task<T = any>(details: TaskParameters<T>): Observable<T> {
     const request =
         method === 'post' || method === 'put' || !method
             ? (method === 'put' ? put : post)(url, form_data)
-            : (method === 'del' ? del : get)(`${url}${query_str ? '?' + query_str : ''}`);
+            : (method === 'del' ? del : get)(`${url}${query_str ? '?' + query_str : ''}`, {
+                  response_type: 'json',
+              });
     return request.pipe(map((resp: HashMap) => (callback || ((_: any) => _))(resp)));
 }
 
