@@ -97,8 +97,8 @@ describe('Resource API', () => {
             'get',
             Resource.query,
             { total: 10, results: [item] },
-            [{ query_params: { offset: 10 }}],
-            [{ query_params: { offset: 10 }}]
+            [{ query_params: { offset: 10 } }],
+            [{ query_params: { offset: 10 } }]
         );
         headers['x-total-count'] = '25';
         resp_header_spy.mockReturnValue(headers);
@@ -106,8 +106,8 @@ describe('Resource API', () => {
             'get',
             Resource.query,
             { total: 25, results: [item] },
-            [{ query_params: { test: true }}],
-            [{ query_params: { test: true }}]
+            [{ query_params: { test: true } }],
+            [{ query_params: { test: true } }]
         );
         expect(Resource.requestTotal('resource')).toBe(10);
         expect(Resource.lastRequestTotal('resource')).toBe(25);
@@ -149,7 +149,10 @@ describe('Resource API', () => {
             [{ id: 'test', task_name: 'a_task' }],
             [{ id: 'test', task_name: 'a_task', form_data: { test: true } }]
         );
-        expect(Http.post).toBeCalledWith('http://localhost/api/engine/v2/resource/test/a_task', undefined);
+        expect(Http.post).toBeCalledWith(
+            'http://localhost/api/engine/v2/resource/test/a_task',
+            undefined
+        );
         expect(Http.post).toBeCalledWith('http://localhost/api/engine/v2/resource/test/a_task', {
             test: true,
         });
@@ -198,10 +201,14 @@ describe('Resource API', () => {
             [{ id: 'test', task_name: 'a_task', method: 'get' }],
             [{ id: 'test', task_name: 'a_task', form_data: { test: true }, method: 'get' }]
         );
-        expect(Http.get).toBeCalledWith('http://localhost/api/engine/v2/resource/test/a_task');
-        expect(Http.get).toBeCalledWith(
-            'http://localhost/api/engine/v2/resource/test/a_task?test=true'
-        );
+        expect(Http.get).toBeCalledWith('http://localhost/api/engine/v2/resource/test/a_task', {
+            response_type: 'json',
+        });
+        expect(
+            Http.get
+        ).toBeCalledWith('http://localhost/api/engine/v2/resource/test/a_task?test=true', {
+            response_type: 'json',
+        });
     });
 
     it('should allow getting the next page', () => {
