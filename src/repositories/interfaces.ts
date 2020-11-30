@@ -9,6 +9,8 @@ export enum PlaceRepositoryType {
 export interface PlaceRepositoryCommitQuery {
     /** URL encoded name of the driver being requested */
     driver?: string;
+    /** Number of commits to return */
+    limit?: number;
 }
 
 export interface GitCommitDetails {
