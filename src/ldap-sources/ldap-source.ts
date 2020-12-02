@@ -2,6 +2,8 @@
 import { PlaceResource } from '../resources/resource';
 
 export class PlaceLDAPSource extends PlaceResource {
+    /** Type of auth source */
+    public readonly type = 'ldap';
     /** ID of the authority associted with the auth method */
     public readonly authority_id: string;
     /** HTTP URL of the SSO provider */

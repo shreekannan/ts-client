@@ -8,6 +8,8 @@ export interface PlaceSamlRequestAttribute {
 }
 
 export class PlaceSAMLSource extends PlaceResource {
+    /** Type of auth source */
+    public readonly type = 'saml';
     /** ID of the authority associted with the auth method */
     public readonly authority_id: string;
     /** Name of the application requesting auth */

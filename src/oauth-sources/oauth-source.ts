@@ -2,6 +2,8 @@ import { PlaceResource } from '../resources/resource';
 import { HashMap } from '../utilities/types';
 
 export class PlaceOAuthSource extends PlaceResource {
+    /** Type of auth source */
+    public readonly type = 'oauth';
     /** ID of the authority associted with the auth method */
     public readonly authority_id: string;
     /** Application ID from the SSO provider providing the OAuth services */
