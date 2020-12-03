@@ -40,7 +40,7 @@ export class PlaceSystemBinding {
             this._module_list[module].push(
                 new PlaceModuleBinding(
                     this,
-                    `${module}_${this._module_list[module].length}`
+                    `${module}_${this._module_list[module].length + 1}`
                 )
             );
         }
