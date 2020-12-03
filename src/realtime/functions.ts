@@ -222,8 +222,7 @@ export function unbind(
  * Execute method on the given system module
  * @param options Exec request options
  */
-export function execute(options: PlaceExecRequestOptions): Promise<void>;
-export function execute<T = any>(
+export function execute<T = void>(
     options: PlaceExecRequestOptions,
     post: (_: PlaceCommandRequest) => Promise<T> = send
 ): Promise<T> {

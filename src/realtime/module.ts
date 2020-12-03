@@ -48,8 +48,8 @@ export class PlaceModuleBinding {
      * @param method Name of the method
      * @param args Array of arguments to pass to the method
      */
-    public execute(method: string, args?: any[]): Promise<any> {
-        return execute({
+    public execute<T = any>(method: string, args?: any[]): Promise<T> {
+        return execute<T>({
             sys: this._system.id,
             mod: this.name,
             index: this.index,
