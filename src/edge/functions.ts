@@ -6,7 +6,7 @@ import { PlaceEdge } from './edge';
 /**
  * @private
  */
-const PATH = 'edge';
+const PATH = 'edges';
 
 /** Convert raw server data to an Edge object */
 function process(item: Partial<PlaceEdge>) {
