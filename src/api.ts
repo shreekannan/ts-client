@@ -59,6 +59,16 @@ export { PlaceDriver } from './drivers/driver';
 export { PlaceDriverQueryOptions, PlaceDriverDetails } from './drivers/interfaces';
 export { PlaceDriverRole } from './drivers/enums';
 
+export { PlaceEdge } from './edge/edge';
+export {
+    queryEdges,
+    showEdge,
+    addEdge,
+    updateEdge,
+    removeEdge,
+    retrieveEdgeToken
+} from './edge/functions'
+
 export {
     queryLDAPSources,
     showLDAPSource,
