@@ -25,6 +25,8 @@ export class PlaceModule extends PlaceResource {
     public readonly running: boolean;
     /** Timestamp of last update in ms since UTC epoch */
     public readonly updated_at: number;
+    /** ID of the edge associated with the module */
+    public readonly edge_id: string;
     /** ID of the driver associated with the module */
     public readonly driver_id: string;
     /** Driver/dependancy associated with the module */
@@ -69,6 +71,7 @@ export class PlaceModule extends PlaceResource {
         super(raw_data);
         this.driver_id = raw_data.driver_id || raw_data.dependency_id || '';
         this.control_system_id = raw_data.control_system_id || '';
+        this.edge_id = raw_data.edge_id || '';
         this.ip = raw_data.ip || '';
         this.tls = raw_data.tls || false;
         this.udp = raw_data.udp || false;
