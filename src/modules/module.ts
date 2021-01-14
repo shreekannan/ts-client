@@ -111,9 +111,11 @@ export class PlaceModule extends PlaceResource {
      */
     public toJSON(keep_system: boolean = false): HashMap {
         const obj = super.toJSON();
-        if (obj.role !== PlaceDriverRole.Logic && !keep_system) {
+        if ((obj.role !== PlaceDriverRole.Logic && !keep_system) || !obj.control_system_id) {
             delete obj.control_system_id;
         }
+        delete obj.driver;
+        delete obj.system;
         return obj;
     }
 }

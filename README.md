@@ -243,6 +243,21 @@ registerMockEndpoint({
 });
 ```
 
+Handlers may also throw errors
+
+```typescript
+registerMockEndpoint({
+    path: `/api/engin/v2/systems/:id`,
+    method: 'GET',
+    callback: (request) => {
+        if (request.route_params.id) {
+            ...
+        }
+        throw { status: 404, message: 'Invalid system ID' }; 
+    }
+});
+```
+
 Query parameters are also available on the callback input.
 
 `GET`, `POST`, `PUT`, `PATCH` and `DELETE` requests can be mocked out.
