@@ -231,6 +231,7 @@ export function request(
                     if (i + 1 > 4 || error.status !== 401) {
                         return throwError(error || {});
                     }
+                    log('HTTP', 'Auth error', error);
                     reloadAuth();
                     return of(error);
                 })
