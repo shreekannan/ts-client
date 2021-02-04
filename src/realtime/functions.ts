@@ -35,7 +35,7 @@ import { MockPlaceWebsocketSystem } from './mock-system';
  * @private
  * Time in seconds to ping the server to keep the websocket connection alive
  */
-const KEEP_ALIVE = 20;
+const KEEP_ALIVE = 15;
 /**
  * @private
  * Global counter for websocket request IDs
@@ -457,7 +457,10 @@ export function connect(tries: number = 0): Promise<void> {
                     () => {
                         _websocket = undefined;
                         _connection_promise = null;
+                        log('WS', `Connection closed by browser.`);
                         _status.next(false);
+                        // Try reconnecting after 1 second
+                        reconnect();
                     }
                 );
                 if (_keep_alive) {
