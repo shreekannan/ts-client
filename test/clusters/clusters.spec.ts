@@ -26,6 +26,26 @@ describe('PlaceCluster', () => {
     it('should create instance', () => {
         expect(application).toBeTruthy();
         expect(application).toBeInstanceOf(PlaceCluster);
+        let app = new PlaceCluster({
+            id: '01E2PRBSNE4GXM9WGVM7M3KEZX',
+            load: {
+                local: {
+                    hostname: 'core',
+                    cpu_count: 3,
+                    core_cpu: 0,
+                    total_cpu: 0,
+                    memory_total: 8155620,
+                    memory_usage: 3028124,
+                    core_memory: 3028124,
+                },
+                edge: [{}]
+            },
+        } as any);
+        expect(app.edge_nodes.length).toBe(1);
+        app = new PlaceCluster({
+            id: '01E2PRBSNE4GXM9WGVM7M3KEZX',
+            run_counts: { local: { drivers: 2, modules: 1 } },
+        } as any);
     });
 
     it('should expose ID', () => {
