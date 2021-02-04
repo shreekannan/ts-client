@@ -2744,6 +2744,9 @@ img {
 					<a href="placecluster.html#cpu_count" class="tsd-kind-icon">cpu_<wbr>count</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
+					<a href="placecluster.html#edge_nodes" class="tsd-kind-icon">edge_<wbr>nodes</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class">
 					<a href="placecluster.html#hostname" class="tsd-kind-icon">hostname</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -2760,6 +2763,9 @@ img {
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
 					<a href="placecluster.html#module_instances" class="tsd-kind-icon">module_<wbr>instances</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class">
+					<a href="placecluster.html#run_counts" class="tsd-kind-icon">run_<wbr>counts</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
 					<a href="placecluster.html#running_drivers" class="tsd-kind-icon">running_<wbr>drivers</a>
@@ -2790,6 +2796,11 @@ img {
 			<ul class="tsd-hierarchy">
 				<li>
 					<span class="target">PlaceCluster</span>
+					<ul class="tsd-hierarchy">
+						<li>
+							<a href="../interfaces/placeclustercomplete.html" class="tsd-signature-type">PlaceClusterComplete</a>
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</section>
@@ -2811,12 +2822,14 @@ img {
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#core_cpu" class="tsd-kind-icon">core_<wbr>cpu</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#core_memory" class="tsd-kind-icon">core_<wbr>memory</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#cpu_count" class="tsd-kind-icon">cpu_<wbr>count</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#edge_nodes" class="tsd-kind-icon">edge_<wbr>nodes</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#hostname" class="tsd-kind-icon">hostname</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#id" class="tsd-kind-icon">id</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#memory_percentage" class="tsd-kind-icon">memory_<wbr>percentage</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#memory_total" class="tsd-kind-icon">memory_<wbr>total</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#memory_usage" class="tsd-kind-icon">memory_<wbr>usage</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#module_instances" class="tsd-kind-icon">module_<wbr>instances</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#run_counts" class="tsd-kind-icon">run_<wbr>counts</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#running_drivers" class="tsd-kind-icon">running_<wbr>drivers</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#total_cpu" class="tsd-kind-icon">total_<wbr>cpu</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="placecluster.html#total_memory" class="tsd-kind-icon">total_<wbr>memory</a></li>
@@ -2834,19 +2847,19 @@ img {
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Place<wbr>Cluster<span class="tsd-signature-symbol">(</span>raw_data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="placecluster.html" class="tsd-signature-type">PlaceCluster</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="placecluster.html" class="tsd-signature-type">PlaceCluster</a></li>
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Place<wbr>Cluster<span class="tsd-signature-symbol">(</span>raw_data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/placeclustercomplete.html" class="tsd-signature-type">PlaceClusterComplete</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="placecluster.html" class="tsd-signature-type">PlaceCluster</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L37">src/clusters/cluster.ts:37</a></li>
+								<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L63">src/clusters/cluster.ts:63</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> raw_data: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="placecluster.html" class="tsd-signature-type">PlaceCluster</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = {}</span></h5>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> raw_data: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/placeclustercomplete.html" class="tsd-signature-type">PlaceClusterComplete</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = {}</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="placecluster.html" class="tsd-signature-type">PlaceCluster</a></h4>
@@ -2862,7 +2875,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">available_<wbr>repositories<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L9">src/clusters/cluster.ts:9</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L31">src/clusters/cluster.ts:31</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2877,7 +2890,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">compiled_<wbr>drivers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L7">src/clusters/cluster.ts:7</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L29">src/clusters/cluster.ts:29</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2892,7 +2905,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">core_<wbr>cpu<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L23">src/clusters/cluster.ts:23</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L45">src/clusters/cluster.ts:45</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2907,7 +2920,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">core_<wbr>memory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L31">src/clusters/cluster.ts:31</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L53">src/clusters/cluster.ts:53</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2922,7 +2935,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">cpu_<wbr>count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L21">src/clusters/cluster.ts:21</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L43">src/clusters/cluster.ts:43</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2932,12 +2945,27 @@ img {
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+				<a name="edge_nodes" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> edge_<wbr>nodes</h3>
+				<div class="tsd-signature tsd-kind-icon">edge_<wbr>nodes<span class="tsd-signature-symbol">:</span> <a href="../interfaces/placeclusterdetails.html" class="tsd-signature-type">PlaceClusterDetails</a><span class="tsd-signature-symbol">[]</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L61">src/clusters/cluster.ts:61</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>List of edge nodes within the cluster</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 				<a name="hostname" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> hostname</h3>
 				<div class="tsd-signature tsd-kind-icon">hostname<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L19">src/clusters/cluster.ts:19</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L41">src/clusters/cluster.ts:41</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2952,7 +2980,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L5">src/clusters/cluster.ts:5</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L27">src/clusters/cluster.ts:27</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2967,7 +2995,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">memory_<wbr>percentage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L33">src/clusters/cluster.ts:33</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L55">src/clusters/cluster.ts:55</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2982,7 +3010,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">memory_<wbr>total<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L27">src/clusters/cluster.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L49">src/clusters/cluster.ts:49</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2997,7 +3025,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">memory_<wbr>usage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L29">src/clusters/cluster.ts:29</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L51">src/clusters/cluster.ts:51</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3012,7 +3040,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">module_<wbr>instances<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L13">src/clusters/cluster.ts:13</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L35">src/clusters/cluster.ts:35</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3022,12 +3050,22 @@ img {
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+				<a name="run_counts" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> run_<wbr>counts</h3>
+				<div class="tsd-signature tsd-kind-icon">run_<wbr>counts<span class="tsd-signature-symbol">:</span> <a href="../interfaces/placeclusterruncounts.html" class="tsd-signature-type">PlaceClusterRunCounts</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L63">src/clusters/cluster.ts:63</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 				<a name="running_drivers" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> running_<wbr>drivers</h3>
 				<div class="tsd-signature tsd-kind-icon">running_<wbr>drivers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L11">src/clusters/cluster.ts:11</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L33">src/clusters/cluster.ts:33</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3042,7 +3080,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">total_<wbr>cpu<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L25">src/clusters/cluster.ts:25</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L47">src/clusters/cluster.ts:47</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3057,7 +3095,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">total_<wbr>memory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L37">src/clusters/cluster.ts:37</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L59">src/clusters/cluster.ts:59</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3072,7 +3110,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">unavailable_<wbr>drivers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L17">src/clusters/cluster.ts:17</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L39">src/clusters/cluster.ts:39</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3087,7 +3125,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">unavailable_<wbr>repositories<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L15">src/clusters/cluster.ts:15</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L37">src/clusters/cluster.ts:37</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3102,7 +3140,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">used_<wbr>memory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/6d75f61/src/clusters/cluster.ts#L35">src/clusters/cluster.ts:35</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L57">src/clusters/cluster.ts:57</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">

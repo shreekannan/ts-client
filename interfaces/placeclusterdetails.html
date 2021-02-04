@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AuthorizeDetails | @placeos/ts-client</title>
+	<title>PlaceClusterDetails | @placeos/ts-client</title>
 	<meta name="description" content="Documentation for @placeos/ts-client">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -2723,16 +2723,31 @@ img {
 <nav class="tsd-navigation secondary">
 	<ul>
 		<li class="current tsd-kind-interface">
-			<a href="authorizedetails.html" class="tsd-kind-icon">Authorize<wbr>Details</a>
+			<a href="placeclusterdetails.html" class="tsd-kind-icon">Place<wbr>Cluster<wbr>Details</a>
 			<ul>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="authorizedetails.html#code" class="tsd-kind-icon">code</a>
+					<a href="placeclusterdetails.html#core_cpu" class="tsd-kind-icon">core_<wbr>cpu</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="authorizedetails.html#expires_in" class="tsd-kind-icon">expires_<wbr>in</a>
+					<a href="placeclusterdetails.html#core_memory" class="tsd-kind-icon">core_<wbr>memory</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="authorizedetails.html#token" class="tsd-kind-icon">token</a>
+					<a href="placeclusterdetails.html#cpu_count" class="tsd-kind-icon">cpu_<wbr>count</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="placeclusterdetails.html#hostname" class="tsd-kind-icon">hostname</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="placeclusterdetails.html#memory_total" class="tsd-kind-icon">memory_<wbr>total</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="placeclusterdetails.html#memory_usage" class="tsd-kind-icon">memory_<wbr>usage</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="placeclusterdetails.html#run_count" class="tsd-kind-icon">run_<wbr>count</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="placeclusterdetails.html#total_cpu" class="tsd-kind-icon">total_<wbr>cpu</a>
 				</li>
 			</ul>
 		</li>
@@ -2744,7 +2759,7 @@ img {
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">AuthorizeDetails</span>
+					<span class="target">PlaceClusterDetails</span>
 				</li>
 			</ul>
 		</section>
@@ -2755,9 +2770,14 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="authorizedetails.html#code" class="tsd-kind-icon">code</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="authorizedetails.html#expires_in" class="tsd-kind-icon">expires_<wbr>in</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="authorizedetails.html#token" class="tsd-kind-icon">token</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="placeclusterdetails.html#core_cpu" class="tsd-kind-icon">core_<wbr>cpu</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="placeclusterdetails.html#core_memory" class="tsd-kind-icon">core_<wbr>memory</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="placeclusterdetails.html#cpu_count" class="tsd-kind-icon">cpu_<wbr>count</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="placeclusterdetails.html#hostname" class="tsd-kind-icon">hostname</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="placeclusterdetails.html#memory_total" class="tsd-kind-icon">memory_<wbr>total</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="placeclusterdetails.html#memory_usage" class="tsd-kind-icon">memory_<wbr>usage</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="placeclusterdetails.html#run_count" class="tsd-kind-icon">run_<wbr>count</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="placeclusterdetails.html#total_cpu" class="tsd-kind-icon">total_<wbr>cpu</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2766,49 +2786,84 @@ img {
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="code" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> code</h3>
-				<div class="tsd-signature tsd-kind-icon">code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+				<a name="core_cpu" class="tsd-anchor"></a>
+				<h3>core_<wbr>cpu</h3>
+				<div class="tsd-signature tsd-kind-icon">core_<wbr>cpu<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/auth/interfaces.ts#L20">src/auth/interfaces.ts:20</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L11">src/clusters/cluster.ts:11</a></li>
 					</ul>
 				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Token generation code</p>
-					</div>
-				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="expires_in" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> expires_<wbr>in</h3>
-				<div class="tsd-signature tsd-kind-icon">expires_<wbr>in<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+				<a name="core_memory" class="tsd-anchor"></a>
+				<h3>core_<wbr>memory</h3>
+				<div class="tsd-signature tsd-kind-icon">core_<wbr>memory<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/auth/interfaces.ts#L22">src/auth/interfaces.ts:22</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L15">src/clusters/cluster.ts:15</a></li>
 					</ul>
 				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>TTL of access token</p>
-					</div>
-				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="token" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> token</h3>
-				<div class="tsd-signature tsd-kind-icon">token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+				<a name="cpu_count" class="tsd-anchor"></a>
+				<h3>cpu_<wbr>count</h3>
+				<div class="tsd-signature tsd-kind-icon">cpu_<wbr>count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/auth/interfaces.ts#L18">src/auth/interfaces.ts:18</a></li>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L10">src/clusters/cluster.ts:10</a></li>
 					</ul>
 				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Access token</p>
-					</div>
-				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="hostname" class="tsd-anchor"></a>
+				<h3>hostname</h3>
+				<div class="tsd-signature tsd-kind-icon">hostname<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L9">src/clusters/cluster.ts:9</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="memory_total" class="tsd-anchor"></a>
+				<h3>memory_<wbr>total</h3>
+				<div class="tsd-signature tsd-kind-icon">memory_<wbr>total<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L13">src/clusters/cluster.ts:13</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="memory_usage" class="tsd-anchor"></a>
+				<h3>memory_<wbr>usage</h3>
+				<div class="tsd-signature tsd-kind-icon">memory_<wbr>usage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L14">src/clusters/cluster.ts:14</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="run_count" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> run_<wbr>count</h3>
+				<div class="tsd-signature tsd-kind-icon">run_<wbr>count<span class="tsd-signature-symbol">:</span> <a href="placeclusterruncounts.html" class="tsd-signature-type">PlaceClusterRunCounts</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L16">src/clusters/cluster.ts:16</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="total_cpu" class="tsd-anchor"></a>
+				<h3>total_<wbr>cpu</h3>
+				<div class="tsd-signature tsd-kind-icon">total_<wbr>cpu<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/PlaceOS/ts-client/blob/1a0afbd/src/clusters/cluster.ts#L12">src/clusters/cluster.ts:12</a></li>
+					</ul>
+				</aside>
 			</section>
 		</section>
 		<footer class="with-border-bottom">
