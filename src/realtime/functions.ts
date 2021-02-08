@@ -132,7 +132,7 @@ export function cleanupRealtime() {
 }
 
 export function websocketRoute() {
-    return apiEndpoint().indexOf('/control') >= 0
+    return apiEndpoint().indexOf('/control/') >= 0
         ? '/control/websocket'
         : `${httpRoute()}/systems/control`;
 }
