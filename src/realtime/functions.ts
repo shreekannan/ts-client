@@ -434,8 +434,8 @@ export function connect(tries: number = 0): Promise<void> {
                 return location.reload();
             }
             _connection_attempts++;
-            _websocket = isMock() ? createMockWebSocket() : createWebsocket();
-            if (_websocket && (token() || isMock()) && authority()) {
+            _websocket = (isMock() ? createMockWebSocket() : createWebsocket()) as any;
+            if (_websocket) {
                 log('WS', `Connecting to websocket...`);
                 _websocket.subscribe(
                     (resp: PlaceResponse) => {
@@ -497,7 +497,7 @@ export function connect(tries: number = 0): Promise<void> {
  * Create websocket connection
  */
 export function createWebsocket() {
-    if (!authority()) return null;
+    if (!authority() || !token()) return null;
     const secure = isSecure() || location.protocol.indexOf('https') >= 0;
     let url = `ws${secure ? 's' : ''}://${host()}${websocketRoute()}${
         isFixedDevice() ? '?fixed_device=true' : ''
