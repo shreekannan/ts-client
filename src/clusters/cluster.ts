@@ -1,4 +1,4 @@
-import { HashMap } from 'src/utilities/types';
+import { HashMap } from '../utilities/types';
 import { humanReadableByteCount } from '../utilities/general';
 
 interface PlaceClusterRunCounts {
