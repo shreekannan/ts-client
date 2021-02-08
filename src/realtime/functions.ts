@@ -497,6 +497,7 @@ export function connect(tries: number = 0): Promise<void> {
  * Create websocket connection
  */
 export function createWebsocket() {
+    if (!authority()) return null;
     const secure = isSecure() || location.protocol.indexOf('https') >= 0;
     let url = `ws${secure ? 's' : ''}://${host()}${websocketRoute()}${
         isFixedDevice() ? '?fixed_device=true' : ''
