@@ -436,6 +436,7 @@ export function connect(tries: number = 0): Promise<void> {
             _connection_attempts++;
             _websocket = (isMock() ? createMockWebSocket() : createWebsocket()) as any;
             if (_websocket) {
+                log('WS(Debug)', `Authority:`, [authority()]);
                 log('WS', `Connecting to websocket...`);
                 _websocket.subscribe(
                     (resp: PlaceResponse) => {
