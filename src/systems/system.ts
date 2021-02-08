@@ -39,6 +39,8 @@ export class PlaceSystem extends PlaceResource {
     public readonly map_id: string;
     /** List of module IDs that belong to the system */
     public readonly modules: readonly string[];
+    /** List of images associated with the system */
+    public readonly images: readonly string[];
     /** List of the zone IDs that the system belongs */
     public readonly zones: readonly string[];
     /**
@@ -59,6 +61,7 @@ export class PlaceSystem extends PlaceResource {
         this.support_url = raw_data.support_url || '';
         this.map_id = raw_data.map_id || '';
         this.modules = raw_data.modules || [];
+        this.images = raw_data.images || [];
         this.zones = raw_data.zones || [];
         this.settings = raw_data.settings || [null, null, null, null];
         if (typeof this.settings !== 'object') {
